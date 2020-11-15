@@ -1,0 +1,28 @@
+# Copyright (c) m8mble 2020.
+# SPDX-License-Identifier: BSL-1.0
+
+# Shorthand for introducing a new test executable.
+# Usage: add_clntst_test(name extra-srcs...)
+function(add_clntst_test name)
+    set(options)
+    set(oneValueArgs LINK)
+    set(multiValueArgs)
+    cmake_parse_arguments(PARSED "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+    if (NOT DEFINED PARSED_LINK)
+        set(PARSED_LINK default)
+    endif()
+
+    string(TOLOWER ${name} EXE)
+    set(sources "${name}.cpp")
+    foreach (tu ${PARSED_UNPARSED_ARGUMENTS})
+        list(APPEND sources "${tu}.cpp")
+    endforeach ()
+
+    add_executable(${EXE} ${sources})
+    target_link_libraries(${EXE} CleanTest::${PARSED_LINK})
+    add_test(NAME ${EXE} COMMAND ${EXE})
+endfunction()
+
+add_clntst_test(Shared LINK shared)
+add_clntst_test(Static LINK static)
+add_clntst_test(Default)

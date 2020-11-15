@@ -1,0 +1,15 @@
+# Ticket List
+
+
+## Build
+
+ - [ ] Make build warnings / werror configurable
+ - [ ] Make installable
+ - [ ] Support building as part (i.e. subdir) of another cmake project.
+       If so, honor static / dynamic building of the parent.
+ - [ ] Make packageable (for github, vcpkg, etc.)
+
+
+## Doc
+
+ - [ ] Add generator
