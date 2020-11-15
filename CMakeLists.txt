@@ -25,6 +25,7 @@ add_compile_options(-Wall -Wextra -pedantic -Werror -Wswitch-enum)
 
 set(CLNTST_PUBLIC_HEADERS
     include/clean-test/foo.h
+    include/clean-test/utils/SourceLocation.h
 )
 set(CLNTST_SOURCES
     src/foo.cpp
