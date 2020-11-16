@@ -13,3 +13,12 @@
 ## Doc
 
  - [ ] Add generator
+
+
+## Expression
+
+ - [ ] Support literals
+ - [ ] Support unary not
+ - [ ] Support more binary operators
+ - [ ] Deal with configurable floating point accuracy
+ - [ ] Comparison of containers
