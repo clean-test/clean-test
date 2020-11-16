@@ -37,6 +37,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Base.h
     Clause.h
+    Equal.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     SourceLocation.h
