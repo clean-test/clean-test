@@ -35,6 +35,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test
     foo.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
+    And.h
     Base.h
     Clause.h
     Equal.h
