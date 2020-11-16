@@ -25,4 +25,4 @@ endfunction()
 
 add_clntst_test(Shared LINK shared)
 add_clntst_test(Static LINK static)
-add_clntst_test(Default)
+add_clntst_test(Expression)
