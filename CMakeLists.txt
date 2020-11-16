@@ -23,12 +23,22 @@ endif()
 # build configuration
 add_compile_options(-Wall -Wextra -pedantic -Werror -Wswitch-enum)
 
-set(CLNTST_PUBLIC_HEADERS
-    include/clean-test/foo.h
-    include/clean-test/utils/SourceLocation.h
+function(add_files VAR prefix)
+    set(content ${${VAR}})
+    foreach (file ${ARGN})
+        set(content ${content} ${prefix}/${file})
+    endforeach()
+    set(${VAR} ${content} PARENT_SCOPE)
+endfunction()
+
+add_files(CLNTST_PUBLIC_HEADERS include/clean-test
+    foo.h
 )
-set(CLNTST_SOURCES
-    src/foo.cpp
+add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
+    SourceLocation.h
+)
+add_files(CLNTST_SOURCES src
+    foo.cpp
 )
 
 add_library(clntst-objlib OBJECT ${CLNTST_SOURCES})
