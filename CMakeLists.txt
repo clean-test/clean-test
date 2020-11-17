@@ -43,6 +43,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Lift.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
+    Name.h
     Tag.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
