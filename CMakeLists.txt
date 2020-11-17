@@ -42,6 +42,9 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Equal.h
     Lift.h
 )
+add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
+    Tag.h
+)
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     SourceLocation.h
 )
