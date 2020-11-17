@@ -47,6 +47,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Tag.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
+    ScopeGuard.h
     SourceLocation.h
 )
 add_files(CLNTST_SOURCES src
