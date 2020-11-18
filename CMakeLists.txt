@@ -45,6 +45,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Case.h
     Name.h
     ObserverFwd.h
+    Registry.h
     SuiteRegistrar.h
     SuiteRegistrationSetup.h
     Tag.h
@@ -55,6 +56,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     SourceLocation.h
 )
 add_files(CLNTST_SOURCES src/framework
+    Registry.cpp
     SuiteRegistrationSetup.cpp
 )
 add_files(CLNTST_SOURCES src/execute
