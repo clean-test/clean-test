@@ -42,6 +42,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Lift.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
+    Case.h
     Name.h
     ObserverFwd.h
     SuiteRegistrar.h
