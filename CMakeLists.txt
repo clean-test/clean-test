@@ -44,6 +44,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Name.h
+    SuiteRegistrationSetup.h
     Tag.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
@@ -54,8 +55,12 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
 add_files(CLNTST_SOURCES src
     foo.cpp
 )
+add_files(CLNTST_SOURCES src/framework
+    SuiteRegistrationSetup.cpp
+)
 
 add_library(clntst-objlib OBJECT ${CLNTST_SOURCES})
+target_include_directories(clntst-objlib PRIVATE include/clean-test)
 if (CLNTST_BUILD_SHARED)
     set_property(TARGET clntst-objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif()
