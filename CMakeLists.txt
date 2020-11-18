@@ -56,9 +56,13 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
 add_files(CLNTST_SOURCES src/framework
     SuiteRegistrationSetup.cpp
 )
+add_files(CLNTST_SOURCES src/execute
+    Observer.h
+)
 
 add_library(clntst-objlib OBJECT ${CLNTST_SOURCES})
 target_include_directories(clntst-objlib PRIVATE include/clean-test)
+target_include_directories(clntst-objlib PRIVATE src/)
 if (CLNTST_BUILD_SHARED)
     set_property(TARGET clntst-objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif()
