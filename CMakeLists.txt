@@ -32,7 +32,6 @@ function(add_files VAR prefix)
 endfunction()
 
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test
-    foo.h
     expression.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
@@ -51,9 +50,6 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     Initializes.h
     ScopeGuard.h
     SourceLocation.h
-)
-add_files(CLNTST_SOURCES src
-    foo.cpp
 )
 add_files(CLNTST_SOURCES src/framework
     SuiteRegistrationSetup.cpp
