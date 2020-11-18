@@ -4,16 +4,22 @@
 #pragma once
 
 #include "framework/CaseRegistrar.h"
+#include "framework/Expect.h"
 #include "framework/SuiteRegistrar.h"
 #include "framework/Tag.h"
 #include "framework/ObserverFwd.h"
 
 namespace clean_test {
 
+using framework::expect;
+
 using Observer = execute::Observer;
 using Suite = framework::SuiteRegistrar;
 using Tag = framework::Tag;
 using Test = framework::CaseRegistrar;
+
+constexpr inline auto asserted = framework::Asserted{};
+constexpr inline auto flaky = framework::Flaky{};
 
 namespace literals {
 
