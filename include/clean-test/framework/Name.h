@@ -61,9 +61,12 @@ Name operator/(L && l, R && r)
 
 // Implementation //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-inline Name & Name::operator/=(std::string_view const path)
+inline Name & Name::operator/=(std::string_view const extension)
 {
-    m_path.append(separator).append(path);
+    if (not path().empty()) {
+        m_path.append(separator);
+    }
+    m_path.append(extension);
     return *this;
 }
 
@@ -75,7 +78,7 @@ inline Name & Name::operator/=(Tag const & tag)
 
 inline Name & Name::operator/=(Name const & other)
 {
-    m_path.append(separator).append(other.path());
+    *this /= other.path();
     auto const & other_tags = other.tags();
     m_tags.insert(std::end(m_tags), std::begin(other_tags), std::end(other_tags));
     return *this;
