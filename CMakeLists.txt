@@ -43,6 +43,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Name.h
+    SuiteRegistrar.h
     SuiteRegistrationSetup.h
     Tag.h
 )
