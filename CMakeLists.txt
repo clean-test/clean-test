@@ -53,6 +53,9 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     SuiteRegistrationSetup.h
     Tag.h
 )
+add_files(CLNTST_PUBLIC_HEADERS include/clean-test/execute
+    Configuration.h
+)
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     FwdCapture.h
     Initializes.h
@@ -65,6 +68,7 @@ add_files(CLNTST_SOURCES src/framework
     SuiteRegistrationSetup.cpp
 )
 add_files(CLNTST_SOURCES src/execute
+    Configuration.cpp
     Observer.h
 )
 
