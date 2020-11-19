@@ -44,6 +44,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Case.h
     Name.h
+    ObservationSetup.h
     ObserverFwd.h
     Registry.h
     SuiteRegistrar.h
@@ -57,6 +58,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     SourceLocation.h
 )
 add_files(CLNTST_SOURCES src/framework
+    ObservationSetup.cpp
     Registry.cpp
     SuiteRegistrationSetup.cpp
 )
