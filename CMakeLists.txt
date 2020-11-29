@@ -36,6 +36,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test
     framework.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
+    Aborts.h
     And.h
     Base.h
     Clause.h
