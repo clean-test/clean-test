@@ -112,4 +112,11 @@ int main()
     dynamic_assert(ct::aborts([] { std::terminate(); }));
     dynamic_assert(not ct::aborts([] { return 42; }));
     dynamic_assert(ct::debug_aborts([] { assert(false); }));
+
+    // Exceptions
+    dynamic_assert(ct::throws([] { throw 42; }));
+    dynamic_assert(not ct::throws([] { return 42; }));
+    dynamic_assert(ct::throws<std::exception>([] { throw std::runtime_error{"violation"}; }));
+    dynamic_assert(not ct::throws<std::exception>([] { throw 42; }));
+    dynamic_assert(not ct::throws<std::exception>([] { return 42; }));
 }

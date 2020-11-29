@@ -43,6 +43,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Equal.h
     LazyDetector.h
     Lift.h
+    Throws.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Case.h
