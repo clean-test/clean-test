@@ -7,13 +7,15 @@
 #include <exception>
 #include <iostream>
 #include <sstream>
+#include <cassert>
 
 namespace {
 
 namespace ct = clean_test;
 
+// Note: must not be called assert (because of the macro from cassert).
 template <typename T>
-void assert(T const & condition, ct::utils::SourceLocation const & where = ct::utils::SourceLocation::current())
+void dynamic_assert(T const & condition, ct::utils::SourceLocation const & where = ct::utils::SourceLocation::current())
 {
     if (not condition) {
         std::cerr << "Failure in " << where.file_name() << ":" << where.line() << std::endl;
@@ -100,8 +102,14 @@ int main()
     auto const c1 = ct::lift(t1);
 
     auto const conjunction = (c1 and c0);
-    assert(not conjunction);
-    assert(t1.was_converted());
-    assert(not t0.was_converted()); // due to short circuiting
+    dynamic_assert(not conjunction);
+    dynamic_assert(t1.was_converted());
+    dynamic_assert(not t0.was_converted()); // due to short circuiting
     assert_output("( 0 and <unknown> )", conjunction);
+
+    // Abortion
+    dynamic_assert(ct::aborts([] { std::abort(); }));
+    dynamic_assert(ct::aborts([] { std::terminate(); }));
+    dynamic_assert(not ct::aborts([] { return 42; }));
+    dynamic_assert(ct::debug_aborts([] { assert(false); }));
 }
