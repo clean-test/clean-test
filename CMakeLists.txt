@@ -76,6 +76,9 @@ add_files(CLNTST_SOURCES src/execute
     Main.cpp
     Observer.h
 )
+add_files(CLNTST_SOURCES src/utils
+    WithAdaptiveUnit.h
+)
 
 add_library(clntst-objlib OBJECT ${CLNTST_SOURCES})
 target_include_directories(clntst-objlib PRIVATE include/clean-test)
