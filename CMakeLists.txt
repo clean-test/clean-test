@@ -51,6 +51,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Tag.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
+    FwdCapture.h
     Initializes.h
     ScopeGuard.h
     SourceLocation.h
