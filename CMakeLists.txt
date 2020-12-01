@@ -74,6 +74,7 @@ add_files(CLNTST_SOURCES src/framework
 add_files(CLNTST_SOURCES src/execute
     Configuration.cpp
     Main.cpp
+    ObservationStatus.h
     Observer.h
 )
 add_files(CLNTST_SOURCES src/utils
