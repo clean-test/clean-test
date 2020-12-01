@@ -72,6 +72,7 @@ add_files(CLNTST_SOURCES src/framework
     SuiteRegistrationSetup.cpp
 )
 add_files(CLNTST_SOURCES src/execute
+    CaseStatus.h
     Configuration.cpp
     Main.cpp
     Observation.h
