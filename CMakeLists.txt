@@ -72,6 +72,8 @@ add_files(CLNTST_SOURCES src/framework
     SuiteRegistrationSetup.cpp
 )
 add_files(CLNTST_SOURCES src/execute
+    CaseResult.cpp
+    CaseResult.h
     CaseStatus.h
     Configuration.cpp
     Main.cpp
