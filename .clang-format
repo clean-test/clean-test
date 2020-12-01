@@ -1,0 +1,73 @@
+# Copyright (c) m8mble 2020.
+# SPDX-License-Identifier: BSL-1.0
+
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveAssignments: false
+AlignOperands: AlignAfterOperator
+AlignTrailingComments: false
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: None
+AlwaysBreakTemplateDeclarations: Yes
+BreakConstructorInitializers: AfterColon
+BreakConstructorInitializersBeforeComma: false
+BasedOnStyle: LLVM
+BinPackArguments: false
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterControlStatement: MultiLine
+  AfterFunction: true
+  SplitEmptyFunction: false
+BreakBeforeBinaryOperators: All
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ColumnLimit: 120
+ContinuationIndentWidth: 4
+FixNamespaceComments: false
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex:           '^"[^/]+"'
+    Priority:        10
+  - Regex:           '^"expression/'
+    Priority:        11
+  - Regex:           '^"framework/'
+    Priority:        12
+  - Regex:           '^"execute/'
+    Priority:        13
+  - Regex:           '^"utils/'
+    Priority:        14
+  - Regex:           '^<expression/'
+    Priority:        21
+  - Regex:           '^<framework/'
+    Priority:        22
+  - Regex:           '^<execute/'
+    Priority:        23
+  - Regex:           '^<utils/'
+    Priority:        24
+  - Regex:           '^<clean-test/expression/'
+    Priority:        21
+  - Regex:           '^<clean-test/framework/'
+    Priority:        22
+  - Regex:           '^<clean-test/execute/'
+    Priority:        23
+  - Regex:           '^<clean-test/utils/'
+    Priority:        24
+  - Regex:           '^<'
+    Priority:        30
+IndentCaseLabels: true
+IndentWidth: 4
+Language: Cpp
+PenaltyBreakAssignment: 30
+PenaltyBreakBeforeFirstCallParameter: 1
+PenaltyBreakComment: 10
+PenaltyBreakFirstLessLess: 0
+PenaltyBreakString: 10
+PenaltyBreakTemplateDeclaration: 10
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 200
+PointerAlignment: Middle
+Standard: Cpp11
+TabWidth: 4
+UseTab: Never
