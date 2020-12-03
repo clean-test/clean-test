@@ -3,15 +3,32 @@
 
 #include "execute/Main.h"
 
-#include "execute/CaseReporter.h"
-#include <execute/Configuration.h>
+#include "CaseEvaluator.h"
 
-#include <framework/Registry.h>
-#include <execute/Observer.h>
+#include "framework/Registry.h"
 
+#include "execute/Configuration.h"
+
+#include <algorithm>
 #include <iostream>
+#include <version>
 
 namespace clean_test::execute {
+namespace {
+
+/// Variant of @c std::count_if for whole containers.
+template <typename Data, std::invocable<typename Data::value_type> Predicate>
+constexpr std::size_t count_if(Data const & data, Predicate && predicate)
+{
+#if __cpp_lib_ranges
+    return std::ranges::count_if(data, std::forward<Predicate>(predicate));
+#else
+    return std::count_if(std::cbegin(data), std::cend(data), std::forward<Predicate>(predicate));
+#endif
+}
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char ** argv)
 {
@@ -20,19 +37,14 @@ int main(int argc, char ** argv)
 
 int main(Configuration const &)
 {
-    auto const & registry = framework::registry();
+    auto & registry = framework::registry();
     std::cout << "Running " << std::size(registry) << " test-cases.\n";
+    auto results = std::vector<CaseResult>{};
     for (auto & tc: registry) {
-        std::cout << " -> " << tc.m_name.path() << "\n";
-        auto reporter = execute::CaseReporter{std::cout};
-        auto observer = execute::Observer{reporter};
-        try {
-            tc.m_runner(observer);
-        } catch (...) {
-        }
-        // observer -> tc.result
+        results.emplace_back(CaseEvaluator{}(tc));
+        tc.m_runner = nullptr;
     }
-    return 0; // TODO return number of failed tests
+    return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
 }
 
 }
