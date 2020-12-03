@@ -5,6 +5,12 @@
 # Ticket List
 
 
+## General
+
+ - [ ] Write README
+ - [x] Add copyrights to files
+
+
 ## Build
 
  - [ ] Make build warnings / werror configurable
@@ -18,6 +24,19 @@
 ## Doc
 
  - [ ] Add generator
+ - [ ] Provide short (tested) demos
+ - [ ] Document toplevel API headers
+
+
+## Execute
+
+ - [x] Provide `main`-variant with `Configuration`
+ - [ ] Support parsing `Configuration` with (printed) failure
+ - [x] `main` general enough for `nutsh`?
+ - [ ] (Restricted) support for non-exception environments
+ - [ ] Multiline expression decomposition in output
+ - [ ] Provide real parallel showcase (registration, expectation)
+ - [ ] Timeout capabilities
 
 
 ## Framework
@@ -26,14 +45,19 @@
  - [ ] Make output thread-safe by using `std::basic_osyncstream`
  - [x] Integrate Observer
  - [ ] Support parameterized tests (for loop; also with `operator|`?)
- - [ ] Decide whether delay registration is supported
+ - [ ] Decide whether delayed registration is supported
        (i.e. registering while any case has already been started).
  - [ ] Make `Name` `constexpr` with `constexpr` `std::vector` / `std::string`.
        (`constexpr` consequences: `SuiteRegistrar`, UDLs, `Case`)
+ - [ ] Make `Tag`s owning (`std::string_view` -> `std::string`),
+       s.t. users may store them without surprises.
  - [ ] Normalize `Name` paths (e.g. strip `separator`).
  - [ ] Benchmark whether type-erasure via `std::function` is slower
        than doing this manually (via our own interface).
  - [x] Install (`thread_local`) observer upon test registration
+ - [x] Move Observer into execute
+ - [ ] Generate case-reporting prefixes with `std::format`.
+ - [ ] Support fallback `Observer` (for users forgetting to pass it along)
 
 
 ## Expression
@@ -43,6 +67,7 @@
  - [ ] Support more binary operators
  - [ ] Deal with configurable floating point accuracy
  - [ ] Comparison of containers
+ - [ ] Think about case-insensitive string comparisons
 
 
 ## Utils
