@@ -3,6 +3,7 @@
 
 #include "execute/Main.h"
 
+#include "execute/CaseReporter.h"
 #include <execute/Configuration.h>
 
 #include <framework/Registry.h>
@@ -23,7 +24,8 @@ int main(Configuration const &)
     std::cout << "Running " << std::size(registry) << " test-cases.\n";
     for (auto & tc: registry) {
         std::cout << " -> " << tc.m_name.path() << "\n";
-        auto observer = execute::Observer{};
+        auto reporter = execute::CaseReporter{std::cout};
+        auto observer = execute::Observer{reporter};
         try {
             tc.m_runner(observer);
         } catch (...) {
