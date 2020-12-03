@@ -48,6 +48,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Case.h
     CaseRegistrar.h
+    Expect.h
     ExpectationObserver.h
     Name.h
     ObservationSetup.h
