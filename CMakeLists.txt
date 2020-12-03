@@ -81,6 +81,7 @@ add_files(CLNTST_SOURCES src/execute
     Main.cpp
     Observation.h
     ObservationStatus.h
+    Observer.cpp
     Observer.h
 )
 add_files(CLNTST_SOURCES src/utils
