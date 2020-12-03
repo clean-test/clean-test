@@ -76,6 +76,8 @@ add_files(CLNTST_SOURCES src/framework
 )
 add_files(CLNTST_SOURCES src/execute
     Abortion.h
+    CaseEvaluator.cpp
+    CaseEvaluator.h
     CaseReporter.cpp
     CaseReporter.h
     CaseResult.cpp
