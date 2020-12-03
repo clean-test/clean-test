@@ -32,6 +32,7 @@ function(add_files VAR prefix)
 endfunction()
 
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test
+    clean-test.h
     execute.h
     expression.h
     framework.h
