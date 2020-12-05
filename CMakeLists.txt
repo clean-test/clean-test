@@ -33,6 +33,7 @@ endfunction()
 
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test
     expression.h
+    framework.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     And.h
