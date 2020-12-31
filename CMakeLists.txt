@@ -48,6 +48,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Throws.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
+    AbstractCaseRunner.h
     Case.h
     CaseRegistrar.h
     Expect.h
