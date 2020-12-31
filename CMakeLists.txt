@@ -51,6 +51,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     AbstractCaseRunner.h
     Case.h
     CaseRegistrar.h
+    ConcreteCaseRunner.h
     Expect.h
     ExpectationObserver.h
     Name.h
