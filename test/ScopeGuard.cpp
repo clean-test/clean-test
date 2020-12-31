@@ -1,20 +1,14 @@
 // Copyright (c) m8mble 2020.
 // SPDX-License-Identifier: BSL-1.0
 
-#include "utils/ScopeGuard.h"
+#include "TestUtilities.h"
 
-#include <functional>
+#include <clean-test/utils/ScopeGuard.h>
+
 #include <cstdlib>
+#include <functional>
 
 namespace {
-
-template <typename T>
-void dynamic_assert(T const & condition)
-{
-    if (not static_cast<bool>(condition)) {
-        std::abort();
-    }
-}
 
 template <typename T>
 void discard(T && t)
@@ -121,16 +115,16 @@ void test_move_assign()
 
         // regular move-assignment
         sg0 = std::move(sg1);
-        dynamic_assert(cnt0 == 1ul);
-        dynamic_assert(cnt1 == 0ul);
+        clean_test::utils::dynamic_assert(cnt0 == 1ul);
+        clean_test::utils::dynamic_assert(cnt1 == 0ul);
 
         // self move-assignment
         sg0 = identity(std::move(sg0));
-        dynamic_assert(cnt0 == 1ul);
-        dynamic_assert(cnt1 == 0ul);
+        clean_test::utils::dynamic_assert(cnt0 == 1ul);
+        clean_test::utils::dynamic_assert(cnt1 == 0ul);
     }
-    dynamic_assert(cnt0 == 1ul);
-    dynamic_assert(cnt1 == 1ul);
+    clean_test::utils::dynamic_assert(cnt0 == 1ul);
+    clean_test::utils::dynamic_assert(cnt1 == 1ul);
 }
 
 void test_dismiss()
@@ -139,9 +133,9 @@ void test_dismiss()
     {
         auto sg = clean_test::utils::ScopeGuard{[&cnt] { ++cnt; }};
         sg.dismiss();
-        dynamic_assert(cnt == 0ul);
+        clean_test::utils::dynamic_assert(cnt == 0ul);
     }
-    dynamic_assert(cnt == 0ul);
+    clean_test::utils::dynamic_assert(cnt == 0ul);
 }
 
 }
