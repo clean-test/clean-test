@@ -18,11 +18,11 @@ CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept
     auto reporter = CaseReporter{std::cout};
     auto observer = Observer{reporter};
 
-    reporter(CaseReporter::Start{tc.m_name.path()});
+    reporter(CaseReporter::Start{tc.name().path()});
     auto execution_outcome = CaseStatus{CaseStatus::pass};
     auto const time_start = Clock::now();
     try {
-        tc.m_runner(observer);
+        tc.run(observer);
     } catch (execute::Abortion const &) {
         execution_outcome = CaseStatus::abort;
     } catch (std::exception const & xcp) {
@@ -33,8 +33,8 @@ CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept
     auto const wall_time = Clock::now() - time_start;
 
     auto result = CaseResult{
-        std::string{tc.m_name.path()}, execution_outcome, wall_time, std::move(observer).release()};
-    reporter(CaseReporter::Stop{tc.m_name.path(), wall_time, result.m_status});
+        std::string{tc.name().path()}, execution_outcome, wall_time, std::move(observer).release()};
+    reporter(CaseReporter::Stop{tc.name().path(), wall_time, result.m_status});
     return result;
 }
 

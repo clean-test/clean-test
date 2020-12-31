@@ -147,7 +147,7 @@ int main()
     auto const & registry = ct::framework::registry();
     auto found_descriptions = std::multiset<std::string>{};
     for (auto && test_case : registry) {
-        found_descriptions.emplace(description(test_case.m_name));
+        found_descriptions.emplace(description(test_case.name()));
     }
     ct::utils::dynamic_assert(found_descriptions == expected_descriptions);
 }

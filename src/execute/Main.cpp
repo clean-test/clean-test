@@ -42,7 +42,6 @@ int main(Configuration const &)
     auto results = std::vector<CaseResult>{};
     for (auto & tc: registry) {
         results.emplace_back(CaseEvaluator{}(tc));
-        tc.m_runner = nullptr;
     }
     return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
 }
