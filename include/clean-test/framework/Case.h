@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include "ConcreteCaseRunner.h"
 #include "Name.h"
 #include "ObserverFwd.h"
 
-#include <functional>
+#include <memory>
 
 namespace clean_test::framework {
 
@@ -15,7 +16,7 @@ namespace clean_test::framework {
 /// This includes static details (e.g. the actual underlying test-runner) and dynamic results computed at runtime.
 class Case {
 public:
-    using Runner = std::function<void(execute::Observer &)>;
+    using Runner = std::unique_ptr<AbstractCaseRunner>;
 
     Case(Name name, Runner runner) noexcept : m_name{std::move(name)}, m_runner{std::move(runner)}
     {}
@@ -27,9 +28,9 @@ public:
 
     void run(execute::Observer& observer)
     {
-        m_runner(observer);
+        m_runner->run(observer);
         // make sure the runner is only ever used once.
-        m_runner = nullptr;
+        m_runner.reset();
     }
 
 private:

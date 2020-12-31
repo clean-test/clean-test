@@ -48,8 +48,6 @@
  - [ ] Make `Tag`s owning (`std::string_view` -> `std::string`),
        s.t. users may store them without surprises.
  - [ ] Normalize `Name` paths (e.g. strip `separator`).
- - [ ] Benchmark whether type-erasure via `std::function` is slower
-       than doing this manually (via our own interface).
  - [x] Install (`thread_local`) observer upon test registration
  - [x] Move Observer into execute
  - [ ] Generate case-reporting prefixes with `std::format`.

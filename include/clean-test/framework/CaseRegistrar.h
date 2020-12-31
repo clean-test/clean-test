@@ -80,8 +80,9 @@ template <GenericCaseRunner Runner>
 CaseRegistrar const & CaseRegistrar::operator=(Runner && runner) const
 {
     auto const & setup = suite_registration_setup();
-    static auto stored_runner = load_runner(std::forward<Runner>(runner));
-    registry().emplace_back(setup / m_name, std::cref(stored_runner));
+    auto safe_runner = load_runner(std::forward<Runner>(runner));
+    registry().emplace_back(
+        setup / m_name, std::make_unique<ConcreteCaseRunner<decltype(safe_runner)>>(std::move(safe_runner)));
     return *this;
 }
 
