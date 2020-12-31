@@ -1,27 +1,19 @@
 // Copyright (c) m8mble 2020.
 // SPDX-License-Identifier: BSL-1.0
 
-#include <clean-test/expression.h>
+#include "TestUtilities.h"
+
 #include <clean-test/utils/SourceLocation.h>
 
+#include <cassert>
+#include <clean-test/expression.h>
 #include <exception>
 #include <iostream>
 #include <sstream>
-#include <cassert>
 
 namespace {
 
 namespace ct = clean_test;
-
-// Note: must not be called assert (because of the macro from cassert).
-template <typename T>
-void dynamic_assert(T const & condition, ct::utils::SourceLocation const & where = ct::utils::SourceLocation::current())
-{
-    if (not condition) {
-        std::cerr << "Failure in " << where.file_name() << ":" << where.line() << std::endl;
-        std::terminate();
-    }
-}
 
 template <typename T>
 void assert_output(
@@ -102,21 +94,21 @@ int main()
     auto const c1 = ct::lift(t1);
 
     auto const conjunction = (c1 and c0);
-    dynamic_assert(not conjunction);
-    dynamic_assert(t1.was_converted());
-    dynamic_assert(not t0.was_converted()); // due to short circuiting
+    ct::utils::dynamic_assert(not conjunction);
+    ct::utils::dynamic_assert(t1.was_converted());
+    ct::utils::dynamic_assert(not t0.was_converted()); // due to short circuiting
     assert_output("( 0 and <unknown> )", conjunction);
 
     // Abortion
-    dynamic_assert(ct::aborts([] { std::abort(); }));
-    dynamic_assert(ct::aborts([] { std::terminate(); }));
-    dynamic_assert(not ct::aborts([] { return 42; }));
-    dynamic_assert(ct::debug_aborts([] { assert(false); }));
+    ct::utils::dynamic_assert(ct::aborts([] { std::abort(); }));
+    ct::utils::dynamic_assert(ct::aborts([] { std::terminate(); }));
+    ct::utils::dynamic_assert(not ct::aborts([] { return 42; }));
+    ct::utils::dynamic_assert(ct::debug_aborts([] { assert(false); }));
 
     // Exceptions
-    dynamic_assert(ct::throws([] { throw 42; }));
-    dynamic_assert(not ct::throws([] { return 42; }));
-    dynamic_assert(ct::throws<std::exception>([] { throw std::runtime_error{"violation"}; }));
-    dynamic_assert(not ct::throws<std::exception>([] { throw 42; }));
-    dynamic_assert(not ct::throws<std::exception>([] { return 42; }));
+    ct::utils::dynamic_assert(ct::throws([] { throw 42; }));
+    ct::utils::dynamic_assert(not ct::throws([] { return 42; }));
+    ct::utils::dynamic_assert(ct::throws<std::exception>([] { throw std::runtime_error{"violation"}; }));
+    ct::utils::dynamic_assert(not ct::throws<std::exception>([] { throw 42; }));
+    ct::utils::dynamic_assert(not ct::throws<std::exception>([] { return 42; }));
 }

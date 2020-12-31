@@ -1,9 +1,11 @@
 // Copyright (c) m8mble 2020.
 // SPDX-License-Identifier: BSL-1.0
 
-#include <clean-test/clean-test.h>
+#include "TestUtilities.h"
 
 #include "execute/CaseEvaluator.h"
+
+#include <clean-test/clean-test.h>
 
 namespace {
 
@@ -42,21 +44,13 @@ using namespace ct::literals;
 using Outcome = ct::execute::CaseStatus;
 using State = ct::execute::ObservationStatus;
 
-void assert(bool const condition, ct::utils::SourceLocation const & where = ct::utils::SourceLocation::current())
-{
-    if (not condition) {
-        std::cerr << "Failure in " << where.file_name() << ":" << where.line() << std::endl;
-        std::terminate();
-    }
-}
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
-    // Start by running the entire framework (synchroneously and in order)
+    // Start by running the entire framework (synchronously and in order)
     auto results = std::vector<ct::execute::CaseResult>{};
     for (auto& tc: ct::framework::registry()) {
         results.emplace_back(ct::execute::CaseEvaluator{}(tc));
@@ -67,74 +61,74 @@ int main()
     };
 
     test([](auto const & result) {
-        assert(result.m_status == Outcome::pass);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::pass);
+        ct::utils::dynamic_assert(result.m_status == Outcome::pass);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::pass);
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::fail);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::fail);
+        ct::utils::dynamic_assert(result.m_status == Outcome::fail);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail);
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::pass);
-        assert(result.m_observations.size() == 2ul);
+        ct::utils::dynamic_assert(result.m_status == Outcome::pass);
+        ct::utils::dynamic_assert(result.m_observations.size() == 2ul);
         for (auto const & observation : result.m_observations) {
-            assert(observation.m_status == State::pass);
+            ct::utils::dynamic_assert(observation.m_status == State::pass);
         }
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::abort);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::fail);
+        ct::utils::dynamic_assert(result.m_status == Outcome::abort);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail);
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::pass);
-        assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_status == Outcome::pass);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
         auto const & observation = result.m_observations[0];
-        assert(observation.m_status == State::pass);
-        assert(observation.m_description == "Can't see this");
+        ct::utils::dynamic_assert(observation.m_status == State::pass);
+        ct::utils::dynamic_assert(observation.m_description == "Can't see this");
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::fail);
-        assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_status == Outcome::fail);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
         auto const & observation = result.m_observations[0];
-        assert(observation.m_status == State::fail);
-        assert(observation.m_description == "Can see this!");
+        ct::utils::dynamic_assert(observation.m_status == State::fail);
+        ct::utils::dynamic_assert(observation.m_description == "Can see this!");
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::pass);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::pass);
+        ct::utils::dynamic_assert(result.m_status == Outcome::pass);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::pass);
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::pass);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::fail_flaky);
+        ct::utils::dynamic_assert(result.m_status == Outcome::pass);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_flaky);
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::abort);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::fail_flaky);
+        ct::utils::dynamic_assert(result.m_status == Outcome::abort);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_flaky);
     });
 
     // Recursion
     test([](auto const & result) {
-        assert(result.m_status == Outcome::fail);
-        assert(result.m_observations.size() == 2ul);
-        assert(result.m_observations[0].m_status == State::pass); // the internal throw
-        assert(result.m_observations[1].m_status == State::fail); // the external throw
+        ct::utils::dynamic_assert(result.m_status == Outcome::fail);
+        ct::utils::dynamic_assert(result.m_observations.size() == 2ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::pass); // the internal throw
+        ct::utils::dynamic_assert(result.m_observations[1].m_status == State::fail); // the external throw
     });
 
     // Explicit observer
     test([](auto const & result) {
-        assert(result.m_status == Outcome::pass);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::pass);
+        ct::utils::dynamic_assert(result.m_status == Outcome::pass);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::pass);
     });
     test([](auto const & result) {
-        assert(result.m_status == Outcome::fail);
-        assert(result.m_observations.size() == 1ul);
-        assert(result.m_observations[0].m_status == State::fail);
+        ct::utils::dynamic_assert(result.m_status == Outcome::fail);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail);
     });
 }

@@ -1,6 +1,8 @@
 // Copyright (c) m8mble 2020.
 // SPDX-License-Identifier: BSL-1.0
 
+#include "TestUtilities.h"
+
 #include <clean-test/framework.h>
 
 #include <iostream>
@@ -147,7 +149,5 @@ int main()
     for (auto && test_case : registry) {
         found_descriptions.emplace(description(test_case.m_name));
     }
-    if (found_descriptions != expected_descriptions) {
-        std::terminate();
-    }
+    ct::utils::dynamic_assert(found_descriptions == expected_descriptions);
 }
