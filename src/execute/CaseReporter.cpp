@@ -4,6 +4,8 @@
 #include "CaseReporter.h"
 
 #include "Badges.h"
+#include "ColorTable.h"
+#include "ColoringSetup.h"
 
 #include "utils/WithAdaptiveUnit.h"
 
@@ -33,15 +35,32 @@ BadgeType badge_type(CaseStatus status)
     }
 }
 
+Color color(CaseStatus status)
+{
+    switch (status) {
+        case CaseStatus::pass:
+            return Color::good;
+        case CaseStatus::abort:
+        case CaseStatus::fail:
+            return Color::bad;
+        default:
+            std::terminate();
+    }
+}
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CaseReporter::CaseReporter(std::ostream & output) : m_output{output}, m_is_observation_state_enabled{false, true, true}
+CaseReporter::CaseReporter(std::ostream & output, ColorTable const & colors) :
+    m_output{output}, m_colors{colors}, m_is_observation_state_enabled{false, true, true}
+{}
+
+CaseReporter::CaseReporter(std::ostream & output) : CaseReporter{output, coloring_setup(ColoringMode::disabled)}
 {}
 
 void CaseReporter::operator()(Start const & start)
 {
-    m_output << badge(BadgeType::start) << ' ' << start.m_name << std::endl;
+    m_output << m_colors.colored(Color::good, badge(BadgeType::start)) << ' ' << start.m_name << std::endl;
 }
 
 void CaseReporter::operator()(Observation const & o)
@@ -57,8 +76,8 @@ void CaseReporter::operator()(Observation const & o)
 
 void CaseReporter::operator()(Stop const & stop)
 {
-    m_output << badge(badge_type(stop.m_status)) << ' ' << stop.m_name << " (" << std::setprecision(0) << std::fixed
-             << utils::WithAdaptiveUnit{stop.m_wall_time} << ')' << std::endl;
+    m_output << m_colors.colored(color(stop.m_status), badge(badge_type(stop.m_status))) << ' ' << stop.m_name << " ("
+             << std::setprecision(0) << std::fixed << utils::WithAdaptiveUnit{stop.m_wall_time} << ')' << std::endl;
 }
 
 }

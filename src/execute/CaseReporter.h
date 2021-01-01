@@ -13,6 +13,8 @@
 
 namespace clean_test::execute {
 
+class ColorTable;
+
 /// Output facility for events encountered during test-execution.
 ///
 /// Supports configurable verbosity depending on the severity of the observed event status.
@@ -32,8 +34,11 @@ public:
         CaseStatus m_status; //!< Overall status of the test-case execution.
     };
 
-    /// Detailed c'tor: store @p output (don't output anything)
+    /// Convenience c'tor: forward to detailed c'tor with colors turned off.
     CaseReporter(std::ostream & output);
+
+    /// Detailed c'tor: store @p output (don't output anything) and @p colors.
+    CaseReporter(std::ostream & output, ColorTable const & colors);
 
     /// Report @c Start -event.
     void operator()(Start const &);
@@ -46,6 +51,7 @@ public:
 
 private:
     std::ostream & m_output; //!< stream to write output to.
+    ColorTable const & m_colors; //!< coloring details for output badges.
     /// Filter configuration for different output status.
     std::array<bool, ObservationStatus::num_values> const m_is_observation_state_enabled;
 };
