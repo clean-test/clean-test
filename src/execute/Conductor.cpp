@@ -51,7 +51,7 @@ Conductor::Results Conductor::run() const
     // run cases and collect results
     auto results = std::vector<CaseResult>{};
     for (auto & tc : registry) {
-        results.emplace_back(CaseEvaluator{}(tc));
+        results.emplace_back(CaseEvaluator{m_colors}(tc));
     }
 
     auto const wall_time = Clock::now() - time_start;
