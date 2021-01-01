@@ -3,7 +3,7 @@
 
 #include "TestUtilities.h"
 
-#include "execute/CaseEvaluator.h"
+#include <execute/Conductor.h>
 
 #include <clean-test/clean-test.h>
 
@@ -50,11 +50,7 @@ using State = ct::execute::ObservationStatus;
 
 int main()
 {
-    // Start by running the entire framework (synchronously and in order)
-    auto results = std::vector<ct::execute::CaseResult>{};
-    for (auto& tc: ct::framework::registry()) {
-        results.emplace_back(ct::execute::CaseEvaluator{}(tc));
-    }
+    auto const results = ct::execute::Conductor{}.run();
 
     auto test = [&results, cur = 0ul](auto && asserter) mutable {
         asserter(results[cur++]);

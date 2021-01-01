@@ -3,7 +3,7 @@
 
 #include "TestUtilities.h"
 
-#include <execute/CaseEvaluator.h>
+#include <execute/Conductor.h>
 #include <execute/CaseResult.h>
 #include <execute/CaseStatus.h>
 
@@ -32,11 +32,7 @@ auto const by_type = ct::Suite{"by_type", [] {
 
 int main()
 {
-    // Start by running the entire framework (synchronously and in order)
-    auto results = std::vector<ct::execute::CaseResult>{};
-    for (auto & tc : ct::framework::registry()) {
-        results.emplace_back(ct::execute::CaseEvaluator{}(tc));
-    }
+    auto const results = ct::execute::Conductor{}.run();
 
     auto by_path = [&results] {
         auto result = std::map<std::string_view, std::size_t>{};

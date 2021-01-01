@@ -3,14 +3,11 @@
 
 #include "execute/Main.h"
 
-#include "CaseEvaluator.h"
-
-#include "framework/Registry.h"
-
-#include "execute/Configuration.h"
+#include <execute/ColoringSetup.h>
+#include <execute/Configuration.h>
+#include <execute/Conductor.h>
 
 #include <algorithm>
-#include <iostream>
 #include <version>
 
 namespace clean_test::execute {
@@ -35,14 +32,11 @@ int main(int argc, char ** argv)
     return main(Configuration::parse(argc, argv));
 }
 
-int main(Configuration const &)
+int main(Configuration const & configuration)
 {
-    auto & registry = framework::registry();
-    std::cout << "Running " << std::size(registry) << " test-cases.\n";
-    auto results = std::vector<CaseResult>{};
-    for (auto & tc: registry) {
-        results.emplace_back(CaseEvaluator{}(tc));
-    }
+    auto const & colors = coloring_setup(configuration.coloring);
+    auto const conductor = Conductor{colors};
+    auto results = conductor.run();
     return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
 }
 
