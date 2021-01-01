@@ -11,14 +11,15 @@
 
 namespace clean_test::execute {
 
+CaseEvaluator::CaseEvaluator(ColorTable const & colors) : m_reporter{std::cout, colors}
+{}
+
 CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept
 {
     using Clock = CaseResult::Clock;
 
-    auto reporter = CaseReporter{std::cout};
-    auto observer = Observer{reporter};
-
-    reporter(CaseReporter::Start{tc.name().path()});
+    auto observer = Observer{m_reporter};
+    m_reporter(CaseReporter::Start{tc.name().path()});
     auto execution_outcome = CaseStatus{CaseStatus::pass};
     auto const time_start = Clock::now();
     try {
@@ -34,9 +35,8 @@ CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept
 
     auto result = CaseResult{
         std::string{tc.name().path()}, execution_outcome, wall_time, std::move(observer).release()};
-    reporter(CaseReporter::Stop{tc.name().path(), wall_time, result.m_status});
+    m_reporter(CaseReporter::Stop{tc.name().path(), wall_time, result.m_status});
     return result;
 }
-
 
 }
