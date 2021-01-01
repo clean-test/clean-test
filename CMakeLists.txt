@@ -94,6 +94,8 @@ add_files(CLNTST_SOURCES src/execute
     ColorTable.h
     ColoringSetup.cpp
     ColoringSetup.h
+    Conductor.cpp
+    Conductor.h
     Configuration.cpp
     Main.cpp
     Observation.h
