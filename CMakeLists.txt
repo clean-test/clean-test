@@ -90,6 +90,8 @@ add_files(CLNTST_SOURCES src/execute
     CaseStatus.h
     ColorTable.cpp
     ColorTable.h
+    ColoringSetup.cpp
+    ColoringSetup.h
     Configuration.cpp
     Main.cpp
     Observation.h
