@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "ColoringMode.h"
+
 namespace clean_test::execute {
 
 /// User settings for running tests.
@@ -14,6 +16,9 @@ public:
     bool print_help = false;
     bool list_tests = false;
     bool run_tests = true;
+
+    /// How console output of the framework should be colored.
+    ColoringMode coloring = ColoringMode::automatic;
 };
 
 }
