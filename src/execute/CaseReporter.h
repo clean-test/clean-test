@@ -34,9 +34,6 @@ public:
         CaseStatus m_status; //!< Overall status of the test-case execution.
     };
 
-    /// Convenience c'tor: forward to detailed c'tor with colors turned off.
-    CaseReporter(std::ostream & output);
-
     /// Detailed c'tor: store @p output (don't output anything) and @p colors.
     CaseReporter(std::ostream & output, ColorTable const & colors);
 

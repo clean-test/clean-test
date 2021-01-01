@@ -5,7 +5,6 @@
 
 #include "Badges.h"
 #include "ColorTable.h"
-#include "ColoringSetup.h"
 
 #include "utils/WithAdaptiveUnit.h"
 
@@ -53,9 +52,6 @@ Color color(CaseStatus status)
 
 CaseReporter::CaseReporter(std::ostream & output, ColorTable const & colors) :
     m_output{output}, m_colors{colors}, m_is_observation_state_enabled{false, true, true}
-{}
-
-CaseReporter::CaseReporter(std::ostream & output) : CaseReporter{output, coloring_setup(ColoringMode::disabled)}
 {}
 
 void CaseReporter::operator()(Start const & start)
