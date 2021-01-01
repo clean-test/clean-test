@@ -50,7 +50,7 @@
  - [ ] Normalize `Name` paths (e.g. strip `separator`).
  - [x] Install (`thread_local`) observer upon test registration
  - [x] Move Observer into execute
- - [ ] Generate case-reporting prefixes with `std::format`.
+ - [ ] Generate badges with `std::format`.
  - [ ] Support fallback `Observer` (for users forgetting to pass it along)
 
 

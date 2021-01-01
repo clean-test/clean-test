@@ -81,6 +81,8 @@ add_files(CLNTST_SOURCES src/framework
 )
 add_files(CLNTST_SOURCES src/execute
     Abortion.h
+    Badges.cpp
+    Badges.h
     CaseEvaluator.cpp
     CaseEvaluator.h
     CaseReporter.cpp
