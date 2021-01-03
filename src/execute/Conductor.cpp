@@ -45,13 +45,16 @@ Conductor::Results Conductor::run() const
     auto const time_start = Clock::now();
 
     auto & registry = framework::registry();
+    auto results = std::vector<CaseResult>{};
     std::cout << m_colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
               << " test-cases" << std::endl;
 
     // run cases and collect results
-    auto results = std::vector<CaseResult>{};
-    for (auto & tc : registry) {
+    for (auto & tc : std::exchange(registry, {})) {
         results.emplace_back(CaseEvaluator{m_colors}(tc));
+    }
+    if (not registry.empty()) {
+        display_late_registration_warning(registry);
     }
 
     auto const wall_time = Clock::now() - time_start;
@@ -77,6 +80,17 @@ void Conductor::report(Results const & results) const
                   << (all_have_passed ? "" : "other ") << num_passed << " test-cases\n";
     }
     std::cout << std::flush;
+}
+
+void Conductor::display_late_registration_warning(std::vector<framework::Case> const & cases) const
+{
+    std::cout << m_colors[Color::bad] << badge(BadgeType::headline) << " Warning: The following " << cases.size()
+              << " test-cases have been registered late:\n";
+    for (auto const & tc : cases) {
+        std::cout << badge(BadgeType::empty) << "   - " << tc.name().path() << '\n';
+    }
+    std::cout << badge(BadgeType::headline) << " Registering test-cases dynamically impedes parallel execution."
+              << m_colors[Color::off] << std::endl;
 }
 
 }

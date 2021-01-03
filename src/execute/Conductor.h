@@ -8,6 +8,9 @@
 
 #include <vector>
 
+namespace clean_test::framework {
+class Case;
+}
 namespace clean_test::execute {
 
 /// High level test-case execution orchestration facility.
@@ -27,6 +30,8 @@ public:
 private:
     /// Output final summary about passed and failed @p results.
     void report(Results const & results) const;
+    /// Print warning for @p cases registered late.
+    void display_late_registration_warning(std::vector<framework::Case> const & cases) const;
 
     ColorTable const & m_colors; //!< coloring details for console output.
 };
