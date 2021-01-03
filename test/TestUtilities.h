@@ -21,4 +21,11 @@ inline void dynamic_assert(T const & condition, SourceLocation const & where = S
     }
 }
 
+/// Silence potential warnings about unused value @p t.
+template <typename T>
+void discard(T && t)
+{
+    static_cast<void>(t);
+}
+
 }
