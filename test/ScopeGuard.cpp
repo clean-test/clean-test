@@ -11,12 +11,6 @@
 namespace {
 
 template <typename T>
-void discard(T && t)
-{
-    static_cast<void>(t);
-}
-
-template <typename T>
 using ScopeGuard = clean_test::utils::ScopeGuard<T>;
 
 /// Helper type with configurable con- and destructability as well as invocability.
@@ -77,7 +71,9 @@ static_assert(not is_guard_nothrow_destructible<false, false>);
 [[maybe_unused]] constexpr auto default_constructible = [] {};
 static_assert(std::is_default_constructible_v<decltype(default_constructible)>);
 static_assert(std::is_default_constructible_v<ScopeGuard<decltype(default_constructible)>>);
-[[maybe_unused]] constexpr auto nondefault_constructible = [ref = std::ref(default_constructible)]{ discard(ref); };
+[[maybe_unused]] constexpr auto nondefault_constructible = [ref = std::ref(default_constructible)] {
+    clean_test::utils::discard(ref);
+};
 static_assert(not std::is_default_constructible_v<decltype(nondefault_constructible)>);
 static_assert(not std::is_default_constructible_v<ScopeGuard<decltype(nondefault_constructible)>>);
 
