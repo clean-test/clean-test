@@ -107,6 +107,7 @@ add_files(CLNTST_SOURCES src/execute
     Observer.h
 )
 add_files(CLNTST_SOURCES src/utils
+    Guarded.h
     WithAdaptiveUnit.h
 )
 
