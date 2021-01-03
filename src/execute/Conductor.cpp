@@ -13,9 +13,13 @@
 
 #include <exception>
 #include <iostream>
+#include <thread>
 
 namespace clean_test::execute {
 namespace {
+
+using Cases = framework::Registry;
+using Results = Conductor::Results;
 
 bool passed(CaseStatus const status)
 {
@@ -28,6 +32,77 @@ bool passed(CaseStatus const status)
         default:
             std::terminate();
     }
+}
+
+class Worker {
+public:
+    using Next = std::atomic<std::size_t>;
+
+    Worker(Cases & cases, Next & next, ColorTable const & colors) :
+        m_cases{cases}, m_next{next}, m_evaluator{colors}, m_results{}, m_thread{[this] { run(); }}
+    {}
+
+    void join()
+    {
+        m_thread.join();
+    }
+
+    Results results() &&
+    {
+        return std::move(m_results);
+    }
+
+private:
+    void run()
+    {
+        auto const num = m_cases.size();
+
+        auto next = [previous = 0ul, this, num]() mutable {
+            while (previous < num
+                   and not m_next.compare_exchange_weak(previous, previous + 1ul, std::memory_order_relaxed)) {
+            }
+            return previous;
+        };
+
+        for (auto cur = next(); cur < num; cur = next()) {
+            m_results.emplace_back(m_evaluator(m_cases[cur]));
+        }
+    }
+
+    Cases & m_cases;
+    Next & m_next;
+    CaseEvaluator m_evaluator;
+    Results m_results;
+    std::thread m_thread;
+};
+
+template <typename T>
+std::vector<T> & move_append(std::vector<T> & destination, std::vector<T> source)
+{
+    for (auto & s : source) {
+        destination.emplace_back(std::move(s));
+    }
+    return destination;
+}
+
+Results execute_parallel(std::size_t const num_threads, Cases test_cases, ColorTable const & colors)
+{
+    auto next = std::atomic<std::size_t>{0ul};
+
+    // start workers
+    auto workers = std::vector<Worker>{};
+    workers.reserve(num_threads);
+    while (workers.size() < num_threads) {
+        workers.emplace_back(test_cases, next, colors);
+    }
+
+    // collect results
+    auto results = Conductor::Results{};
+    for (auto & worker : workers) {
+        worker.join();
+        move_append(results, std::move(worker).results());
+    }
+    return results;
 }
 
 }
@@ -45,14 +120,11 @@ Conductor::Results Conductor::run() const
     auto const time_start = Clock::now();
 
     auto & registry = framework::registry();
-    auto results = std::vector<CaseResult>{};
     std::cout << m_colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
               << " test-cases" << std::endl;
 
     // run cases and collect results
-    for (auto & tc : std::exchange(registry, {})) {
-        results.emplace_back(CaseEvaluator{m_colors}(tc));
-    }
+    auto const results = execute_parallel(std::thread::hardware_concurrency(), std::exchange(registry, {}), m_colors);
     if (not registry.empty()) {
         display_late_registration_warning(registry);
     }
