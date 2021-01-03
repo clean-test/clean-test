@@ -41,7 +41,7 @@
  - [ ] Make output thread-safe by using `std::basic_osyncstream`
  - [x] Integrate Observer
  - [ ] Support parameterized tests (for loop; also with `operator|`?)
- - [ ] Decide whether delayed registration is supported
+ - [x] Decide whether delayed registration is supported
        (i.e. registering while any case has already been started).
  - [ ] Make `Name` `constexpr` with `constexpr` `std::vector` / `std::string`.
        (`constexpr` consequences: `SuiteRegistrar`, UDLs, `Case`)

@@ -27,6 +27,17 @@ auto const by_type = ct::Suite{"by_type", [] {
     "false"_test = generate(false);
 }};
 
+// Dynamically expanding (endless) test loop.
+auto const dummy = [] {
+    auto generate = [](std::size_t const num, auto generator) -> void {
+        ct::Test{"recursive/" + std::to_string(num)} = [=] {
+            generator(num + 1ul, generator);
+        };
+    };
+    generate(0, generate);
+    return 0;
+}();
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
