@@ -108,6 +108,8 @@ add_files(CLNTST_SOURCES src/execute
 )
 add_files(CLNTST_SOURCES src/utils
     Guarded.h
+    OSyncStream.cpp
+    OSyncStream.h
     WithAdaptiveUnit.h
 )
 
