@@ -47,6 +47,9 @@ public:
     void operator()(Stop const &);
 
 private:
+    /// Load synchronizing facility for writing output.
+    auto output() const;
+
     std::ostream & m_output; //!< stream to write output to.
     ColorTable const & m_colors; //!< coloring details for output badges.
     /// Filter configuration for different output status.
