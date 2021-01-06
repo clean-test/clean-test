@@ -38,7 +38,7 @@
 ## Framework
 
  - [x] Replace `std::function` in order to support move-only testcases\
- - [ ] Make output thread-safe by using `std::basic_osyncstream`
+ - [x] Make output thread-safe by using `std::basic_osyncstream`
  - [x] Integrate Observer
  - [ ] Support parameterized tests (for loop; also with `operator|`?)
  - [x] Decide whether delayed registration is supported
