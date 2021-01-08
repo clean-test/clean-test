@@ -7,14 +7,18 @@
 
 #include <clean-test/clean-test.h>
 
+#include <map>
+
 namespace {
 
 namespace ct = clean_test;
 
+auto const name_prefix = std::string{"auto-test-"};
+
 auto auto_test()
 {
     static auto num = 0ul;
-    return ct::Test{"auto-test-" + std::to_string(num++)};
+    return ct::Test{name_prefix + std::to_string(num++)};
 }
 
 auto const dummy = [] {
@@ -40,20 +44,26 @@ auto const dummy = [] {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-using namespace ct::literals;
-using Outcome = ct::execute::CaseStatus;
-using State = ct::execute::ObservationStatus;
-
+auto load_positions(std::vector<ct::execute::CaseResult> const & results)
+{
+    auto positions = std::map<std::string, std::size_t>{};
+    for (auto i = 0ul; i < results.size(); ++i) {
+        positions[results[i].m_name_path] = i;
+    }
+    return positions;
 }
 
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main()
 {
-    auto const results = ct::execute::Conductor{}.run();
+    using Outcome = ct::execute::CaseStatus;
+    using State = ct::execute::ObservationStatus;
 
-    auto test = [&results, cur = 0ul](auto && asserter) mutable {
-        asserter(results[cur++]);
+    auto const results = ct::execute::Conductor{}.run();
+    auto test = [&results, pos = load_positions(results), cur = 0ul](auto && asserter) mutable {
+        asserter(results.at(pos[name_prefix + std::to_string(cur++)]));
     };
 
     test([](auto const & result) {
