@@ -20,6 +20,9 @@ if (NOT CLNTEST_BUILD_STATIC AND NOT CLNTST_BUILD_SHARED)
     message(FATAL_ERROR "Both static and shared library building disabled. What do you want?")
 endif()
 
+# Dependencies
+find_package(Threads)
+
 # build configuration
 add_compile_options(-Wall -Wextra -pedantic -Werror -Wswitch-enum)
 
@@ -118,11 +121,13 @@ endif()
 if (CLNTST_BUILD_STATIC)
     add_library(cleantest-static STATIC $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
     target_include_directories(cleantest-static PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+    target_link_libraries(cleantest-static ${CMAKE_THREAD_LIBS_INIT})
     add_library(CleanTest::static ALIAS cleantest-static)
 endif()
 if (CLNTST_BUILD_SHARED)
     add_library(cleantest-shared SHARED $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
     target_include_directories(cleantest-shared PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+    target_link_libraries(cleantest-shared ${CMAKE_THREAD_LIBS_INIT})
     add_library(CleanTest::shared ALIAS cleantest-shared)
 endif()
 if (CLNTST_BUILD_STATIC AND NOT CLNTST_BUILD_SHARED)
