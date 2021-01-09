@@ -3,8 +3,10 @@
 
 #pragma once
 
-#include "ColorTable.h"
 #include "CaseResult.h"
+#include "ColorTable.h"
+
+#include <execute/BufferingMode.h>
 
 #include <vector>
 
@@ -21,9 +23,9 @@ public:
     /// Detailed c'tor
     ///
     /// @param num_jobs number of test-cases to be executed in parallel. Utilizes all availble CPU core if set to 0.
-    Conductor(ColorTable const & colors, unsigned int num_jobs) noexcept;
+    Conductor(ColorTable const & colors, unsigned int num_jobs, BufferingMode buffering) noexcept;
 
-    /// Convenience c'tor for internal tests: use automatic coloring and all threads.
+    /// Convenience c'tor for internal tests: use automatic coloring, all threads and buffering.
     Conductor() noexcept;
 
     /// Invoke all tests and return collected results.
@@ -37,6 +39,7 @@ private:
 
     ColorTable const & m_colors; //!< coloring details for console output.
     unsigned int const m_num_workers; //!< number of worker threads for executing test-cases concurrently.
+    BufferingMode const m_buffering; //!< how test observation output is buffered.
 };
 
 }
