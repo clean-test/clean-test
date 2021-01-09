@@ -38,12 +38,8 @@ class Worker {
 public:
     using Next = std::atomic<std::size_t>;
 
-    Worker(Cases & cases, Next & next, ColorTable const & colors) :
-        m_cases{cases},
-        m_next{next},
-        m_evaluator{{std::cout, colors, BufferingMode::testcase}},
-        m_results{},
-        m_thread{[this] { run(); }}
+    Worker(Cases & cases, Next & next, CaseReporter::Setup const setup) :
+        m_cases{cases}, m_next{next}, m_evaluator{setup}, m_results{}, m_thread{[this] { run(); }}
     {}
 
     void join()
@@ -89,7 +85,7 @@ std::vector<T> & move_append(std::vector<T> & destination, std::vector<T> source
     return destination;
 }
 
-Results execute_parallel(std::size_t const num_threads, Cases test_cases, ColorTable const & colors)
+Results execute_parallel(std::size_t const num_threads, Cases test_cases, CaseReporter::Setup const setup)
 {
     auto next = std::atomic<std::size_t>{0ul};
 
@@ -97,7 +93,7 @@ Results execute_parallel(std::size_t const num_threads, Cases test_cases, ColorT
     auto workers = std::vector<Worker>{};
     workers.reserve(num_threads);
     while (workers.size() < num_threads) {
-        workers.emplace_back(test_cases, next, colors);
+        workers.emplace_back(test_cases, next, setup);
     }
 
     // collect results
@@ -112,11 +108,13 @@ Results execute_parallel(std::size_t const num_threads, Cases test_cases, ColorT
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Conductor::Conductor(ColorTable const & colors, unsigned int const num_jobs) noexcept :
-    m_colors(colors), m_num_workers{num_jobs == 0ul ? std::max(1u, std::thread::hardware_concurrency()) : num_jobs}
+Conductor::Conductor(ColorTable const & colors, unsigned int const num_jobs, BufferingMode const buffering) noexcept :
+    m_colors(colors),
+    m_num_workers{num_jobs == 0ul ? std::max(1u, std::thread::hardware_concurrency()) : num_jobs},
+    m_buffering{buffering}
 {}
 
-Conductor::Conductor() noexcept : Conductor{coloring_setup(ColoringMode::automatic), 0ul}
+Conductor::Conductor() noexcept : Conductor{coloring_setup(ColoringMode::automatic), 0ul, BufferingMode::testcase}
 {}
 
 Conductor::Results Conductor::run() const
@@ -129,7 +127,9 @@ Conductor::Results Conductor::run() const
               << " test-cases" << std::endl;
 
     // run cases and collect results
-    auto const results = execute_parallel(m_num_workers, std::exchange(registry, {}), m_colors);
+    auto const report_setup = CaseReporter::Setup{
+        .m_output = std::cout, .m_colors = m_colors, .m_buffering = m_buffering};
+    auto const results = execute_parallel(m_num_workers, std::exchange(registry, {}), report_setup);
     if (not registry.empty()) {
         display_late_registration_warning(registry);
     }
