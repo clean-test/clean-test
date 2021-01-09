@@ -19,6 +19,11 @@ public:
 
     /// How console output of the framework should be colored.
     ColoringMode coloring = ColoringMode::automatic;
+
+    /// Number of test-cases to be executed in parallel.
+    ///
+    /// The special value 0 (default) instructs to utilize all available CPU cores.
+    unsigned int num_jobs = 0ul;
 };
 
 }
