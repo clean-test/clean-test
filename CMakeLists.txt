@@ -66,6 +66,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     Tag.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/execute
+    BufferingMode.h
     ColoringMode.h
     Configuration.h
     Main.h
