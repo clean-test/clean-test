@@ -11,7 +11,7 @@
 
 namespace clean_test::execute {
 
-CaseEvaluator::CaseEvaluator(ColorTable const & colors) : m_reporter{std::cout, colors}
+CaseEvaluator::CaseEvaluator(CaseReporter::Setup const setup) : m_reporter{setup}
 {}
 
 CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept

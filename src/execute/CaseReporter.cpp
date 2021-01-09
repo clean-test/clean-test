@@ -48,21 +48,44 @@ Color color(CaseStatus status)
     }
 }
 
+constexpr bool use_buffering(BufferingMode const mode)
+{
+    switch (mode) {
+        case BufferingMode::off:
+            return false;
+        case BufferingMode::testcase:
+            return true;
+        default:
+            std::terminate();
+    }
+}
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 auto CaseReporter::output() const
 {
-    return utils::OSyncStream{m_output};
+    return utils::OSyncStream{m_sink};
 }
 
-CaseReporter::CaseReporter(std::ostream & output, ColorTable const & colors) :
-    m_output{output}, m_colors{colors}, m_is_observation_state_enabled{false, true, true}
+CaseReporter::CaseReporter(Setup const setup) :
+    m_setup{setup},
+    m_buffer{},
+    m_sink{use_buffering(m_setup.m_buffering) ? m_buffer : m_setup.m_output},
+    m_is_observation_state_enabled{false, true, true}
 {}
+
+CaseReporter::~CaseReporter()
+{
+    auto buffered = std::move(m_buffer).str();
+    if (not buffered.empty()) {
+        utils::OSyncStream{m_setup.m_output} << std::move(buffered);
+    }
+}
 
 void CaseReporter::operator()(Start const & start)
 {
-    output() << m_colors.colored(Color::good, badge(BadgeType::start)) << ' ' << start.m_name << std::endl;
+    output() << m_setup.m_colors.colored(Color::good, badge(BadgeType::start)) << ' ' << start.m_name << std::endl;
 }
 
 void CaseReporter::operator()(Observation const & o)
@@ -79,7 +102,7 @@ void CaseReporter::operator()(Observation const & o)
 void CaseReporter::operator()(Stop const & stop)
 {
     output()
-        << m_colors.colored(color(stop.m_status), badge(badge_type(stop.m_status))) << ' ' << stop.m_name
+        << m_setup.m_colors.colored(color(stop.m_status), badge(badge_type(stop.m_status))) << ' ' << stop.m_name
         << " (" << std::setprecision(0) << std::fixed << utils::WithAdaptiveUnit{stop.m_wall_time} << ')' << std::endl;
 }
 

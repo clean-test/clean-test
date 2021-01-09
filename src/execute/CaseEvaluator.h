@@ -10,16 +10,14 @@
 
 namespace clean_test::execute {
 
-class ColorTable;
-
 /// Assesses testcase execution and thereby collects results.
 class CaseEvaluator {
 public:
-    /// Detailed c'tor: Build reporter from @p colors.
-    CaseEvaluator(ColorTable const & colors);
+    /// Detailed c'tor: Build reporter from given @p setup.
+    explicit CaseEvaluator(CaseReporter::Setup setup);
 
     /// Execute @p testcase and return results evaluated therein.
-    CaseResult operator()(framework::Case& testcase) noexcept;
+    CaseResult operator()(framework::Case & testcase) noexcept;
 
 private:
     CaseReporter m_reporter; //!< output facility for test status and observations.
