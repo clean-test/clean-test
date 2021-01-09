@@ -39,7 +39,11 @@ public:
     using Next = std::atomic<std::size_t>;
 
     Worker(Cases & cases, Next & next, ColorTable const & colors) :
-        m_cases{cases}, m_next{next}, m_evaluator{colors}, m_results{}, m_thread{[this] { run(); }}
+        m_cases{cases},
+        m_next{next},
+        m_evaluator{{std::cout, colors, BufferingMode::testcase}},
+        m_results{},
+        m_thread{[this] { run(); }}
     {}
 
     void join()
