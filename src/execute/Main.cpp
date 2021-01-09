@@ -35,7 +35,7 @@ int main(int argc, char ** argv)
 int main(Configuration const & configuration)
 {
     auto const & colors = coloring_setup(configuration.coloring);
-    auto const conductor = Conductor{colors};
+    auto const conductor = Conductor{colors, configuration.num_jobs};
     auto results = conductor.run();
     return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
 }

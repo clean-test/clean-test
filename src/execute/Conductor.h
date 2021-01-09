@@ -19,9 +19,11 @@ public:
     using Results = std::vector<CaseResult>;
 
     /// Detailed c'tor
-    explicit Conductor(ColorTable const & colors) noexcept;
+    ///
+    /// @param num_jobs number of test-cases to be executed in parallel. Utilizes all availble CPU core if set to 0.
+    Conductor(ColorTable const & colors, unsigned int num_jobs) noexcept;
 
-    /// Convenience c'tor for internal tests: use automatic coloring.
+    /// Convenience c'tor for internal tests: use automatic coloring and all threads.
     Conductor() noexcept;
 
     /// Invoke all tests and return collected results.
@@ -34,6 +36,7 @@ private:
     void display_late_registration_warning(std::vector<framework::Case> const & cases) const;
 
     ColorTable const & m_colors; //!< coloring details for console output.
+    unsigned int const m_num_workers; //!< number of worker threads for executing test-cases concurrently.
 };
 
 }
