@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "BufferingMode.h"
 #include "ColoringMode.h"
 
 namespace clean_test::execute {
@@ -19,6 +20,8 @@ public:
 
     /// How console output of the framework should be colored.
     ColoringMode coloring = ColoringMode::automatic;
+    /// Whether test-case messages should be buffered (in order to ensure uninterrupted output).
+    BufferingMode buffering = BufferingMode::testcase;
 
     /// Number of test-cases to be executed in parallel.
     ///
