@@ -102,6 +102,8 @@ add_files(CLNTST_SOURCES src/execute
     Conductor.cpp
     Conductor.h
     Configuration.cpp
+    JUnitExport.cpp
+    JUnitExport.h
     Main.cpp
     NameFilter.cpp
     NameFilter.h
