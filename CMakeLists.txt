@@ -109,6 +109,8 @@ add_files(CLNTST_SOURCES src/execute
     ObservationStatus.h
     Observer.cpp
     Observer.h
+    XMLEncoder.cpp
+    XMLEncoder.h
 )
 add_files(CLNTST_SOURCES src/utils
     Guarded.h
