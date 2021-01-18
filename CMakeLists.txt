@@ -103,6 +103,8 @@ add_files(CLNTST_SOURCES src/execute
     Conductor.h
     Configuration.cpp
     Main.cpp
+    NameFilter.cpp
+    NameFilter.h
     Observation.h
     ObservationStatus.h
     Observer.cpp
