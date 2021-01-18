@@ -30,6 +30,7 @@ BadgeType badge_type(CaseStatus status)
             return BadgeType::fail;
         case CaseStatus::pass:
             return BadgeType::pass;
+        case CaseStatus::skip:
         default:
             std::terminate();
     }
@@ -39,6 +40,7 @@ Color color(CaseStatus status)
 {
     switch (status) {
         case CaseStatus::pass:
+        case CaseStatus::skip:
             return Color::good;
         case CaseStatus::abort:
         case CaseStatus::fail:
