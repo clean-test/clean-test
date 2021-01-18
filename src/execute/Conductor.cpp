@@ -25,6 +25,7 @@ bool passed(CaseStatus const status)
 {
     switch (status) {
         case CaseStatus::pass:
+        case CaseStatus::skip:
             return true;
         case CaseStatus::fail:
         case CaseStatus::abort:

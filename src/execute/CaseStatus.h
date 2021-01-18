@@ -16,6 +16,7 @@ public:
         pass = 0, //!< Test performed successfully.
         fail = 1, //!< Test failed (some) expectations.
         abort = 2, //!< Test aborted prematurely e.g. due to failed assertions.
+        skip = 3, //!< Test not run at all (e.g. due to an appropriate runtime filter).
     };
 
     /// Total number of different outcomes.
