@@ -5,7 +5,9 @@
 
 #include "Badges.h"
 #include "CaseEvaluator.h"
+#include "ColorTable.h"
 #include "ColoringSetup.h"
+#include "NameFilter.h"
 
 #include <framework/Registry.h>
 
@@ -34,6 +36,41 @@ bool passed(CaseStatus const status)
             std::terminate();
     }
 }
+
+Conductor::Setup const & default_setup()
+{
+    static auto const filter = NameFilter{};
+    static auto const singleton = Conductor::Setup{
+        .m_colors = coloring_setup(ColoringMode::automatic),
+        .m_num_workers = 0u,
+        .m_buffering = BufferingMode::testcase,
+        .m_filter = filter};
+    return singleton;
+}
+
+Conductor::Setup normalized(Conductor::Setup const & input)
+{
+    auto output = input; // intentional copy
+
+    // Map special value of 0 workers to the maximum number supported of concurrently running CPU cores.
+    auto & num_jobs = output.m_num_workers;
+    if (num_jobs == 0u) {
+        num_jobs = std::max(1u, std::thread::hardware_concurrency());
+    }
+
+    return output;
+}
+
+template <typename T>
+std::vector<T> & move_append(std::vector<T> & destination, std::vector<T> source)
+{
+    for (auto & s : source) {
+        destination.emplace_back(std::move(s));
+    }
+    return destination;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Worker {
 public:
@@ -77,15 +114,6 @@ private:
     std::thread m_thread;
 };
 
-template <typename T>
-std::vector<T> & move_append(std::vector<T> & destination, std::vector<T> source)
-{
-    for (auto & s : source) {
-        destination.emplace_back(std::move(s));
-    }
-    return destination;
-}
-
 Results execute_parallel(std::size_t const num_threads, Cases test_cases, CaseReporter::Setup const setup)
 {
     auto next = std::atomic<std::size_t>{0ul};
@@ -109,13 +137,10 @@ Results execute_parallel(std::size_t const num_threads, Cases test_cases, CaseRe
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Conductor::Conductor(ColorTable const & colors, unsigned int const num_jobs, BufferingMode const buffering) noexcept :
-    m_colors(colors),
-    m_num_workers{num_jobs == 0ul ? std::max(1u, std::thread::hardware_concurrency()) : num_jobs},
-    m_buffering{buffering}
+Conductor::Conductor(Setup const & setup) noexcept : m_setup{normalized(setup)}
 {}
 
-Conductor::Conductor() noexcept : Conductor{coloring_setup(ColoringMode::automatic), 0ul, BufferingMode::testcase}
+Conductor::Conductor() noexcept : Conductor{default_setup()}
 {}
 
 Conductor::Results Conductor::run() const
@@ -124,19 +149,20 @@ Conductor::Results Conductor::run() const
     auto const time_start = Clock::now();
 
     auto & registry = framework::registry();
-    std::cout << m_colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
+    auto const & [colors, num_workers, buffering, filter] = m_setup;
+    std::cout << colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
               << " test-cases" << std::endl;
 
     // run cases and collect results
     auto const report_setup = CaseReporter::Setup{
-        .m_output = std::cout, .m_colors = m_colors, .m_buffering = m_buffering};
-    auto const results = execute_parallel(m_num_workers, std::exchange(registry, {}), report_setup);
+        .m_output = std::cout, .m_colors = colors, .m_buffering = buffering};
+    auto const results = execute_parallel(num_workers, std::exchange(registry, {}), report_setup);
     if (not registry.empty()) {
         display_late_registration_warning(registry);
     }
 
     auto const wall_time = Clock::now() - time_start;
-    std::cout << m_colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << results.size() << " test-cases ("
+    std::cout << colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << results.size() << " test-cases ("
               << utils::WithAdaptiveUnit{wall_time} << " total)" << std::endl;
     report(results);
     return results;
@@ -144,17 +170,18 @@ Conductor::Results Conductor::run() const
 
 void Conductor::report(Results const & results) const
 {
+    auto const & colors = m_setup.m_colors;
     std::size_t num_passed = 0ul;
     for (auto const & result : results) {
         if (passed(result.m_status)) {
             ++num_passed;
         } else {
-            std::cout << m_colors.colored(Color::bad, badge(BadgeType::fail)) << ' ' << result.m_name_path << '\n';
+            std::cout << colors.colored(Color::bad, badge(BadgeType::fail)) << ' ' << result.m_name_path << '\n';
         }
     }
     auto const all_have_passed = (num_passed == results.size());
     if (num_passed > 0ul) {
-        std::cout << m_colors.colored(Color::good, badge(BadgeType::pass)) << " All "
+        std::cout << colors.colored(Color::good, badge(BadgeType::pass)) << " All "
                   << (all_have_passed ? "" : "other ") << num_passed << " test-cases\n";
     }
     std::cout << std::flush;
@@ -162,13 +189,14 @@ void Conductor::report(Results const & results) const
 
 void Conductor::display_late_registration_warning(std::vector<framework::Case> const & cases) const
 {
-    std::cout << m_colors[Color::bad] << badge(BadgeType::headline) << " Warning: The following " << cases.size()
+    auto const & colors = m_setup.m_colors;
+    std::cout << colors[Color::bad] << badge(BadgeType::headline) << " Warning: The following " << cases.size()
               << " test-cases have been registered late:\n";
     for (auto const & tc : cases) {
         std::cout << badge(BadgeType::empty) << "   - " << tc.name().path() << '\n';
     }
     std::cout << badge(BadgeType::headline) << " Registering test-cases dynamically impedes parallel execution."
-              << m_colors[Color::off] << std::endl;
+              << colors[Color::off] << std::endl;
 }
 
 }
