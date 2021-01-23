@@ -5,9 +5,11 @@
 
 #include <expression/Throws.h>
 
-#include <framework/Name.h>
-
+#include <execute/Conductor.h>
 #include <execute/NameFilter.h>
+#include <execute/ColoringSetup.h>
+
+#include <framework.h>
 
 namespace {
 
@@ -97,6 +99,28 @@ void pattern()
     clean_test::utils::dynamic_assert(clean_test::expression::throws([&] { f("(?P<no>.*)"); })); // invalid pattern
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void execute()
+{
+    auto const filter = [] {
+        auto f = Filter{};
+        f.add(Toggle::enabled, Property::path, "^a");
+        return f;
+    }();
+    auto const setup = clean_test::execute::Conductor::Setup{
+        .m_colors = clean_test::execute::coloring_setup(clean_test::execute::ColoringMode::automatic),
+        .m_num_workers = 0u,
+        .m_buffering = clean_test::execute::BufferingMode::off,
+        .m_filter = filter,
+    };
+
+    clean_test::Test{"a", [] { clean_test::utils::dynamic_assert(true); }};
+    clean_test::Test{"b", [] { clean_test::utils::dynamic_assert(false); }};
+
+    clean_test::execute::Conductor{setup}.run();
+}
+
 }
 
 int main()
@@ -106,4 +130,5 @@ int main()
     conflict();
     properties();
     pattern();
+    execute();
 }

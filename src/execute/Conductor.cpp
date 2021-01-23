@@ -76,8 +76,13 @@ class Worker {
 public:
     using Next = std::atomic<std::size_t>;
 
-    Worker(Cases & cases, Next & next, CaseReporter::Setup const setup) :
-        m_cases{cases}, m_next{next}, m_evaluator{setup}, m_results{}, m_thread{[this] { run(); }}
+    Worker(Cases & cases, Next & next, Conductor::Setup const setup) :
+        m_cases{cases},
+        m_next{next},
+        m_filter{setup.m_filter},
+        m_evaluator{{.m_output = std::cout, .m_colors = setup.m_colors, .m_buffering = setup.m_buffering}},
+        m_results{},
+        m_thread{[this] { run(); }}
     {}
 
     void join()
@@ -103,19 +108,37 @@ private:
         };
 
         for (auto cur = next(); cur < num; cur = next()) {
-            m_results.emplace_back(m_evaluator(m_cases[cur]));
+            m_results.emplace_back(evaluate(m_cases[cur]));
+        }
+    }
+
+    CaseResult evaluate(framework::Case & tc)
+    {
+        switch (m_filter(tc.name())) {
+            case NameFilterToggle::enabled:
+                // Execute test-case.
+                return m_evaluator(tc);
+
+            case NameFilterToggle::disabled:
+                // Skip test-case.
+                return CaseResult{std::string{tc.name().path()}, CaseStatus::skip, CaseResult::Duration{}, {}};
+
+            default:
+                std::terminate();
         }
     }
 
     Cases & m_cases;
     Next & m_next;
+    NameFilter const & m_filter;
     CaseEvaluator m_evaluator;
     Results m_results;
     std::thread m_thread;
 };
 
-Results execute_parallel(std::size_t const num_threads, Cases test_cases, CaseReporter::Setup const setup)
+Results execute_parallel(Cases test_cases, Conductor::Setup const setup)
 {
+    auto const num_threads = setup.m_num_workers;
     auto next = std::atomic<std::size_t>{0ul};
 
     // start workers
@@ -154,9 +177,7 @@ Conductor::Results Conductor::run() const
               << " test-cases" << std::endl;
 
     // run cases and collect results
-    auto const report_setup = CaseReporter::Setup{
-        .m_output = std::cout, .m_colors = colors, .m_buffering = buffering};
-    auto const results = execute_parallel(num_workers, std::exchange(registry, {}), report_setup);
+    auto const results = execute_parallel(std::exchange(registry, {}), m_setup);
     if (not registry.empty()) {
         display_late_registration_warning(registry);
     }
