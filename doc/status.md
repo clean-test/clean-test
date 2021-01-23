@@ -29,10 +29,11 @@
  - [x] Provide `main`-variant with `Configuration`
  - [ ] Support parsing `Configuration` with (printed) failure
  - [x] `main` general enough for `nutsh`?
+ - [ ] Validate utf-8
+ - [ ] Provide real parallel showcase (registration, expectation)
  - [ ] (Restricted) support for non-exception environments
  - [ ] Multiline expression decomposition in output
- - [ ] Provide real parallel showcase (registration, expectation)
- - [ ] Timeout capabilities
+ - [ ] Benchmark startup / execution speed
 
 
 ## Framework
@@ -51,7 +52,9 @@
  - [x] Install (`thread_local`) observer upon test registration
  - [x] Move Observer into execute
  - [ ] Generate badges with `std::format`.
- - [ ] Support fallback `Observer` (for users forgetting to pass it along)
+ - [x] Support fallback `Observer` (for users forgetting to pass it along)
+ - [ ] Add scoped, `Observer`-based facility for additional debug output
+ - [ ] Provide migration helpers for the big 3
 
 
 ## Expression
