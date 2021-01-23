@@ -4,8 +4,9 @@
 #include "execute/Main.h"
 
 #include <execute/ColoringSetup.h>
-#include <execute/Configuration.h>
 #include <execute/Conductor.h>
+#include <execute/Configuration.h>
+#include <execute/NameFilter.h>
 
 #include <algorithm>
 #include <version>
@@ -35,7 +36,12 @@ int main(int argc, char ** argv)
 int main(Configuration const & configuration)
 {
     auto const & colors = coloring_setup(configuration.coloring);
-    auto const conductor = Conductor{colors, configuration.num_jobs, configuration.buffering};
+    auto const filter = NameFilter{};
+    auto const conductor = Conductor{{
+        .m_colors = colors,
+        .m_num_workers = configuration.num_jobs,
+        .m_buffering = configuration.buffering,
+        .m_filter = filter}};
     auto results = conductor.run();
     return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
 }
