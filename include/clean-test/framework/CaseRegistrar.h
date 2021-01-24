@@ -15,7 +15,6 @@
 
 #include <string_view>
 #include <type_traits>
-#include <utility>
 
 namespace clean_test::framework {
 
@@ -66,10 +65,7 @@ constexpr CaseRunner auto load_runner(Runner && runner)
         return std::forward<Runner>(runner);
     } else {
         return [fwd = utils::fwd_capture(std::forward<Runner>(runner))](execute::Observer & observe) {
-            auto & setup = observation_setup();
-            auto const ensure_setup = utils::ScopeGuard{
-                [&setup, reset = std::exchange(setup, std::addressof(observe))] { std::exchange(setup, reset); }};
-
+            auto const setup = framework::ObservationSetup{observe};
             auto & [runner] = fwd;
             runner();
         };

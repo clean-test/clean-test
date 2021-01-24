@@ -31,8 +31,7 @@ auto expect(
 template <typename T>
 auto expect(T const & expr, utils::SourceLocation const & sl = utils::SourceLocation::current())
 {
-    // TODO: handle unknown failure site (i.e. construct some unlikely fallback observer)
-    return expect(*observation_setup(), expr, sl);
+    return expect(ObservationSetup::observer(), expr, sl);
 }
 
 }
