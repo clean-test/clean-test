@@ -80,6 +80,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
 )
 add_files(CLNTST_SOURCES src/framework
     ExpectationObserver.cpp
+    FallbackObservationSetup.h
     ObservationSetup.cpp
     Registry.cpp
     SuiteRegistrationSetup.cpp
