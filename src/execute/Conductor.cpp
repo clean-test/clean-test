@@ -5,12 +5,16 @@
 
 #include "Badges.h"
 #include "CaseEvaluator.h"
+#include "CaseReporter.h"
 #include "ColorTable.h"
 #include "ColoringSetup.h"
 #include "NameFilter.h"
+#include "Observer.h"
 
+#include <framework/FallbackObservationSetup.h>
 #include <framework/Registry.h>
 
+#include <utils/OSyncStream.h>
 #include <utils/WithAdaptiveUnit.h>
 
 #include <exception>
@@ -157,6 +161,30 @@ Results execute_parallel(Cases test_cases, Conductor::Setup const setup)
     return results;
 }
 
+/// Variant of @c execute_parallel that manages mis-reported @c Observation s encountered at a fallback observer.
+Results safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
+{
+    // Ensure appropriate fallback observation setup.
+    auto fallback_reporter = CaseReporter{{std::cout, setup.m_colors, setup.m_buffering}};
+    auto fallback_observer = Observer{fallback_reporter};
+    auto const fallback = framework::FallbackObservationSetup{fallback_observer};
+
+    // Run all test-cases in parallel (with the ensured fallback observation setup).
+    auto results = execute_parallel(std::move(test_cases), setup);
+
+    // Harvest any incorrectly directed observations.
+    auto unmanaged = std::move(fallback_observer).release();
+    if (not unmanaged.empty()) {
+        auto const & colors = setup.m_colors;
+        utils::OSyncStream{std::cout}
+            << colors[Color::bad] << badge(BadgeType::headline)
+            << " Warning: Observed test-expectations at unknown Observer, likely caused by lacking passed observer."
+            << colors[Color::off];
+        results.emplace_back("unknown", CaseStatus::fail, CaseResult::Duration{}, std::move(unmanaged));
+    }
+    return results;
+}
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -177,7 +205,7 @@ Conductor::Results Conductor::run() const
               << " test-cases" << std::endl;
 
     // run cases and collect results
-    auto const results = execute_parallel(std::exchange(registry, {}), m_setup);
+    auto const results = safe_execute_parallel(std::exchange(registry, {}), m_setup);
     if (not registry.empty()) {
         display_late_registration_warning(registry);
     }

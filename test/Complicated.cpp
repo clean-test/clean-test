@@ -38,6 +38,14 @@ auto const dummy = [] {
     return 0;
 }();
 
+std::string_view const wrong_observer_message = "This is a message directed to the wrong observer!";
+auto const wrong_observer = [] {
+    "wrong"_test = [](ct::Observer &) {
+        ct::expect(false) << wrong_observer_message;
+    };
+    return 0;
+}();
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -62,4 +70,7 @@ int main()
 
     ct::utils::dynamic_assert(result("by_type/true").m_status == ct::execute::CaseStatus::pass);
     ct::utils::dynamic_assert(result("by_type/false").m_status == ct::execute::CaseStatus::fail);
+
+    ct::utils::dynamic_assert(result("wrong").m_observations.empty());
+    ct::utils::dynamic_assert(result("unknown").m_observations.front().m_description == wrong_observer_message);
 }
