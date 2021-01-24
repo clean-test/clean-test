@@ -86,7 +86,7 @@ int main()
     test([](auto const & result) {
         ct::utils::dynamic_assert(result.m_status == Outcome::abort);
         ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
-        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_asserted);
     });
     test([](auto const & result) {
         ct::utils::dynamic_assert(result.m_status == Outcome::pass);
@@ -115,7 +115,7 @@ int main()
     test([](auto const & result) {
         ct::utils::dynamic_assert(result.m_status == Outcome::abort);
         ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
-        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_flaky);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_asserted);
     });
 
     // Recursion
