@@ -13,13 +13,18 @@ namespace clean_test::execute {
 class ObservationStatus {
 public:
     enum Value : std::uint8_t {
-        pass = 0, //!< Expectation satisfied, i.e. no failure
-        fail_flaky = 1, //!< Expectation violated, but failure was expected.
-        fail = 2, //!< Expectation violated. Any observation in this state makes a case fail.
+        /// Expectation satisfied, i.e. no failure
+        pass = 0,
+        /// Expectation violated, but failure was expected.
+        fail_flaky,
+        /// Expectation violated. Any observation in this state makes a case fail.
+        fail,
+        /// Asserted expectation violated. An observation in this state makes the case fail and aborts its execution.
+        fail_asserted,
     };
 
     /// Total number of supported states.
-    constexpr static inline std::size_t num_values = 3ul;
+    constexpr static inline std::size_t num_values = 4ul;
 
     /// Detailed c'tor.
     constexpr explicit(false) ObservationStatus(Value const value) : m_value{value}
