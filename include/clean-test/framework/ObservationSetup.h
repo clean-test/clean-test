@@ -7,11 +7,6 @@
 
 namespace clean_test::framework {
 
-/// The (thread-local) observation setup.
-///
-/// This setup is used for reporting violated expectations when no other @c Observer is passed explicitly.
-execute::Observer * & observation_setup();
-
 /// Scoped wrapper to maintain a thread-local, test-case specific observer.
 ///
 /// This observer is mere convenience feature for allowing the user to call @c expect without explicitly specifying
