@@ -20,11 +20,6 @@ auto * & registry()
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-execute::Observer * & observation_setup()
-{
-    return registry();
-}
-
 execute::Observer & ObservationSetup::observer()
 {
     if (registry() == nullptr) {
