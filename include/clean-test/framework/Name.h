@@ -13,6 +13,8 @@ namespace clean_test::framework {
 /// Common naming type for both test-suites and -cases: Manages hierarchical path as well as associated tags.
 class Name {
 public:
+    static constexpr auto separator = std::string_view{"/"}; //!< separator for different path components
+
     using Tags = std::vector<Tag>;
 
     /// Default c'tor with empty path and tags.
@@ -44,8 +46,6 @@ public:
     Name & operator/=(Name const & other);
 
 private:
-    static constexpr auto separator = std::string_view{"/"};
-
     std::string m_path;
     Tags m_tags;
 };
