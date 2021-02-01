@@ -71,6 +71,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/execute
     Configuration.h
     Main.h
     NameFilterSetting.h
+    OperationMode.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     FwdCapture.h
