@@ -104,6 +104,8 @@ add_files(CLNTST_SOURCES src/execute
     Conductor.cpp
     Conductor.h
     Configuration.cpp
+    HelpDisplay.cpp
+    HelpDisplay.h
     JUnitExport.cpp
     JUnitExport.h
     Main.cpp
