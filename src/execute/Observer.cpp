@@ -9,9 +9,9 @@ namespace clean_test::execute {
 
 void Observer::operator()(Observation observation)
 {
-    auto const guard = std::lock_guard{m_mutex};
-    m_observations.emplace_back(std::move(observation));
-    m_reporter(m_observations.back());
+    m_reporter(observation);
+    auto const guard = m_observations.guard();
+    guard->emplace_back(std::move(observation));
 }
 
 }
