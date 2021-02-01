@@ -70,6 +70,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/execute
     ColoringMode.h
     Configuration.h
     Main.h
+    NameFilterSetting.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     FwdCapture.h
