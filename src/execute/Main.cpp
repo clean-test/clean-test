@@ -35,12 +35,12 @@ int main(int argc, char ** argv)
 
 int main(Configuration const & configuration)
 {
-    auto const & colors = coloring_setup(configuration.coloring);
-    auto const filter = NameFilter{};
+    auto const & colors = coloring_setup(configuration.m_coloring);
+    auto const filter = NameFilter{configuration.m_filter_settings};
     auto const conductor = Conductor{{
         .m_colors = colors,
-        .m_num_workers = configuration.num_jobs,
-        .m_buffering = configuration.buffering,
+        .m_num_workers = configuration.m_num_jobs,
+        .m_buffering = configuration.m_buffering,
         .m_filter = filter}};
     auto results = conductor.run();
     return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
