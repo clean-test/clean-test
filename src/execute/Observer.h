@@ -5,7 +5,8 @@
 
 #include "Observation.h"
 
-#include <mutex>
+#include <utils/Guarded.h>
+
 #include <vector>
 
 namespace clean_test::execute {
@@ -26,13 +27,12 @@ public:
     /// Release recorded observations.
     Observations release() &&
     {
-        return std::move(m_observations);
+        return std::move(m_observations).release();
     }
 
 private:
     execute::CaseReporter & m_reporter; //!< utility for printing details
-    std::mutex m_mutex; //!< protects access to all members below
-    Observations m_observations; //!< encountered observations
+    utils::Guarded<Observations> m_observations; //!< encountered observations
 };
 
 }
