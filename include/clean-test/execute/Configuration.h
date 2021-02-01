@@ -5,6 +5,11 @@
 
 #include "BufferingMode.h"
 #include "ColoringMode.h"
+#include "NameFilterSetting.h"
+#include "OperationMode.h"
+
+#include <vector>
+#include <filesystem>
 
 namespace clean_test::execute {
 
@@ -14,19 +19,48 @@ public:
     /// Parse @c Configuration from commandline arguments @p argc and @p argv.
     static Configuration parse(int argc, char ** argv);
 
-    bool print_help = false;
-    bool list_tests = false;
-    bool run_tests = true;
+    /// @name General Configuration
+    ///
+    /// @{
+
+    /// Which mode of clean-test should be executed?
+    OperationMode m_operation = OperationMode::run;
 
     /// How console output of the framework should be colored.
-    ColoringMode coloring = ColoringMode::automatic;
+    ColoringMode m_coloring = ColoringMode::automatic;
+
+    /// Which selection of test-cases should be included / excluded from configured operations?
+    std::vector<NameFilterSetting> m_filter_settings = {};
+
+    /// @}
+
+    /// @name Test Execution Configuration
+    ///
+    /// @{
+
     /// Whether test-case messages should be buffered (in order to ensure uninterrupted output).
-    BufferingMode buffering = BufferingMode::testcase;
+    BufferingMode m_buffering = BufferingMode::off;
 
     /// Number of test-cases to be executed in parallel.
     ///
     /// The special value 0 (default) instructs to utilize all available CPU cores.
-    unsigned int num_jobs = 0ul;
+    unsigned int m_num_jobs = 0ul;
+
+    /// Path for generating the JUnit-XML summary into.
+    ///
+    /// The special value of @c {} (empty, default) disables the generation of this type of report.
+    std::filesystem::path m_junit_path = {};
+
+    /// @}
+
+    /// @name Test Listing Configuration
+    ///
+    /// @{
+
+    /// Maximum depth of the visualized tree of test-cases.
+    unsigned int m_depth = 3ul;
+
+    /// @}
 };
 
 }
