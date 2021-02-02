@@ -17,7 +17,9 @@ namespace clean_test::execute {
 class Configuration {
 public:
     /// Parse @c Configuration from commandline arguments @p argc and @p argv.
-    static Configuration parse(int argc, char ** argv);
+    ///
+    /// Throws std::invalid_argument (with descriptive error) in case parsing the given commandline is not possible.
+    static Configuration parse(int argc, char const * const * argv);
 
     /// @name General Configuration
     ///
