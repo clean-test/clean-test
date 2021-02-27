@@ -13,6 +13,18 @@ namespace {
 
 namespace ct = clean_test;
 
+class NonString {
+public:
+    friend std::ostream & operator<<(std::ostream & out, NonString const & ns)
+    {
+        return out << ns.m_str;
+    }
+
+    [[maybe_unused]] friend auto operator<=>(NonString const &, NonString const &) = default;
+
+    std::string m_str;
+};
+
 auto const name_prefix = std::string{"auto-test-"};
 
 auto auto_test()
@@ -38,6 +50,13 @@ auto const dummy = [] {
     // Explicit observer
     auto_test() = [](ct::Observer & o) { ct::expect(o, true); };
     auto_test() = [](ct::Observer & o) { ct::expect(o, false); };
+
+    // Unicode handling
+    auto_test() = [] { ct::expect(ct::lift("\x80") == ct::lift("")); }; // invalid UTF-8
+    auto_test() = [] { ct::expect(ct::lift("\n") == ct::lift("")); }; // wants to be escaped
+    // bypass special handling for std::string
+    auto_test() = [] { ct::expect(ct::lift(NonString{"\x80"}) == ct::lift(NonString{""})); };
+    auto_test() = [] { ct::expect(true) << "\x80"; }; // broken user message
 
     return 1;
 }();
@@ -136,5 +155,32 @@ int main()
         ct::utils::dynamic_assert(result.m_status == Outcome::fail);
         ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
         ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail);
+    });
+
+    // Unicode handling
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        auto const & details = result.m_observations.front().m_expression_details;
+        std::cout << "HUHU " << details << std::endl;
+        ct::utils::dynamic_assert(details.find(R"R("\x80")R") != std::string_view::npos);
+        ct::utils::dynamic_assert(details.find("invalid utf-8") != std::string_view::npos);
+    });
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        auto const & details = result.m_observations.front().m_expression_details;
+        std::cout << "HUHU " << details << std::endl;
+        ct::utils::dynamic_assert(details.find(R"R("\n")R") != std::string_view::npos);
+    });
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        auto const & details = result.m_observations.front().m_expression_details;
+        std::cout << "HUHU " << details << std::endl;
+        ct::utils::dynamic_assert(details.find(R"R(\x80)R") != std::string_view::npos);
+    });
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        auto const & details = result.m_observations.front().m_description;
+        std::cout << "HUHU " << details << std::endl;
+        ct::utils::dynamic_assert(details.find(R"R(\x80)R") != std::string_view::npos);
     });
 }

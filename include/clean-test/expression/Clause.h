@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Base.h"
+#include <clean-test/utils/UTF8Encoder.h>
 
 #include <ostream>
 
@@ -19,7 +20,12 @@ public:
 
     friend std::ostream & operator<<(std::ostream & out, Clause const & ref)
     {
-        return out << ref.value();
+        if constexpr (requires { utils::UTF8Encoder::Elaborated{ref.value()}; }) {
+            out << utils::UTF8Encoder::Elaborated{ref.value()};
+        } else {
+            out << ref.value();
+        }
+        return out;
     }
 
     constexpr T const & value() const
