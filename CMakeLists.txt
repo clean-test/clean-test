@@ -124,6 +124,8 @@ add_files(CLNTST_SOURCES src/utils
     Guarded.h
     OSyncStream.cpp
     OSyncStream.h
+    UTF8Utils.cpp
+    UTF8Utils.h
     WithAdaptiveUnit.h
 )
 
