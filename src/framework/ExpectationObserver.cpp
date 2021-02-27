@@ -7,6 +7,8 @@
 #include "execute/ObservationStatus.h"
 #include "execute/Observer.h"
 
+#include "utils/UTF8Encoder.h"
+
 namespace clean_test::framework {
 namespace {
 
@@ -30,7 +32,10 @@ Status status(bool const failed, bool const flaky, bool const asserted)
 
 ExpectationObserver::~ExpectationObserver() noexcept(false)
 {
-    m_observer.get()({m_where, status(m_failed, m_may_fail, m_abort_on_failure), m_what, std::move(m_buffer).str()});
+    m_what = utils::UTF8Encoder::sanitize(m_what);
+    auto buffered = utils::UTF8Encoder::sanitize(std::move(m_buffer).str());
+    m_observer.get()(
+        {m_where, status(m_failed, m_may_fail, m_abort_on_failure), std::move(m_what), std::move(buffered)});
     if (m_failed and m_abort_on_failure) {
         throw execute::Abortion{};
     }
