@@ -3,6 +3,7 @@
 
 #include "TestUtilities.h"
 
+#include "utils/UTF8Encoder.h"
 #include "utils/UTF8Utils.h"
 
 #include <sstream>
@@ -95,8 +96,45 @@ void test_escape()
     dynamic_assert(escaped("multi\nline\tcontent") == R"R("multi\nline\tcontent")R"); // escape sequences
 
     // invalid unicode
-    dynamic_assert(escaped("embedded\x80" "continuation") == R"R("embedded\x80" "continuation")R");
+    dynamic_assert(
+        escaped("embedded\x80"
+                "continuation")
+        == R"R("embedded\x80" "continuation")R");
     dynamic_assert(escaped("embedded\x80invalid") == R"R("embedded\x80invalid")R");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void test_sanitize()
+{
+    // valid input
+    dynamic_assert(UTF8Encoder::sanitize("ascii") == "ascii");
+    dynamic_assert(UTF8Encoder::sanitize("\u0401") == "\u0401");
+    dynamic_assert(UTF8Encoder::sanitize("ascii \u0401") == "ascii \u0401");
+
+    // invalid input
+    dynamic_assert(UTF8Encoder::sanitize("ascii X\x80Y \u0401") == "ascii XY (\"X\\x80Y\") \u0401");
+    dynamic_assert(UTF8Encoder::sanitize("a \"X\x80Y\" b") == R"R(a "XY ("X\x80Y")" b)R");
+
+    // corner cases
+    dynamic_assert(UTF8Encoder::sanitize("").empty());
+    dynamic_assert(UTF8Encoder::sanitize("\"") == "\"");
+    dynamic_assert(UTF8Encoder::sanitize(" ") == " ");
+    dynamic_assert(UTF8Encoder::sanitize("foo\"") == "foo\"");
+}
+
+void test_elaborate()
+{
+    static auto elaborated = [](std::string_view const input) {
+        auto buffer = std::ostringstream{};
+        buffer << UTF8Encoder::Elaborated{input};
+        return std::move(buffer).str();
+    };
+
+    dynamic_assert(elaborated("") == "\"\"");
+    dynamic_assert(elaborated("ascii") == "\"ascii\"");
+    dynamic_assert(elaborated("a \u0401 b") == "\"a \u0401 b\" (\"a \\xD0\\x81 b\")");
+    dynamic_assert(elaborated("a \x80 b") == "\"a  b\" (invalid utf-8: \"a \\x80 b\")");
 }
 
 }
@@ -107,4 +145,6 @@ int main()
     test_code_point();
     test_analysis();
     test_escape();
+    test_sanitize();
+    test_elaborate();
 }
