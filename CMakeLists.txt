@@ -78,6 +78,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
     Initializes.h
     ScopeGuard.h
     SourceLocation.h
+    UTF8Encoder.h
 )
 add_files(CLNTST_SOURCES src/framework
     ExpectationObserver.cpp
@@ -126,6 +127,7 @@ add_files(CLNTST_SOURCES src/utils
     OSyncStream.h
     UTF8Utils.cpp
     UTF8Utils.h
+    UTF8Encoder.cpp
     WithAdaptiveUnit.h
 )
 
