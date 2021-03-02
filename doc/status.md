@@ -27,9 +27,9 @@
 ## Execute
 
  - [x] Provide `main`-variant with `Configuration`
- - [ ] Support parsing `Configuration` with (printed) failure
+ - [x] Support parsing `Configuration` with (printed) failure
  - [x] `main` general enough for `nutsh`?
- - [ ] Validate utf-8
+ - [x] Validate utf-8
  - [ ] Provide real parallel showcase (registration, expectation)
  - [ ] (Restricted) support for non-exception environments
  - [ ] Multiline expression decomposition in output
@@ -65,6 +65,7 @@
  - [ ] Deal with configurable floating point accuracy
  - [ ] Comparison of containers
  - [ ] Think about case-insensitive string comparisons
+ - [ ] Diff for longer strings (colored?)
 
 
 ## Utils
