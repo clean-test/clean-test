@@ -25,7 +25,6 @@ namespace clean_test::execute {
 namespace {
 
 using Cases = framework::Registry;
-using Results = Conductor::Results;
 
 bool passed(CaseStatus const status)
 {
@@ -94,7 +93,7 @@ public:
         m_thread.join();
     }
 
-    Results results() &&
+    auto results() &&
     {
         return std::move(m_results);
     }
@@ -136,11 +135,11 @@ private:
     Next & m_next;
     NameFilter const & m_filter;
     CaseEvaluator m_evaluator;
-    Results m_results;
+    Outcome::Results m_results;
     std::thread m_thread;
 };
 
-Results execute_parallel(Cases test_cases, Conductor::Setup const setup)
+auto execute_parallel(Cases test_cases, Conductor::Setup const setup)
 {
     auto const num_threads = setup.m_num_workers;
     auto next = std::atomic<std::size_t>{0ul};
@@ -153,7 +152,7 @@ Results execute_parallel(Cases test_cases, Conductor::Setup const setup)
     }
 
     // collect results
-    auto results = Conductor::Results{};
+    auto results = Outcome::Results{};
     for (auto & worker : workers) {
         worker.join();
         move_append(results, std::move(worker).results());
@@ -162,8 +161,11 @@ Results execute_parallel(Cases test_cases, Conductor::Setup const setup)
 }
 
 /// Variant of @c execute_parallel that manages mis-reported @c Observation s encountered at a fallback observer.
-Results safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
+Outcome safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
 {
+    using Clock = CaseResult::Clock;
+    auto const time_start = Clock::now();
+
     // Ensure appropriate fallback observation setup.
     auto fallback_reporter = CaseReporter{{std::cout, setup.m_colors, setup.m_buffering}};
     auto fallback_observer = Observer{fallback_reporter};
@@ -182,7 +184,7 @@ Results safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
             << colors[Color::off];
         results.emplace_back("unknown", CaseStatus::fail, CaseResult::Duration{}, std::move(unmanaged));
     }
-    return results;
+    return {Clock::now() - time_start, std::move(results)};
 }
 
 }
@@ -194,32 +196,30 @@ Conductor::Conductor(Setup const & setup) noexcept : m_setup{normalized(setup)}
 Conductor::Conductor() noexcept : Conductor{default_setup()}
 {}
 
-Conductor::Results Conductor::run() const
+Outcome Conductor::run() const
 {
-    using Clock = CaseResult::Clock;
-    auto const time_start = Clock::now();
-
     auto & registry = framework::registry();
-    auto const & [colors, num_workers, buffering, filter] = m_setup;
-    std::cout << colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
+    std::cout << m_setup.m_colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
               << " test-cases" << std::endl;
 
     // run cases and collect results
-    auto const results = safe_execute_parallel(std::exchange(registry, {}), m_setup);
+    auto const outcome = safe_execute_parallel(std::exchange(registry, {}), m_setup);
     if (not registry.empty()) {
         display_late_registration_warning(registry);
     }
 
-    auto const wall_time = Clock::now() - time_start;
-    std::cout << colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << results.size() << " test-cases ("
-              << utils::WithAdaptiveUnit{wall_time} << " total)" << std::endl;
-    report(results);
-    return results;
+    report(outcome);
+    return outcome;
 }
 
-void Conductor::report(Results const & results) const
+void Conductor::report(Outcome const & outcome) const
 {
+    auto const & [wall_time, results] = outcome;
     auto const & colors = m_setup.m_colors;
+
+    std::cout << colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << results.size() << " test-cases ("
+              << utils::WithAdaptiveUnit{wall_time} << " total)" << std::endl;
+
     std::size_t num_passed = 0ul;
     for (auto const & result : results) {
         if (passed(result.m_status)) {

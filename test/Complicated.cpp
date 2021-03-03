@@ -51,7 +51,7 @@ auto const wrong_observer = [] {
 
 int main()
 {
-    auto const results = ct::execute::Conductor{}.run();
+    auto const results = ct::execute::Conductor{}.run().m_results;
 
     auto by_path = [&results] {
         auto result = std::map<std::string_view, std::size_t>{};

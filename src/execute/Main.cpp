@@ -69,10 +69,10 @@ int run(Configuration const & cfg)
         .m_buffering = cfg.m_buffering,
         .m_filter = filter(cfg)}};
 
-    auto results = conductor.run();
-    serialize(cfg.m_junit_path, colors, JUnitExport{{Outcome::Duration{}, results}});
+    auto outcome = conductor.run();
+    serialize(cfg.m_junit_path, colors, JUnitExport{outcome});
 
-    return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
+    return count_if(outcome.m_results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
 }
 
 }
