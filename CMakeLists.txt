@@ -116,6 +116,7 @@ add_files(CLNTST_SOURCES src/execute
     ObservationStatus.h
     Observer.cpp
     Observer.h
+    Outcome.h
     TreeDisplay.cpp
     TreeDisplay.h
     XMLEncoder.cpp
