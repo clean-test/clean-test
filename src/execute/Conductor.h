@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "CaseResult.h"
+#include "Outcome.h"
 
 #include <execute/BufferingMode.h>
 
@@ -27,7 +27,6 @@ public:
         BufferingMode m_buffering; //!< how test observation output is buffered.
         NameFilter const & m_filter; //!< which tests should be executed and which should be skipped.
     };
-    using Results = std::vector<CaseResult>;
 
     /// Detailed c'tor: Honor all specified @p setup details.
     Conductor(Setup const & setup) noexcept;
@@ -36,11 +35,11 @@ public:
     Conductor() noexcept;
 
     /// Invoke all tests and return collected results.
-    Results run() const;
+    Outcome run() const;
 
 private:
-    /// Output final summary about passed and failed @p results.
-    void report(Results const & results) const;
+    /// Output final summary about passed and failed results in @p outcome including total wall time.
+    void report(Outcome const & outcome) const;
     /// Print warning for @p cases registered late.
     void display_late_registration_warning(std::vector<framework::Case> const & cases) const;
 

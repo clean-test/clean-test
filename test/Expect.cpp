@@ -80,7 +80,7 @@ int main()
     using Outcome = ct::execute::CaseStatus;
     using State = ct::execute::ObservationStatus;
 
-    auto const results = ct::execute::Conductor{}.run();
+    auto const results = ct::execute::Conductor{}.run().m_results;
     auto test = [&results, pos = load_positions(results), cur = 0ul](auto && asserter) mutable {
         asserter(results.at(pos[name_prefix + std::to_string(cur++)]));
     };
