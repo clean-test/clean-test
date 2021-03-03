@@ -63,7 +63,7 @@ private:
 
 class XMLStats {
 public:
-    explicit XMLStats(JUnitExport::Results const & results) :
+    explicit XMLStats(Outcome::Results const & results) :
         m_num_total{results.size()},
         m_num_failed{count<CaseStatus::fail>(results)},
         m_num_aborted{count<CaseStatus::abort>(results)}
@@ -78,7 +78,7 @@ public:
 
 private:
     template <CaseStatus::Value status>
-    std::size_t count(JUnitExport::Results const & results)
+    std::size_t count(Outcome::Results const & results)
     {
         return std::count_if(
             results.cbegin(), results.cend(), [](CaseResult const & r) { return r.m_status == status; });
@@ -92,7 +92,7 @@ private:
 class XMLHead {
 public:
     XMLStats m_stats;
-    JUnitExport::Duration m_wall_time;
+    Outcome::Duration m_wall_time;
 
     friend std::ostream & operator<<(std::ostream & out, XMLHead const & head)
     {
@@ -180,7 +180,7 @@ public:
 
 class XMLCases {
 public:
-    JUnitExport::Results const & results;
+    Outcome::Results const & results;
 
     friend std::ostream & operator<<(std::ostream & out, XMLCases const & c)
     {
@@ -210,9 +210,10 @@ std::ostream & operator<<(std::ostream & out, JUnitExport data)
         out.unsetf(std::ios_base::floatfield); // std::defaultfloat
     }};
 
+    auto const & [wall_time, results] = data.m_outcome;
     return out
         << std::setprecision(3) << std::fixed
-        << XMLHead{XMLStats{data.m_results}, data.m_wall_time} << XMLCases{data.m_results} << XMLTail{};
+        << XMLHead{XMLStats{results}, wall_time} << XMLCases{results} << XMLTail{};
 }
 
 }
