@@ -70,7 +70,7 @@ int run(Configuration const & cfg)
         .m_filter = filter(cfg)}};
 
     auto results = conductor.run();
-    serialize(cfg.m_junit_path, colors, JUnitExport{results, JUnitExport::Duration{}});
+    serialize(cfg.m_junit_path, colors, JUnitExport{{Outcome::Duration{}, results}});
 
     return count_if(results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
 }
