@@ -3,13 +3,16 @@
 
 #include "TestUtilities.h"
 
-#include <execute/Conductor.h>
 #include <execute/CaseResult.h>
 #include <execute/CaseStatus.h>
+#include <execute/Conductor.h>
 
-#include <cassert>
 #include <clean-test/framework.h>
+
+#include <condition_variable>
 #include <map>
+#include <mutex>
+#include <thread>
 #include <vector>
 
 namespace {
@@ -46,6 +49,30 @@ auto const wrong_observer = [] {
     return 0;
 }();
 
+// Demonstrate that expectations are thread-safe (can even fail on the same expectation concurrently)
+auto const num_simultaneous_failures = std::max(std::thread::hardware_concurrency(), 1u) * 8u;
+auto const simultaneous_failures = ct::Test{"simultaneous_failures", [](ct::Observer& obs) {
+    constexpr auto order = std::memory_order_relaxed;
+    auto go = std::condition_variable{};
+    auto start_failing = std::atomic<bool>{false};
+
+    auto fail_on_go = [&] {
+        auto mtx = std::mutex{};
+        auto lock = std::unique_lock{mtx};
+        go.wait(lock, [&] { return start_failing.load(order); });
+
+        ct::expect(obs, false); // this is the expectation subject to this test.
+    };
+
+    auto workers = std::vector<std::jthread>{};
+    while (workers.size() < num_simultaneous_failures) {
+        workers.emplace_back(fail_on_go);
+    }
+
+    start_failing.store(true, order);
+    go.notify_all();
+}};
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -72,5 +99,9 @@ int main()
     ct::utils::dynamic_assert(result("by_type/false").m_status == ct::execute::CaseStatus::fail);
 
     ct::utils::dynamic_assert(result("wrong").m_observations.empty());
+    ct::utils::dynamic_assert(result("unknown").m_observations.size() == 1ul);
     ct::utils::dynamic_assert(result("unknown").m_observations.front().m_description == wrong_observer_message);
+
+    auto const & r = result("simultaneous_failures");
+    ct::utils::dynamic_assert(r.m_observations.size() == num_simultaneous_failures);
 }
