@@ -7,6 +7,7 @@
 #include "expression/And.h"
 #include "expression/Equal.h"
 #include "expression/Lift.h"
+#include "expression/Not.h"
 #include "expression/Throws.h"
 
 namespace clean_test {

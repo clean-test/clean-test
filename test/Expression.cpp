@@ -73,6 +73,11 @@ static_assert(ct::expression::BasicExpression<ct::expression::Clause<bool>>);
 static_assert(ct::expression::BasicExpression<decltype(ct::lift(true))>);
 static_assert(ct::expression::BasicExpression<decltype(ct::lift(ct::expression::Clause{false}))>);
 
+// unary not
+static_assert(not ct::lift(false));
+static_assert(not not true);
+static_assert(not (not ct::lift(true)));
+
 // Equality comparison
 static_assert(17 == ct::lift(17));
 static_assert(not (17 == ct::lift(42)));
