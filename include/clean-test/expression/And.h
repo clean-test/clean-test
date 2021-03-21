@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Clause.h"
+#include "Lift.h"
 
 #include <iostream>
 
@@ -48,7 +49,7 @@ And(L, R) -> And<L, Clause<R>>;
 template <typename L, typename R> requires (BasicExpression<L> or BasicExpression<R>)
 constexpr auto operator and(L const & lhs, R const & rhs)
 {
-    return And{lhs, rhs};
+    return And{lift(lhs), lift(rhs)};
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
