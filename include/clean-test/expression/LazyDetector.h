@@ -5,59 +5,82 @@
 
 #include "Base.h"
 
-#include <optional>
-#include <iosfwd>
+#include <ostream>
 
 namespace clean_test::expression {
 
-/// Basic detection claus
+class Detection;
+
+/// Basic detection clause
 ///
 /// Uses @tparam Detector in determine a binary predicate for some @tparam Func object. This detection happens lazily
 /// i.e. upon first query of the predicate.
 template <typename Detector, std::invocable<> Func>
 class LazyDetector : public Base, private Detector {
 public:
+    using Value = bool;
+    using Evaluation = Detection;
+
     /// Detailed c'tor: Capture @p func for (potential) later detection.
     constexpr explicit LazyDetector(std::convertible_to<Func> auto && func) : m_func{std::forward<decltype(func)>(func)}
     {}
 
+    [[nodiscard]] constexpr auto value() const
+    {
+        return static_cast<bool>(evaluation());
+    }
+
     /// Determine (and cache) whether invoking @c m_func throws (according to @tparam Detector).
-    [[nodiscard]] constexpr explicit operator bool() const;
+    [[nodiscard]] constexpr explicit operator bool() const
+    {
+        return value();
+    }
+
+    [[nodiscard]] constexpr Detection evaluation() const;
 
     /// Output detection result (if any) of @p self into @p out.
     friend std::ostream & operator<<(std::ostream & out, LazyDetector const & self)
     {
-        return self.print_to(out);
+        return out << self.evaluation();
     }
 
 private:
-    std::ostream & print_to(std::ostream & out) const;
+    Func const & m_func; //!< Object for next predicate detection (if any).
+};
 
-    mutable std::optional<Func> m_func;      //!< Object for next predicate detection (if any).
-    mutable bool m_detection_result = false; //!< Detected binary predicate.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/// Cached detected criterion
+class Detection {
+public:
+    constexpr explicit Detection(bool const detection_result) : m_detection_result{detection_result}
+    {}
+
+    [[nodiscard]] constexpr bool value() const
+    {
+        return m_detection_result;
+    }
+
+    [[nodiscard]] constexpr explicit operator bool() const
+    {
+        return static_cast<bool>(value());
+    }
+
+    friend std::ostream & operator<<(std::ostream & out, Detection const & detection)
+    {
+        return out << detection.m_detection_result;
+    }
+
+private:
+    bool m_detection_result;
 };
 
 // Implementation //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename Detector, std::invocable<> Func>
-constexpr LazyDetector<Detector, Func>::operator bool() const
+constexpr Detection LazyDetector<Detector, Func>::evaluation() const
 {
-    if (m_func) {
-        m_detection_result = Detector::operator()(std::move(*m_func));
-        m_func.reset();
-    }
-    return m_detection_result;
-}
-
-template <typename Detector, std::invocable<> Func>
-std::ostream & LazyDetector<Detector, Func>::print_to(std::ostream & out) const
-{
-    if (m_func) {
-        out << "unevaluated";
-    } else {
-        out << m_detection_result;
-    }
-    return out;
+    return Detection{Detector::operator()(m_func)};
 }
 
 }
