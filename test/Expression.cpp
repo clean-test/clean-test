@@ -36,6 +36,8 @@ public:
     constexpr ConversionTracker(bool const value) : m_value{value}
     {}
 
+    ConversionTracker(ConversionTracker const &) = delete;
+
     explicit operator bool() const
     {
         m_was_converted = true;
@@ -91,18 +93,51 @@ static_assert(not (ct::lift(false) and ct::lift(false)));
 static_assert(std::string_view{"asdf"} == ct::lift(std::string_view{"asdf"}));
 static_assert(not static_cast<bool>(std::string_view{"asdf"} == ct::lift(std::string_view{"not asdf"})));
 
+void test_short_circuit_and()
+{
+    // single layer of short circuiting: (t1 and t2)
+    {
+        auto const t0 = ConversionTracker{false};
+        auto const t1 = ConversionTracker{true};
+        auto const c0 = ct::lift(t0);
+        auto const c1 = ct::lift(t1);
+
+        auto const conjunction_base = (c0 and c1);
+        auto const conjunction = conjunction_base.evaluation();
+        ct::utils::dynamic_assert(not conjunction);
+        ct::utils::dynamic_assert(t0.was_converted());
+        ct::utils::dynamic_assert(not t1.was_converted()); // due to short circuiting
+        assert_output("( 0 and <unknown> )", conjunction);
+    }
+
+    // double layer of short circuiting: ((t0 and t1) and (t2 and t3))
+    {
+        auto const t0 = ConversionTracker{false};
+        auto const t1 = ConversionTracker{true};
+        auto const t2 = ConversionTracker{true};
+        auto const t3 = ConversionTracker{true};
+        auto const c0 = ct::lift(t0);
+        auto const c1 = ct::lift(t1);
+        auto const c2 = ct::lift(t2);
+        auto const c3 = ct::lift(t3);
+
+        auto const conjunction_left = (c0 and c1);
+        auto const conjunction_right = (c2 and c3);
+        auto const conjunction_base = (conjunction_left and conjunction_right);
+        auto const conjunction = conjunction_base.evaluation();
+        ct::utils::dynamic_assert(not conjunction);
+        ct::utils::dynamic_assert(t0.was_converted());
+        ct::utils::dynamic_assert(not t1.was_converted()); // due to short circuiting
+        ct::utils::dynamic_assert(not t2.was_converted()); // due to short circuiting
+        ct::utils::dynamic_assert(not t3.was_converted()); // due to short circuiting
+        // notably the right and layer isn't even expanded a single stage.
+        assert_output("( ( 0 and <unknown> ) and <unknown> )", conjunction);
+    }
+}
+
 int main()
 {
-    auto const t0 = ConversionTracker{true};
-    auto const t1 = ConversionTracker{false};
-    auto const c0 = ct::lift(t0);
-    auto const c1 = ct::lift(t1);
-
-    auto const conjunction = (c1 and c0);
-    ct::utils::dynamic_assert(not conjunction);
-    ct::utils::dynamic_assert(t1.was_converted());
-    ct::utils::dynamic_assert(not t0.was_converted()); // due to short circuiting
-    assert_output("( 0 and <unknown> )", conjunction);
+    test_short_circuit_and();
 
     // Abortion
     ct::utils::dynamic_assert(ct::aborts([] { std::abort(); }));
