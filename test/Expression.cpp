@@ -62,8 +62,8 @@ private:
 // constexpr tests
 
 // truth
-static_assert(ct::lift(true).value());
-static_assert(not ct::lift(false).value());
+static_assert(ct::lift(true));
+static_assert(not ct::lift(false));
 
 // BasicExpression concept invariants
 static_assert(not ct::expression::BasicExpression<ConversionTracker>);
