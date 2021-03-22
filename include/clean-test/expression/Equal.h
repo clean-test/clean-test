@@ -3,63 +3,28 @@
 
 #pragma once
 
-#include "Base.h"
+#include "StandardOperator.h"
 #include "Lift.h"
 
+#include <functional>
 #include <ostream>
 
-namespace clean_test::expression
-{
+namespace clean_test::expression {
 
-/// Equality comparison of clauses.
-template <BasicExpression L, BasicExpression R>
-class Equal : public Base {
+class Equal : public std::equal_to<> {
 public:
-    using Value = bool;
-    using Evaluation = Equal;
-
-    constexpr Equal(L const & lhs, R const & rhs) : m_lhs{lhs}, m_rhs{rhs}
-    {}
-
-    [[nodiscard]] constexpr explicit operator bool() const
+    template <typename L, typename R>
+    std::ostream & describe(std::ostream & out, L const & l, R const & r) const
     {
-        if constexpr (requires { m_lhs.value(); m_rhs.value();}) {
-            return (m_lhs.value() == m_rhs.value());
-        } else {
-            return evaluate(m_lhs) == evaluate(m_rhs);
-        }
+        return out << "( " << l << " == " << r << " )";
     }
-
-    friend std::ostream & operator<<(std::ostream & out, Equal const & expr)
-    {
-        return out << "( " << expr.m_lhs << " == " << expr.m_rhs << " )";
-    }
-
-    constexpr auto & evaluation() const
-    {
-        return *this;
-    }
-
-    constexpr auto value() const
-    {
-        return static_cast<bool>(*this);
-    }
-
-private:
-    L const m_lhs;
-    R const m_rhs;
 };
 
-template <typename L, BasicExpression R> requires (not BasicExpression<L>)
-Equal(L, R) -> Equal<Clause<L>, R>;
-
-template <BasicExpression L, typename R> requires (not BasicExpression<R>)
-Equal(L, R) -> Equal<L, Clause<R>>;
-
-template <typename L, typename R> requires (BasicExpression<L> or BasicExpression<R>)
-constexpr auto operator==(L const & lhs, R const & rhs)
+template <typename L, typename R> requires(BasicExpression<L> or BasicExpression<R>)
+constexpr auto operator==(L && lhs, R && rhs)
 {
-    return Equal{lift(lhs), lift(rhs)};
+    return make_standard_operator<Equal>(lift(std::forward<L>(lhs)), lift(std::forward<R>(rhs)));
 }
+
 
 }
