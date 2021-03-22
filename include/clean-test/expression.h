@@ -4,6 +4,7 @@
 #pragma once
 
 #include "expression/Aborts.h"
+#include "expression/Add.h"
 #include "expression/And.h"
 #include "expression/Equal.h"
 #include "expression/Lift.h"
