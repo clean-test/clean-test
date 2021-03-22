@@ -6,6 +6,7 @@
 #include "ObserverFwd.h"
 
 #include <clean-test/utils/SourceLocation.h>
+#include <clean-test/expression/Base.h>
 
 #include <functional>
 #include <sstream>
@@ -20,8 +21,19 @@ public:
     template <typename T>
     ExpectationObserver(execute::Observer & observer, T const & what, utils::SourceLocation const & where) noexcept
         :
-        m_observer{observer}, m_failed{not static_cast<bool>(what)}, m_what{encode(what)}, m_where{where}
-    {}
+        m_observer{observer}, m_failed{true}, m_what{}, m_where{where}
+    {
+        auto const & value = [&]() constexpr -> decltype(auto)
+        {
+            if constexpr (expression::BasicExpression<T>) {
+                return what.evaluation();
+            } else {
+                return what;
+            }
+        }();
+        m_failed = not static_cast<bool>(value);
+        m_what = encode(value);
+    }
 
     // movable
     ExpectationObserver(ExpectationObserver &&) = default;

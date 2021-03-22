@@ -140,9 +140,9 @@ int main()
     // Recursion
     test([](auto const & result) {
         ct::utils::dynamic_assert(result.m_status == Outcome::fail);
-        ct::utils::dynamic_assert(result.m_observations.size() >= 2ul);
+        ct::utils::dynamic_assert(result.m_observations.size() == 2ul);
         ct::utils::dynamic_assert(result.m_observations[0].m_status == State::pass); // the internal throw
-        ct::utils::dynamic_assert(result.m_observations.back().m_status == State::fail); // the external throw
+        ct::utils::dynamic_assert(result.m_observations[1].m_status == State::fail); // the external throw
     });
 
     // Explicit observer
