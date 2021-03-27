@@ -17,7 +17,7 @@ template <typename Operator, BasicExpression... Expression> requires(only_values
 class StandardOperatorEvaluation;
 
 template <typename Operator, BasicExpression... Expression> requires(only_values<Expression...>)
-class StandardOperator : public Base {
+class StandardOperator : public ExpressionBase<StandardOperator<Operator, Expression...>> {
 public:
     using Value = decltype(
         std::declval<Operator>().operator()(std::declval<typename Expression::Value>()...));
@@ -27,24 +27,9 @@ public:
         m_expression{std::forward<decltype(expr)>(expr)...}
     {}
 
-    [[nodiscard]] constexpr Value value() const
-    {
-        return evaluation().value();
-    }
-
-    [[nodiscard]] constexpr explicit operator bool() const
-    {
-        return static_cast<bool>(value());
-    }
-
     [[nodiscard]] constexpr auto evaluation() const
     {
         return Evaluation{*this};
-    }
-
-    friend std::ostream & operator<<(std::ostream & out, StandardOperator const & so)
-    {
-        return out << so.evaluation();
     }
 
 private:
@@ -54,7 +39,8 @@ private:
 };
 
 template <typename Operator, BasicExpression... Expression> requires(only_values<Expression...>)
-class StandardOperatorEvaluation : private Operator {
+class StandardOperatorEvaluation
+    : public EvaluationBase<StandardOperatorEvaluation<Operator, Expression...>>, private Operator {
 public:
     // clang-format off
     constexpr explicit(sizeof...(Expression) == 1)
@@ -76,11 +62,6 @@ public:
     [[nodiscard]] constexpr typename StandardOperator<Operator, Expression...>::Value const & value() const
     {
         return m_value;
-    }
-
-    [[nodiscard]] constexpr explicit operator bool() const
-    {
-        return static_cast<bool>(value());
     }
 
     friend std::ostream & operator<<(std::ostream & out, StandardOperatorEvaluation const & evaluation)
