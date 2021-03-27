@@ -43,6 +43,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Aborts.h
     Add.h
+    Affirm.h
     And.h
     Base.h
     Clause.h

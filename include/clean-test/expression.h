@@ -5,6 +5,7 @@
 
 #include "expression/Aborts.h"
 #include "expression/Add.h"
+#include "expression/Affirm.h"
 #include "expression/And.h"
 #include "expression/Divide.h"
 #include "expression/Equal.h"
