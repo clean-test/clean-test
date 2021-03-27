@@ -49,6 +49,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Equal.h
     LazyDetector.h
     Lift.h
+    Multiply.h
     Not.h
     StandardOperator.h
     Subtract.h
