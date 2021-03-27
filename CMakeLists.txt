@@ -51,6 +51,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Equal.h
     LazyDetector.h
     Lift.h
+    Modulo.h
     Multiply.h
     Negate.h
     Not.h
