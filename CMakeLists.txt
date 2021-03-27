@@ -51,6 +51,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Lift.h
     Not.h
     StandardOperator.h
+    Subtract.h
     Throws.h
 )
 add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework

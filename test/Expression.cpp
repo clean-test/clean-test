@@ -93,6 +93,15 @@ static_assert(not (ct::lift(false) and ct::lift(false)));
 static_assert(std::string_view{"asdf"} == ct::lift(std::string_view{"asdf"}));
 static_assert(not static_cast<bool>(std::string_view{"asdf"} == ct::lift(std::string_view{"not asdf"})));
 
+static_assert(ct::lift(1) + 1);
+static_assert(ct::lift(2) - 1);
+
+void test_operator_output()
+{
+    assert_output("( 1 + 2 )", 1 + ct::lift(2));
+    assert_output("( 3 - 2 )", 3 - ct::lift(2));
+}
+
 void test_short_circuit_and()
 {
     // single layer of short circuiting: (t1 and t2)
@@ -138,6 +147,7 @@ void test_short_circuit_and()
 int main()
 {
     test_short_circuit_and();
+    test_operator_output();
 
     // Abortion
     ct::utils::dynamic_assert(ct::aborts([] { std::abort(); }));
