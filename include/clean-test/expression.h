@@ -10,6 +10,7 @@
 #include "expression/Divide.h"
 #include "expression/Equal.h"
 #include "expression/Lift.h"
+#include "expression/Modulo.h"
 #include "expression/Multiply.h"
 #include "expression/Negate.h"
 #include "expression/Not.h"
