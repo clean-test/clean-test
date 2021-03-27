@@ -16,7 +16,7 @@ class ClauseEvaluation;
 
 /// The basic building block: Something we can print and convert to bool.
 template <typename T>
-class Clause : public Base {
+class Clause : public ExpressionBase<Clause<T>> {
 public:
     using Evaluation = ClauseEvaluation<T>;
     using Value = T const &;
@@ -24,24 +24,9 @@ public:
     constexpr explicit Clause(std::convertible_to<T> auto && value) : m_value{std::forward<decltype(value)>(value)}
     {}
 
-    [[nodiscard]] constexpr Value value() const
-    {
-        return evaluation().value();
-    }
-
-    [[nodiscard]] constexpr explicit operator bool() const
-    {
-        return static_cast<bool>(evaluation());
-    }
-
     [[nodiscard]] constexpr Evaluation evaluation() const
     {
         return Evaluation{*this};
-    }
-
-    friend std::ostream & operator<<(std::ostream & out, Clause const & ref)
-    {
-        return out << ref.evaluation();
     }
 
 private:
@@ -60,7 +45,7 @@ Clause(T &&) -> Clause<T>;
 
 /// The only evaluation that really does nothing: Forward everything to the underlying clause.
 template <typename T>
-class ClauseEvaluation {
+class ClauseEvaluation : public EvaluationBase<ClauseEvaluation<T>>  {
 public:
     constexpr ClauseEvaluation(Clause<T> const & clause) : m_value{clause.m_value}
     {}
@@ -68,11 +53,6 @@ public:
     [[nodiscard]] constexpr auto & value() const
     {
         return m_value;
-    }
-
-    [[nodiscard]] constexpr explicit operator bool() const
-    {
-        return static_cast<bool>(value());
     }
 
     friend std::ostream & operator<<(std::ostream & out, ClauseEvaluation const & ce)

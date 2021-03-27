@@ -18,7 +18,7 @@ class AndEvaluation;
 
 /// Boolean and for two basic expressions of this framework.
 template <BasicExpression L, BasicExpression R>
-class And : public Base {
+class And : public ExpressionBase<And<L, R>> {
 public:
     using Value = decltype(std::declval<typename L::Value>() and std::declval<typename R::Value>());
     using Evaluation = AndEvaluation<L, R>;
@@ -26,24 +26,9 @@ public:
     constexpr And(L const & lhs, R const & rhs) : m_lhs{lhs}, m_rhs{rhs}
     {}
 
-    [[nodiscard]] constexpr Value value() const
-    {
-        return evaluation().value();
-    }
-
-    [[nodiscard]] constexpr explicit operator bool() const
-    {
-        return static_cast<bool>(evaluation());
-    }
-
     [[nodiscard]] constexpr Evaluation evaluation() const
     {
         return AndEvaluation{*this};
-    }
-
-    friend std::ostream & operator<<(std::ostream & out, And<L, R> const & a)
-    {
-        return out << a.evaluation();
     }
 
 private:
@@ -57,7 +42,7 @@ private:
 
 /// Cached evaluation of a boolean and for two basic expressions of this framework.
 template <BasicExpression L, BasicExpression R>
-class AndEvaluation {
+class AndEvaluation : public EvaluationBase<AndEvaluation<L, R>> {
 public:
     using Value = typename And<L, R>::Value;
 
@@ -71,11 +56,6 @@ public:
     [[nodiscard]] constexpr Value const & value() const
     {
         return (m_rhs ? *m_rhs_value : m_lhs_value);
-    }
-
-    [[nodiscard]] constexpr explicit operator bool() const
-    {
-        return static_cast<bool>(value());
     }
 
     friend std::ostream & operator<<(std::ostream & out, AndEvaluation const & expr)
