@@ -49,6 +49,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Clause.h
     Divide.h
     Equal.h
+    Greater.h
     LazyDetector.h
     Lift.h
     Modulo.h

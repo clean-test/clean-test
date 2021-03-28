@@ -9,6 +9,7 @@
 #include "expression/And.h"
 #include "expression/Divide.h"
 #include "expression/Equal.h"
+#include "expression/Greater.h"
 #include "expression/Lift.h"
 #include "expression/Modulo.h"
 #include "expression/Multiply.h"
