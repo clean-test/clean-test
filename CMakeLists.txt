@@ -46,6 +46,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Affirm.h
     And.h
     Base.h
+    BitwiseAnd.h
     Clause.h
     Divide.h
     Equal.h
