@@ -19,6 +19,7 @@
 #include "expression/Less.h"
 #include "expression/LessEqual.h"
 #include "expression/Lift.h"
+#include "expression/Literals.h"
 #include "expression/Modulo.h"
 #include "expression/Multiply.h"
 #include "expression/Negate.h"
@@ -33,5 +34,9 @@ using expression::aborts;
 using expression::debug_aborts;
 using expression::lift;
 using expression::throws;
+
+namespace literals {
+using namespace expression::literals;
+}
 
 }

@@ -140,6 +140,15 @@ void test_operator_output()
     assert_output("2, 3", (ct::lift(2), ct::lift(3)));
 }
 
+void test_literals()
+{
+    using namespace ct::literals;
+    static_assert(1_i != 2_i);
+    static_assert(0_ull == 0);
+    static_assert(3.7 != 3.8_f);
+    static_assert("hi"_sv != "how are you");
+}
+
 void test_short_circuit_and()
 {
     // single layer of short circuiting: (t1 and t2)
@@ -184,8 +193,9 @@ void test_short_circuit_and()
 
 int main()
 {
-    test_short_circuit_and();
     test_operator_output();
+    test_literals();
+    test_short_circuit_and();
 
     // Abortion
     ct::utils::dynamic_assert(ct::aborts([] { std::abort(); }));

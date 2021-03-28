@@ -60,6 +60,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Less.h
     LessEqual.h
     Lift.h
+    Literals.h
     Modulo.h
     Multiply.h
     Negate.h
