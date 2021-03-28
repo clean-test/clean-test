@@ -55,6 +55,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Multiply.h
     Negate.h
     Not.h
+    NotEqual.h
     StandardOperator.h
     Subtract.h
     Throws.h
