@@ -8,6 +8,7 @@
 #include "expression/Affirm.h"
 #include "expression/And.h"
 #include "expression/BitwiseAnd.h"
+#include "expression/BitwiseNot.h"
 #include "expression/BitwiseOr.h"
 #include "expression/BitwiseXor.h"
 #include "expression/Divide.h"

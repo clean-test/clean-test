@@ -47,6 +47,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     And.h
     Base.h
     BitwiseAnd.h
+    BitwiseNot.h
     BitwiseOr.h
     BitwiseXor.h
     Clause.h
