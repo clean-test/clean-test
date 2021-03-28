@@ -50,6 +50,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Divide.h
     Equal.h
     Greater.h
+    GreaterEqual.h
     LazyDetector.h
     Less.h
     Lift.h
