@@ -53,6 +53,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     GreaterEqual.h
     LazyDetector.h
     Less.h
+    LessEqual.h
     Lift.h
     Modulo.h
     Multiply.h

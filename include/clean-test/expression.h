@@ -12,6 +12,7 @@
 #include "expression/Greater.h"
 #include "expression/GreaterEqual.h"
 #include "expression/Less.h"
+#include "expression/LessEqual.h"
 #include "expression/Lift.h"
 #include "expression/Modulo.h"
 #include "expression/Multiply.h"
