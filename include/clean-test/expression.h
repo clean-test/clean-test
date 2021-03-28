@@ -14,6 +14,7 @@
 #include "expression/Multiply.h"
 #include "expression/Negate.h"
 #include "expression/Not.h"
+#include "expression/NotEqual.h"
 #include "expression/Subtract.h"
 #include "expression/Throws.h"
 
