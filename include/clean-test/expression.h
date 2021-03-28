@@ -7,6 +7,7 @@
 #include "expression/Add.h"
 #include "expression/Affirm.h"
 #include "expression/And.h"
+#include "expression/BitwiseAnd.h"
 #include "expression/Divide.h"
 #include "expression/Equal.h"
 #include "expression/Greater.h"
