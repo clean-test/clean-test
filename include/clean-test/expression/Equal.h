@@ -4,6 +4,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Lift.h"
 
 #include <ostream>
 
@@ -45,7 +46,7 @@ Equal(L, R) -> Equal<L, Clause<R>>;
 template <typename L, typename R> requires (BasicExpression<L> or BasicExpression<R>)
 constexpr auto operator==(L const & lhs, R const & rhs)
 {
-    return Equal{lhs, rhs};
+    return Equal{lift(lhs), lift(rhs)};
 }
 
 }
