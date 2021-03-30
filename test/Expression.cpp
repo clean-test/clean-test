@@ -113,6 +113,7 @@ static_assert(ct::lift(2) | 1);
 static_assert(ct::lift(2) ^ 1);
 static_assert(~ct::lift(1));
 
+static_assert((ct::lift(2), ct::lift(1)));
 
 void test_operator_output()
 {
@@ -135,6 +136,8 @@ void test_operator_output()
     assert_output("( 1 | 2 )", 1 | ct::lift(2));
     assert_output("( 1 ^ 2 )", 1 ^ ct::lift(2));
     assert_output("~2", ~ct::lift(2));
+
+    assert_output("2, 3", (ct::lift(2), ct::lift(3)));
 }
 
 void test_short_circuit_and()
