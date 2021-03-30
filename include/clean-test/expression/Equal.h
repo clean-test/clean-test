@@ -15,6 +15,9 @@ namespace clean_test::expression
 template <BasicExpression L, BasicExpression R>
 class Equal : public Base {
 public:
+    using Value = bool;
+    using Evaluation = Equal;
+
     constexpr Equal(L const & lhs, R const & rhs) : m_lhs{lhs}, m_rhs{rhs}
     {}
 
@@ -30,6 +33,16 @@ public:
     friend std::ostream & operator<<(std::ostream & out, Equal const & expr)
     {
         return out << "( " << expr.m_lhs << " == " << expr.m_rhs << " )";
+    }
+
+    constexpr auto & evaluation() const
+    {
+        return *this;
+    }
+
+    constexpr auto value() const
+    {
+        return static_cast<bool>(*this);
     }
 
 private:
