@@ -11,6 +11,7 @@
 #include "expression/BitwiseNot.h"
 #include "expression/BitwiseOr.h"
 #include "expression/BitwiseXor.h"
+#include "expression/Comma.h"
 #include "expression/Divide.h"
 #include "expression/Equal.h"
 #include "expression/Greater.h"
