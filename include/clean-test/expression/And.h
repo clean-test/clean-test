@@ -14,6 +14,9 @@ namespace clean_test::expression {
 template <BasicExpression L, BasicExpression R>
 class And : public Base {
 public:
+    using Value = bool;
+    using Evaluation = And;
+
     constexpr And(L const & lhs, R const & rhs)
         : m_lhs{lhs}, m_rhs{rhs}, m_left_truth{evaluate(m_lhs)}, m_truth{m_left_truth and evaluate(m_rhs)}
     {}
@@ -26,6 +29,16 @@ public:
     friend std::ostream & operator<<(std::ostream & out, And const & expr)
     {
         return expr.print_to(out);
+    }
+
+    constexpr auto value() const
+    {
+        return static_cast<bool>(*this);
+    }
+
+    constexpr auto& evaluation() const
+    {
+        return *this;
     }
 
 private:
