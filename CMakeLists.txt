@@ -66,6 +66,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Negate.h
     Not.h
     NotEqual.h
+    ShortCircuitOperator.h
     StandardOperator.h
     Subtract.h
     Throws.h
