@@ -9,6 +9,10 @@
 
 namespace clean_test::expression {
 
+/// Determine whether all given @tparam T s are value types.
+template <typename... T>
+constexpr auto only_values = (not std::is_reference_v<T> and ...);
+
 /// Tag-type used to identify expression types.
 class ExpressionTag {
 };

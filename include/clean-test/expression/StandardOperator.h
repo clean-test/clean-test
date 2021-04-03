@@ -10,9 +10,6 @@
 
 namespace clean_test::expression {
 
-template <typename... T>
-constexpr auto only_values = (not std::is_reference_v<T> and ...);
-
 template <typename Operator, BasicExpression... Expression> requires(only_values<Expression...>)
 class StandardOperatorEvaluation;
 
