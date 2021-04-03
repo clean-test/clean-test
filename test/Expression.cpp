@@ -155,10 +155,8 @@ void test_short_circuit_and()
     {
         auto const t0 = ConversionTracker{false};
         auto const t1 = ConversionTracker{true};
-        auto const c0 = ct::lift(t0);
-        auto const c1 = ct::lift(t1);
 
-        auto const conjunction_base = (c0 and c1);
+        auto const conjunction_base = (ct::lift(t0) and t1);
         auto const conjunction = conjunction_base.evaluation();
         ct::utils::dynamic_assert(not conjunction);
         ct::utils::dynamic_assert(t0.was_converted());
@@ -172,14 +170,8 @@ void test_short_circuit_and()
         auto const t1 = ConversionTracker{true};
         auto const t2 = ConversionTracker{true};
         auto const t3 = ConversionTracker{true};
-        auto const c0 = ct::lift(t0);
-        auto const c1 = ct::lift(t1);
-        auto const c2 = ct::lift(t2);
-        auto const c3 = ct::lift(t3);
 
-        auto const conjunction_left = (c0 and c1);
-        auto const conjunction_right = (c2 and c3);
-        auto const conjunction_base = (conjunction_left and conjunction_right);
+        auto const conjunction_base = ((ct::lift(t0) and t1) and (t2 and ct::lift(t3)));
         auto const conjunction = conjunction_base.evaluation();
         ct::utils::dynamic_assert(not conjunction);
         ct::utils::dynamic_assert(t0.was_converted());
