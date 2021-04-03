@@ -3,7 +3,7 @@
 
 ## General
 
- - [ ] Write README
+ - [x] Write README
  - [x] Add copyrights to files
 
 
@@ -15,6 +15,7 @@
        If so, honor static / dynamic building of the parent.
  - [ ] Make packageable (for github, vcpkg, etc.)
  - [ ] Make proper C++20 module
+ - [ ] Add static lib with already prepared main (mention in toplevel readme)
 
 
 ## Doc
@@ -59,11 +60,12 @@
 
 ## Expression
 
- - [ ] Support literals
- - [ ] Support unary not
- - [ ] Support more binary operators
+ - [x] Support literals
+ - [x] Support unary not
+ - [x] Support all binary operators
  - [ ] Deal with configurable floating point accuracy
- - [ ] Comparison of containers
+ - [ ] Comparison of containers / ranges
+ - [ ] Improve lazy detection: support lifting generators, improve descriptions (e.g. "throws").
  - [ ] Think about case-insensitive string comparisons
  - [ ] Diff for longer strings (colored?)
 
