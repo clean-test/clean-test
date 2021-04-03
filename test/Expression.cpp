@@ -112,8 +112,8 @@ static_assert(ct::lift(1) & 1);
 static_assert(ct::lift(2) | 1);
 static_assert(ct::lift(2) ^ 1);
 static_assert(~ct::lift(1));
-
 static_assert((ct::lift(2), ct::lift(1)));
+static_assert(ct::lift(0) or 1);
 
 void test_operator_output()
 {
@@ -191,11 +191,46 @@ void test_short_circuit_and()
     }
 }
 
+void test_short_circuit_or()
+{
+    // single layer of short circuiting: (t1 or t2)
+    {
+        auto const t0 = ConversionTracker{true};
+        auto const t1 = ConversionTracker{false};
+
+        auto const disjunction_base = (ct::lift(t0) or t1);
+        auto const disjunction = disjunction_base.evaluation();
+        ct::utils::dynamic_assert(disjunction);
+        ct::utils::dynamic_assert(t0.was_converted());
+        ct::utils::dynamic_assert(not t1.was_converted()); // due to short circuiting
+        assert_output("( 1 or <unknown> )", disjunction);
+    }
+
+    // double layer of short circuiting: ((t0 and t1) and (t2 and t3))
+    {
+        auto const t0 = ConversionTracker{true};
+        auto const t1 = ConversionTracker{false};
+        auto const t2 = ConversionTracker{false};
+        auto const t3 = ConversionTracker{false};
+
+        auto const disjunction_base = ((ct::lift(t0) or t1) or (t2 or ct::lift(t3)));
+        auto const disjunction = disjunction_base.evaluation();
+        ct::utils::dynamic_assert(disjunction);
+        ct::utils::dynamic_assert(t0.was_converted());
+        ct::utils::dynamic_assert(not t1.was_converted()); // due to short circuiting
+        ct::utils::dynamic_assert(not t2.was_converted()); // due to short circuiting
+        ct::utils::dynamic_assert(not t3.was_converted()); // due to short circuiting
+        // notably the right and layer isn't even expanded a single stage.
+        assert_output("( ( 1 or <unknown> ) or <unknown> )", disjunction);
+    }
+}
+
 int main()
 {
     test_operator_output();
     test_literals();
     test_short_circuit_and();
+    test_short_circuit_or();
 
     // Abortion
     ct::utils::dynamic_assert(ct::aborts([] { std::abort(); }));

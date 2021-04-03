@@ -25,6 +25,7 @@
 #include "expression/Negate.h"
 #include "expression/Not.h"
 #include "expression/NotEqual.h"
+#include "expression/Or.h"
 #include "expression/Subtract.h"
 #include "expression/Throws.h"
 
