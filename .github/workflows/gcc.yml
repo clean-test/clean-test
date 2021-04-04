@@ -1,0 +1,39 @@
+# Copyright m8mble 2021.
+# SPDX-License-Identifier: BSL-1.0
+
+name: gcc
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        cxx: [ g++-10 ]
+        build_type: [ Debug, Release ]
+        std: [ 20 ]
+        os: [ ubuntu-20.04 ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{runner.workspace}}/build
+
+      - name: Configure
+        working-directory: ${{runner.workspace}}/build
+        env:
+          CXX: ${{matrix.cxx}}
+        run:
+          cmake
+          -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
+          -DCMAKE_CXX_STANDARD=${{matrix.std}}
+          $GITHUB_WORKSPACE
+
+      - name: Build
+        working-directory: ${{runner.workspace}}/build
+        run: cmake --build .
+
+      - name: Test
+        working-directory: ${{runner.workspace}}/build
+        run: ctest -C ${{matrix.build_type}}
