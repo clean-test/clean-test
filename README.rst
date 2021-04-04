@@ -42,6 +42,58 @@ Further details are elaborated in
 the `official documentation <https://m8mble.github.io/clean-test-doc/latest/index.html>`_.
 
 
+=====
+Demo
+=====
+
+.. role:: cpp(code)
+   :language: cpp
+
+Let's start with a basic example:
+Consider a standard :cpp:`sum` function together with three tests to ensure its correctness.
+
+.. code-block:: cpp
+
+   #include <clean-test/clean-test.h>
+
+   constexpr auto sum(auto... vs) { return (0 + ... + vs); }
+
+   namespace ct = clean_test;
+   using namespace ct::literals;
+
+   auto const suite = ct::Suite{"sum", [] {
+       "0"_test = [] { ct::expect(sum() == 0_i); };
+       "3"_test = [] { ct::expect(sum(1, 2) == 1 + 2_i); };
+       "A"_test = [] { ct::expect(sum(-1) < 0_i and sum(+1) > 0_i); };
+   }};
+
+Since ``sum`` is correctly implemented, all tests will succeed.
+But what would happen if we made a mistake and wrote
+:cpp:`constexpr auto sum(auto... vs) { return (10 + ... + vs); }` instead?
+
+.. code-block:: none
+
+   Failure in ../test/Demo.cpp:12
+   ( 10 == 0 )
+   Failure in ../test/Demo.cpp:13
+   ( 13 == ( 1 + 2 ) )
+   Failure in ../test/Demo.cpp:14
+   ( ( 9 < 0 ) and <unknown> )
+
+Clean Test shows how different parts of an :code:`ct::expect`-ation are evaluated.
+This works for constants, temporaries and even short circuiting operators alike.
+The user-defined literals from :cpp:`namespace clean_test::literals` can be used to support this introspection
+but are not mandatory.
+
+By default Clean Test utilizes all available hardware threads to execute tests in parallel.
+Failure detection and reporting are thread-safe - even if your tests are parallel themselves.
+
+All aspects of test execution can be configured dynamically.
+It is possible to specify at runtime
+which test cases should be selected, how they should be executed and what kind of reporting is desired.
+Clean Test ensures valid UTF-8 reports and thus can safely be utilized in your CI-pipelines.
+
+
 ======
 Status
 ======
