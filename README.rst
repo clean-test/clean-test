@@ -5,6 +5,10 @@
 Clean Test
 **********
 
+.. image:: https://github.com/m8mble/clean-test/actions/workflows/gcc.yml/badge.svg
+   :target: https://github.com/m8mble/clean-test/actions/workflows/gcc.yml
+.. image:: https://github.com/m8mble/clean-test/actions/workflows/clang.yml/badge.svg
+   :target: https://github.com/m8mble/clean-test/actions/workflows/clang.yml
 .. image:: https://img.shields.io/badge/License-BSL--1.0-informational
    :target: LICENSE.txt
 
