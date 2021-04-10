@@ -9,6 +9,8 @@ Clean Test
    :target: https://github.com/m8mble/clean-test/actions/workflows/gcc.yml
 .. image:: https://github.com/m8mble/clean-test/actions/workflows/clang.yml/badge.svg
    :target: https://github.com/m8mble/clean-test/actions/workflows/clang.yml
+.. image:: https://github.com/m8mble/clean-test/actions/workflows/doc.yml/badge.svg
+   :target: https://github.com/m8mble/clean-test/actions/workflows/doc.yml
 .. image:: https://img.shields.io/badge/license-BSL--1.0-informational
    :target: LICENSE.txt
 
