@@ -1,0 +1,29 @@
+# Copyright m8mble 2021.
+# SPDX-License-Identifier: BSL-1.0
+
+name: documentation
+on: [ push, pull_request ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Environment
+        run: |
+          sudo apt install doxygen pipx
+          pipx install poetry
+          cmake -E make_directory ${{runner.workspace}}/build
+
+      - name: Configure
+        working-directory: ${{runner.workspace}}/build
+        run:
+          cmake $GITHUB_WORKSPACE
+
+      - name: Generate Documentation
+        working-directory: ${{runner.workspace}}/build
+        env:
+          KEY: ${{secrets.DOC_UPLOAD_KEY}}
+        run: cmake --build . -- upload-doc
