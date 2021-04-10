@@ -36,3 +36,6 @@
 
 # Build directories
 cmake-*
+
+# Poetry temporaries
+__pycache__/
