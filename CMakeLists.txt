@@ -153,6 +153,9 @@ add_files(CLNTST_SOURCES src/utils
     UTF8Encoder.cpp
     WithAdaptiveUnit.h
 )
+add_files(CLNTST_MAIN_SOURCES src
+    Main.cpp
+)
 
 add_library(clntst-objlib OBJECT ${CLNTST_SOURCES})
 target_include_directories(clntst-objlib PUBLIC include/)
@@ -162,22 +165,38 @@ if (CLNTST_BUILD_SHARED)
     set_property(TARGET clntst-objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif()
 
+add_library(clntst-main-objlib OBJECT ${CLNTST_MAIN_SOURCES})
+target_include_directories(clntst-main-objlib PRIVATE include/clean-test)
+if (CLNTST_BUILD_SHARED)
+    set_property(TARGET clntst-main-objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+endif()
+
 if (CLNTST_BUILD_STATIC)
     add_library(cleantest-static STATIC $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
     target_include_directories(cleantest-static PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
     target_link_libraries(cleantest-static ${CMAKE_THREAD_LIBS_INIT})
     add_library(CleanTest::static ALIAS cleantest-static)
+
+    add_library(cleantest-main-static STATIC $<TARGET_OBJECTS:clntst-main-objlib>)
+    target_link_libraries(cleantest-main-static cleantest-static)
+    add_library(CleanTest::main-static ALIAS cleantest-main-static)
 endif()
 if (CLNTST_BUILD_SHARED)
     add_library(cleantest-shared SHARED $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
     target_include_directories(cleantest-shared PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
     target_link_libraries(cleantest-shared ${CMAKE_THREAD_LIBS_INIT})
     add_library(CleanTest::shared ALIAS cleantest-shared)
+
+    add_library(cleantest-main-shared STATIC $<TARGET_OBJECTS:clntst-main-objlib>)
+    target_link_libraries(cleantest-main-shared cleantest-shared)
+    add_library(CleanTest::main-shared ALIAS cleantest-main-shared)
 endif()
 if (CLNTST_BUILD_STATIC AND NOT CLNTST_BUILD_SHARED)
     add_library(CleanTest::default ALIAS cleantest-static)
+    add_library(CleanTest::main-default ALIAS cleantest-main-static)
 else ()
     add_library(CleanTest::default ALIAS cleantest-shared)
+    add_library(CleanTest::main-default ALIAS cleantest-main-shared)
 endif ()
 
 if (CLNTST_TEST)
