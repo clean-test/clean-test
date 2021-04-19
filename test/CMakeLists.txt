@@ -9,7 +9,7 @@ function(add_clntst_test name)
     set(multiValueArgs)
     cmake_parse_arguments(PARSED "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     if (NOT DEFINED PARSED_LINK)
-        set(PARSED_LINK default)
+        set(PARSED_LINK automatic)
     endif()
 
     string(TOLOWER ${name} EXE)
