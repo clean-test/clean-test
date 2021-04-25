@@ -14,12 +14,12 @@
 ## Build
 
  - [ ] Make build warnings / werror configurable
- - [ ] Make installable
- - [ ] Support building as part (i.e. subdir) of another cmake project.
+ - [x] Make installable
+ - [x] Support building as part (i.e. subdir) of another cmake project.
        If so, honor static / dynamic building of the parent.
  - [ ] Make packageable (for github, vcpkg, etc.)
  - [ ] Make proper C++20 module
- - [ ] Add static lib with already prepared main (mention in toplevel readme)
+ - [x] Add static lib with already prepared main (mention in toplevel readme)
 
 
 ## Doc
