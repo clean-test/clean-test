@@ -3,6 +3,7 @@
 
 cmake_minimum_required(VERSION 3.17)
 project(clean-test CXX)
+set(PROJECT_VERSION 0.2.0)
 
 include(CMakeParseArguments)
 
@@ -158,7 +159,9 @@ add_files(CLNTST_MAIN_SOURCES src
 )
 
 add_library(clntst-objlib OBJECT ${CLNTST_SOURCES})
-target_include_directories(clntst-objlib PUBLIC include/)
+target_include_directories(clntst-objlib PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 target_include_directories(clntst-objlib PRIVATE include/clean-test)
 target_include_directories(clntst-objlib PRIVATE src/)
 if (CLNTST_BUILD_SHARED)
@@ -173,21 +176,25 @@ endif()
 
 if (CLNTST_BUILD_STATIC)
     add_library(cleantest-static STATIC $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
+    set_target_properties(cleantest-static PROPERTIES EXPORT_NAME static)
     target_include_directories(cleantest-static PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
     target_link_libraries(cleantest-static ${CMAKE_THREAD_LIBS_INIT})
     add_library(CleanTest::static ALIAS cleantest-static)
 
     add_library(cleantest-main-static STATIC $<TARGET_OBJECTS:clntst-main-objlib>)
+    set_target_properties(cleantest-main-static PROPERTIES EXPORT_NAME main-static)
     target_link_libraries(cleantest-main-static cleantest-static)
     add_library(CleanTest::main-static ALIAS cleantest-main-static)
 endif()
 if (CLNTST_BUILD_SHARED)
     add_library(cleantest-shared SHARED $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
+    set_target_properties(cleantest-shared PROPERTIES EXPORT_NAME shared)
     target_include_directories(cleantest-shared PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
     target_link_libraries(cleantest-shared ${CMAKE_THREAD_LIBS_INIT})
     add_library(CleanTest::shared ALIAS cleantest-shared)
 
     add_library(cleantest-main-shared STATIC $<TARGET_OBJECTS:clntst-main-objlib>)
+    set_target_properties(cleantest-main-shared PROPERTIES EXPORT_NAME main-shared)
     target_link_libraries(cleantest-main-shared cleantest-shared)
     add_library(CleanTest::main-shared ALIAS cleantest-main-shared)
 endif()
@@ -204,3 +211,50 @@ if (CLNTST_TEST)
     add_subdirectory(test)
 endif()
 add_subdirectory(doc)
+
+## Packaging ###########################################################################################################
+
+# Skip if we are not the toplevel of the cmake build
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(CPACK_PACKAGE_NAME                clean-test)
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A modern, C++-20 unit-testing framework.")
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY   ${CPACK_PACKAGE_NAME})
+    set(CPACK_PACKAGE_VERSION_MAJOR       ${PROJECT_VERSION_MAJOR})
+    set(CPACK_PACKAGE_VERSION_MINOR       ${PROJECT_VERSION_MINOR})
+    set(CPACK_PACKAGE_VERSION_PATCH       ${PROJECT_VERSION_PATCH})
+    set(CPACK_VERBATIM_VARIABLES          YES)
+    set(CPACK_RESOURCE_FILE_LICENSE       ${CMAKE_CURRENT_LIST_DIR}/LICENSE.txt)
+    set(CPACK_RESOURCE_FILE_README        ${CMAKE_CURRENT_LIST_DIR}/README.rst)
+    set(CPACK_PACKAGE_CONTACT             m8mble@vivaldi.net)
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER   m8mble)
+
+    # Determine installation target directories
+    include(GNUInstallDirs) # imports CMAKE_INSTALL_<dir> variables
+    # overwrite doc dir (in case we are included as a child project)
+    set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/${PROJECT_NAME})
+
+    foreach(_TYPE shared static)
+        if (TARGET CleanTest::${_TYPE})
+            install(
+                TARGETS cleantest-${_TYPE} cleantest-main-${_TYPE}
+                EXPORT clean-test
+                INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            )
+        endif()
+    endforeach()
+    install(
+        EXPORT clean-test
+        FILE CleanTestConfigGenerated.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CleanTest
+        NAMESPACE CleanTest::
+    )
+    install(
+        FILES support/CleanTestConfig.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/CleanTest
+    )
+    install(
+        DIRECTORY include/clean-test
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    )
+    include(CPack)
+endif()
