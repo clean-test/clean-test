@@ -14,10 +14,10 @@ option(CLNTST_TEST "Build tests for the framework." ON)
 option(CLNTST_BUILD_STATIC "Whether to include building the statically linked library version." ON)
 option(CLNTST_BUILD_SHARED "Whether to include building the shared, dynamically linked library version." ON)
 
-if (CLNTEST_BUILD_STATIC AND APPLE)
+if (CLNTST_BUILD_STATIC AND APPLE)
     message(FATAL_ERROR "Statically linking not supported on Apple")
 endif()
-if (NOT CLNTEST_BUILD_STATIC AND NOT CLNTST_BUILD_SHARED)
+if (NOT CLNTST_BUILD_STATIC AND NOT CLNTST_BUILD_SHARED)
     message(FATAL_ERROR "Both static and shared library building disabled. What do you want?")
 endif()
 
