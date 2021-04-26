@@ -10,14 +10,14 @@ include(CMakeParseArguments)
 set(CMAKE_CXX_STANDARD 20)
 
 # Configure build targets
-option(CLNTST_TEST "Build tests for the framework." ON)
-option(CLNTST_BUILD_STATIC "Whether to include building the statically linked library version." ON)
-option(CLNTST_BUILD_SHARED "Whether to include building the shared, dynamically linked library version." ON)
+option(CLEANTEST_TEST "Build tests for the framework." ON)
+option(CLEANTEST_BUILD_STATIC "Whether to include building the statically linked library version." ON)
+option(CLEANTEST_BUILD_SHARED "Whether to include building the shared, dynamically linked library version." ON)
 
-if (CLNTST_BUILD_STATIC AND APPLE)
+if (CLEANTEST_BUILD_STATIC AND APPLE)
     message(FATAL_ERROR "Statically linking not supported on Apple")
 endif()
-if (NOT CLNTST_BUILD_STATIC AND NOT CLNTST_BUILD_SHARED)
+if (NOT CLEANTEST_BUILD_STATIC AND NOT CLEANTEST_BUILD_SHARED)
     message(FATAL_ERROR "Both static and shared library building disabled. What do you want?")
 endif()
 
@@ -35,13 +35,13 @@ function(add_files VAR prefix)
     set(${VAR} ${content} PARENT_SCOPE)
 endfunction()
 
-add_files(CLNTST_PUBLIC_HEADERS include/clean-test
+add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test
     clean-test.h
     execute.h
     expression.h
     framework.h
 )
-add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
+add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/expression
     Aborts.h
     Add.h
     Affirm.h
@@ -73,7 +73,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/expression
     Subtract.h
     Throws.h
 )
-add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
+add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/framework
     AbstractCaseRunner.h
     Case.h
     CaseRegistrar.h
@@ -88,7 +88,7 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/framework
     SuiteRegistrationSetup.h
     Tag.h
 )
-add_files(CLNTST_PUBLIC_HEADERS include/clean-test/execute
+add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/execute
     BufferingMode.h
     ColoringMode.h
     Configuration.h
@@ -96,21 +96,21 @@ add_files(CLNTST_PUBLIC_HEADERS include/clean-test/execute
     NameFilterSetting.h
     OperationMode.h
 )
-add_files(CLNTST_PUBLIC_HEADERS include/clean-test/utils
+add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/utils
     FwdCapture.h
     Initializes.h
     ScopeGuard.h
     SourceLocation.h
     UTF8Encoder.h
 )
-add_files(CLNTST_SOURCES src/framework
+add_files(CLEANTEST_SOURCES src/framework
     ExpectationObserver.cpp
     FallbackObservationSetup.h
     ObservationSetup.cpp
     Registry.cpp
     SuiteRegistrationSetup.cpp
 )
-add_files(CLNTST_SOURCES src/execute
+add_files(CLEANTEST_SOURCES src/execute
     Abortion.h
     Badges.cpp
     Badges.h
@@ -145,7 +145,7 @@ add_files(CLNTST_SOURCES src/execute
     XMLEncoder.cpp
     XMLEncoder.h
 )
-add_files(CLNTST_SOURCES src/utils
+add_files(CLEANTEST_SOURCES src/utils
     Guarded.h
     OSyncStream.cpp
     OSyncStream.h
@@ -154,28 +154,28 @@ add_files(CLNTST_SOURCES src/utils
     UTF8Encoder.cpp
     WithAdaptiveUnit.h
 )
-add_files(CLNTST_MAIN_SOURCES src
+add_files(CLEANTEST_MAIN_SOURCES src
     Main.cpp
 )
 
-add_library(clntst-objlib OBJECT ${CLNTST_SOURCES})
+add_library(clntst-objlib OBJECT ${CLEANTEST_SOURCES})
 target_include_directories(clntst-objlib PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_include_directories(clntst-objlib PRIVATE include/clean-test)
 target_include_directories(clntst-objlib PRIVATE src/)
-if (CLNTST_BUILD_SHARED)
+if (CLEANTEST_BUILD_SHARED)
     set_property(TARGET clntst-objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif()
 
-add_library(clntst-main-objlib OBJECT ${CLNTST_MAIN_SOURCES})
+add_library(clntst-main-objlib OBJECT ${CLEANTEST_MAIN_SOURCES})
 target_include_directories(clntst-main-objlib PRIVATE include/clean-test)
-if (CLNTST_BUILD_SHARED)
+if (CLEANTEST_BUILD_SHARED)
     set_property(TARGET clntst-main-objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 endif()
 
-if (CLNTST_BUILD_STATIC)
-    add_library(cleantest-static STATIC $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
+if (CLEANTEST_BUILD_STATIC)
+    add_library(cleantest-static STATIC $<TARGET_OBJECTS:clntst-objlib> ${CLEANTEST_PUBLIC_HEADERS})
     set_target_properties(cleantest-static PROPERTIES EXPORT_NAME static)
     target_include_directories(cleantest-static PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
     target_link_libraries(cleantest-static ${CMAKE_THREAD_LIBS_INIT})
@@ -186,8 +186,8 @@ if (CLNTST_BUILD_STATIC)
     target_link_libraries(cleantest-main-static cleantest-static)
     add_library(CleanTest::main-static ALIAS cleantest-main-static)
 endif()
-if (CLNTST_BUILD_SHARED)
-    add_library(cleantest-shared SHARED $<TARGET_OBJECTS:clntst-objlib> ${CLNTST_PUBLIC_HEADERS})
+if (CLEANTEST_BUILD_SHARED)
+    add_library(cleantest-shared SHARED $<TARGET_OBJECTS:clntst-objlib> ${CLEANTEST_PUBLIC_HEADERS})
     set_target_properties(cleantest-shared PROPERTIES EXPORT_NAME shared)
     target_include_directories(cleantest-shared PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
     target_link_libraries(cleantest-shared ${CMAKE_THREAD_LIBS_INIT})
@@ -198,7 +198,7 @@ if (CLNTST_BUILD_SHARED)
     target_link_libraries(cleantest-main-shared cleantest-shared)
     add_library(CleanTest::main-shared ALIAS cleantest-main-shared)
 endif()
-if (CLNTST_BUILD_SHARED AND (BUILD_SHARED_LIBS OR NOT CLNTST_BUILD_STATIC))
+if (CLEANTEST_BUILD_SHARED AND (BUILD_SHARED_LIBS OR NOT CLEANTEST_BUILD_STATIC))
     add_library(CleanTest::automatic ALIAS cleantest-static)
     add_library(CleanTest::main-automatic ALIAS cleantest-main-static)
 else ()
@@ -206,7 +206,7 @@ else ()
     add_library(CleanTest::main-automatic ALIAS cleantest-main-shared)
 endif ()
 
-if (CLNTST_TEST)
+if (CLEANTEST_TEST)
     enable_testing()
     add_subdirectory(test)
 endif()
