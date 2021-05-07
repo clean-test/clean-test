@@ -22,7 +22,11 @@ def _sphinx_config(doxygen: pathlib.Path, version: str) -> dict:
                    :language: cpp
             """
         ),
-        "extensions": ["breathe", "sphinx.ext.githubpages"],
+        "extensions": [
+            "breathe",
+            "sphinx.ext.autosectionlabel",
+            "sphinx.ext.githubpages",
+        ],
         # breathe configuration
         "breathe_default_project": "clean-test",
         "breathe_projects": {"clean-test": doxygen.resolve()},
