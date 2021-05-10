@@ -73,6 +73,15 @@ auto const simultaneous_failures = ct::Test{"simultaneous_failures", [](ct::Obse
     go.notify_all();
 }};
 
+auto const move_only = [] {
+    auto tester = [p = std::make_unique<int>(1337)]() { ct::expect(*p != 0); };
+    using Tester = decltype(tester);
+    static_assert(not std::is_copy_assignable_v<Tester>);
+    static_assert(not std::is_copy_constructible_v<Tester>);
+    "move-only"_test = std::move(tester);
+    return 0;
+}();
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,4 +113,6 @@ int main()
 
     auto const & r = result("simultaneous_failures");
     ct::utils::dynamic_assert(r.m_observations.size() == num_simultaneous_failures);
+
+    ct::utils::dynamic_assert(result("move-only").m_status == ct::execute::CaseStatus::pass);
 }
