@@ -66,8 +66,8 @@ constexpr CaseRunner auto load_runner(Runner && runner)
     } else {
         return [fwd = utils::fwd_capture(std::forward<Runner>(runner))](execute::Observer & observe) {
             auto const setup = framework::ObservationSetup{observe};
-            auto & [runner] = fwd;
-            runner();
+            auto & [run] = fwd;
+            run();
         };
     }
 }

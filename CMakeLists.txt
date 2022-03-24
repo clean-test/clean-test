@@ -33,7 +33,7 @@ find_package(Threads)
 
 # build configuration
 if ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "CLANG"))
-    add_compile_options(-Wall -Wextra -pedantic -Wswitch-enum)
+    add_compile_options(-Wall -Wextra -pedantic -Wswitch-enum -Wshadow)
     set(WERROR_FLAG -Werror)
 endif ()
 if (MSVC)

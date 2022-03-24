@@ -86,7 +86,7 @@ constexpr auto operator""_ll(unsigned long long const num)
     return Clause{static_cast<long long>(num)};
 }
 
-constexpr auto operator""_ull(unsigned long long const num)
+constexpr auto operator""_ull(unsigned long long num)
 {
     return Clause{std::move(num)};
 }
