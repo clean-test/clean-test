@@ -13,7 +13,7 @@ namespace clean_test::expression {
 class Not : public std::logical_not<> {
 public:
     template <typename T>
-    std::ostream & describe(std::ostream & out, T const & t)
+    std::ostream & describe(std::ostream & out, T const & t) const
     {
         return out << "not " << t;
     }
