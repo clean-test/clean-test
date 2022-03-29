@@ -181,7 +181,7 @@ Outcome safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
         utils::OSyncStream{std::cout}
             << colors[Color::bad] << badge(BadgeType::headline)
             << " Warning: Observed test-expectations at unknown Observer, likely caused by lacking passed observer."
-            << colors[Color::off];
+            << colors[Color::off] << std::endl;
         results.emplace_back("unknown", CaseStatus::fail, CaseResult::Duration{}, std::move(unmanaged));
     }
     return {Clock::now() - time_start, std::move(results)};
