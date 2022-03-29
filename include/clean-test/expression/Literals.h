@@ -44,10 +44,12 @@ constexpr auto operator""_w(unsigned long long const num)
     return Clause{static_cast<wchar_t>(num)};
 }
 
+#if defined(__cpp_lib_char8_t)
 constexpr auto operator""_c8(unsigned long long const num)
 {
     return Clause{static_cast<char8_t>(num)};
 }
+#endif
 
 constexpr auto operator""_c16(unsigned long long const num)
 {
