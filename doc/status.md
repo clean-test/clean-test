@@ -43,7 +43,7 @@
 
 ## Framework
 
- - [x] Replace `std::function` in order to support move-only testcases\
+ - [x] Replace `std::function` in order to support move-only testcases
  - [x] Make output thread-safe by using `std::basic_osyncstream`
  - [x] Integrate Observer
  - [ ] Support parameterized tests (for loop; also with `operator|`?)
@@ -60,6 +60,8 @@
  - [x] Support fallback `Observer` (for users forgetting to pass it along)
  - [ ] Add scoped, `Observer`-based facility for additional debug output
  - [ ] Provide migration helpers for the big 3
+ - [ ] The unknown catch-all "test" shouldn't be counted in "Ran n test-cases" and not reported as failed (without errors)
+ - [ ] Single-threaded mode could allow a global observer (so that this works without errors)
 
 
 ## Expression
