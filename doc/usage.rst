@@ -15,7 +15,7 @@ Installation
 ^^^^^^^^^^^^^
 
 The quickest way to a working setup is to install a binary artifact.
-This can either be obtained from `a release <https://github.com/m8mble/clean-test/releases>`_
+This can either be obtained from `a release <https://github.com/clean-test/clean-test/releases>`_
 or (soon) your package manager of choice.
 
 With this no further preparation is needed.
@@ -66,7 +66,7 @@ This can be done using the ``FetchContent`` module:
     include(FetchContent)
     fetchcontent_declare(
       CleanTest
-      GIT_REPOSITORY https://github.com/m8mble/clean-test.git
+      GIT_REPOSITORY https://github.com/clean-test/clean-test.git
       GIT_TAG        main # or a fixed tag e.g. v1.2.0
     )
     fetchcontent_makeavailable(CleanTest)

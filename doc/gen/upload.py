@@ -51,7 +51,7 @@ def update(source: pathlib.Path, repository: str, key: str, branch: str, is_ci: 
 def _load_parser():
     p = argparse.ArgumentParser("Update online documentation of Clean Test.")
     p.add_argument("--source", required=True, type=str, help="Locally generated documentation.")
-    p.add_argument("--repository", default="m8mble/clean-test-doc", help="Repository for pages.")
+    p.add_argument("--repository", default="clean-test/clean-test.github.io", help="Repository for pages.")
     return p
 
 

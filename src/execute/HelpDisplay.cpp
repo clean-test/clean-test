@@ -53,7 +53,7 @@ std::ostream & operator<<(std::ostream & out, HelpDisplay const & hd)
            "    Configure maximum depth N of the visualized tree (default: " << default_config.m_depth << ").\n"
            "\n"
            "For more information, please read the Clean Test documentation available at\n"
-        << c("https://github.com/m8mble/clean-test") << ". If you happen to find a bug in Clean Test,\n"
+        << c("https://github.com/clean-test/clean-test") << ". If you happen to find a bug in Clean Test,\n"
            "you are welcome to open an issue or pull request there.\n";
 }
 
