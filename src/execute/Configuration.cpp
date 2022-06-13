@@ -202,7 +202,7 @@ public:
         }();
 
         auto const property = [&] {
-            static auto constexpr properties = std::array<View, 3ul>{"path:", "tag:", "any:"};
+            static auto constexpr properties = std::to_array<View>({"path:", "tag:", "any:"});
             for (auto p = 0ul; p < properties.size(); ++p) {
                 auto const prop = properties[p];
                 if (candidate.starts_with(prop)) {
