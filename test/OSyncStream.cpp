@@ -5,6 +5,7 @@
 
 #include <utils/OSyncStream.h>
 
+#include <algorithm>
 #include <charconv>
 #include <future>
 #include <iostream>

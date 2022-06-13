@@ -8,6 +8,7 @@
 #include <utils/ScopeGuard.h>
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <ctime>
 #include <iomanip>

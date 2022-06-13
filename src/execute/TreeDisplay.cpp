@@ -7,6 +7,7 @@
 #include <framework/Name.h>
 
 #include <functional>
+#include <limits>
 
 namespace clean_test::execute {
 namespace {

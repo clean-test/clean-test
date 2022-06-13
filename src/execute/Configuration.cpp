@@ -3,6 +3,7 @@
 
 #include "execute/Configuration.h"
 
+#include <array>
 #include <charconv>
 #include <optional>
 #include <unordered_map>
