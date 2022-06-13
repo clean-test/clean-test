@@ -9,21 +9,30 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        cxx: [ g++-10 ]
         build_type: [ Debug, Release ]
         std: [ 20 ]
-        os: [ ubuntu-20.04 ]
+        gcc: [ 10, 11 ]
+        os: [ ubuntu-20.04, ubuntu-22.04 ]
+        exclude:
+          - gcc: 10
+            os: ubuntu-22.04
+          - gcc: 11
+            os: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v2
+      - if: matrix.gcc == '11'
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: ${{matrix.gcc}}
 
       - name: Create Build Environment
-        run: cmake -E make_directory ${{runner.workspace}}/build
+        run: cmake -E make_directory ${{github.workspace}}/build
 
       - name: Configure
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         env:
-          CXX: ${{matrix.cxx}}
+          CXX: g++-${{matrix.gcc}}
         run:
           cmake
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
@@ -31,9 +40,9 @@ jobs:
           $GITHUB_WORKSPACE
 
       - name: Build
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         run: cmake --build .
 
       - name: Test
-        working-directory: ${{runner.workspace}}/build
-        run: ctest -C ${{matrix.build_type}}
+        working-directory: ${{github.workspace}}/build
+        run: ctest -C ${{matrix.build_type}} --output-on-failure

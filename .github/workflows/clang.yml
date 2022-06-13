@@ -9,21 +9,33 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        cxx: [ clang++-11 ]
         build_type: [ Debug, Release ]
         std: [ 20 ]
-        os: [ ubuntu-20.04 ]
+        clang: [ 11, 12, 13 ]
+        os: [ ubuntu-20.04, ubuntu-22.04 ]
+        exclude:
+          - clang: 11
+            os: ubuntu-22.04
+          - clang: 12
+            os: ubuntu-22.04
+          - clang: 13
+            os: ubuntu-22.04
+
 
     steps:
       - uses: actions/checkout@v2
+      - if: matrix.clang == '12' || matrix.clang == '13'
+        uses: egor-tensin/setup-clang@v1
+        with:
+          version: ${{matrix.clang}}
 
       - name: Create Build Environment
-        run: cmake -E make_directory ${{runner.workspace}}/build
+        run: cmake -E make_directory ${{github.workspace}}/build
 
       - name: Configure
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         env:
-          CXX: ${{matrix.cxx}}
+          CXX: clang++-${{matrix.clang}}
         run:
           cmake
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
@@ -31,9 +43,9 @@ jobs:
           $GITHUB_WORKSPACE
 
       - name: Build
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         run: cmake --build .
 
       - name: Test
-        working-directory: ${{runner.workspace}}/build
-        run: ctest -C ${{matrix.build_type}}
+        working-directory: ${{github.workspace}}/build
+        run: ctest -C ${{matrix.build_type}} --output-on-failure
