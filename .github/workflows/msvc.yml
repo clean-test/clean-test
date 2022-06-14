@@ -1,0 +1,53 @@
+# Copyright m8mble 2021.
+# SPDX-License-Identifier: BSL-1.0
+
+name: msvc
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-2022 ]
+        platform: [ Win32, x64 ]
+        build_type: [ Debug, Release ]
+        std: [ 20 ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create Build Environment
+        run: cmake -E make_directory ${{ github.workspace }}/build
+
+      - name: Configure
+        working-directory: ${{ github.workspace }}\build
+        run:
+          cmake 
+            -A ${{ matrix.platform }}
+            -DCMAKE_CXX_STANDARD=${{ matrix.std }}
+            -DCMAKE_INSTALL_BINDIR="."
+            -DCMAKE_INSTALL_LIBDIR="."
+            ${{ github.workspace }}
+
+      - name: Build
+        working-directory: ${{ github.workspace }}/build
+        run: |
+          $threads = (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors
+          cmake --build . --config ${{ matrix.build_type }} --parallel $threads
+
+      - name: Install
+        working-directory: ${{ github.workspace }}/build
+        run:
+          cmake
+          --install .
+          --prefix ${{ github.workspace }}\build\test\${{ matrix.build_type }}
+          --config ${{ matrix.build_type }}
+          --verbose
+
+      - name: Test
+        working-directory: ${{ github.workspace }}/build
+        run:
+          ctest
+          -C ${{ matrix.build_type }}
+          --output-on-failure

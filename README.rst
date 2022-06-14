@@ -9,6 +9,8 @@ Clean Test
    :target: https://github.com/clean-test/clean-test/actions/workflows/gcc.yml
 .. image:: https://github.com/clean-test/clean-test/actions/workflows/clang.yml/badge.svg
    :target: https://github.com/clean-test/clean-test/actions/workflows/clang.yml
+.. image:: https://github.com/clean-test/clean-test/actions/workflows/msvc.yml/badge.svg
+   :target: https://github.com/clean-test/clean-test/actions/workflows/msvc.yml
 .. image:: https://github.com/clean-test/clean-test/actions/workflows/doc.yml/badge.svg
    :target: https://github.com/clean-test/clean-test/actions/workflows/doc.yml
 .. image:: https://img.shields.io/badge/license-BSL--1.0-informational
@@ -103,5 +105,5 @@ Clean Test already provides all core features, but currently still lacks some co
 There is a list of `envisioned features <doc/status.md>`_ that will be added in the coming weeks and months.
 
 Clean Test consists of 100% standard C++-20 and works with any modern compiler toolchain.
-As of now, it works both with gcc (version 10) and clang (version 11).
-Once MSVC supports concepts it will also work on Windows.
+It works with gcc (version 10 and above) and Clang (version 11 and above) on Linux as well as
+with MSVC (version 19.29 and above) on Windows.

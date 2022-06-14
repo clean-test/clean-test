@@ -31,7 +31,12 @@ endif ()
 find_package(Threads)
 
 # build configuration
-add_compile_options(-Wall -Wextra -pedantic -Werror -Wswitch-enum)
+if ((CMAKE_CXX_COMPILER_ID MATCHES "GNU") OR (CMAKE_CXX_COMPILER_ID MATCHES "CLANG"))
+    add_compile_options(-Wall -Wextra -pedantic -Werror -Wswitch-enum)
+endif ()
+if (MSVC)
+    add_compile_options(/W3 /WX)
+endif ()
 
 function(add_files VAR prefix)
     set(content ${${VAR}})
