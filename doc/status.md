@@ -13,7 +13,7 @@
 
 ## Build
 
- - [ ] Make build warnings / werror configurable
+ - [x] Make build warnings / werror configurable
  - [x] Make installable
  - [x] Support building as part (i.e. subdir) of another cmake project.
        If so, honor static / dynamic building of the parent.

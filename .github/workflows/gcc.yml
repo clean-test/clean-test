@@ -37,6 +37,7 @@ jobs:
           cmake
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
           -DCMAKE_CXX_STANDARD=${{matrix.std}}
+          -DCLEANTEST_WERROR=ON
           $GITHUB_WORKSPACE
 
       - name: Build

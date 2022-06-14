@@ -26,6 +26,7 @@ jobs:
           cmake 
             -A ${{ matrix.platform }}
             -DCMAKE_CXX_STANDARD=${{ matrix.std }}
+            -DCLEANTEST_WERROR=ON
             -DCMAKE_INSTALL_BINDIR="."
             -DCMAKE_INSTALL_LIBDIR="."
             ${{ github.workspace }}
