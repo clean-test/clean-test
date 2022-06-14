@@ -24,11 +24,4 @@ add_custom_target(doc
     SOURCES index.rst
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-add_custom_target(upload-doc
-    COMMAND ${POETRY} run upload --source ${CMAKE_BINARY_DIR}/html
-    COMMENT "Update Clean Test online documentation."
-    VERBATIM
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
 add_dependencies(doc prepare-doc)
-add_dependencies(upload-doc doc)

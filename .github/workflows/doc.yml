@@ -15,15 +15,26 @@ jobs:
         run: |
           sudo apt install doxygen pipx
           pipx install poetry
-          cmake -E make_directory ${{runner.workspace}}/build
+          cmake -E make_directory ${{github.workspace}}/build
 
       - name: Configure
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         run:
           cmake $GITHUB_WORKSPACE
 
       - name: Generate Documentation
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
+        run: cmake --build . -- doc
+
+      - name: Publish Documentation
+        uses: cpina/github-action-push-to-another-repository@main
         env:
-          KEY: ${{secrets.DOC_UPLOAD_KEY}}
-        run: cmake --build . -- upload-doc
+          SSH_DEPLOY_KEY: ${{ secrets.PAGES_DEPLOYMENT_KEY }}
+        with:
+          source-directory: build/html
+          destination-github-username: clean-test
+          destination-repository-name: clean-test.github.io
+          user-name: doc-bot
+          user-email: doc-bot@clean-test.io
+          target-directory: ${{ github.ref_name }}
+        if: (github.ref_type == 'branch' && github.ref_name == github.event.repository.default_branch) || github.ref_type == 'tag'
