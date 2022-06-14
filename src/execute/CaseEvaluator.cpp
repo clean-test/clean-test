@@ -26,7 +26,7 @@ CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept
         tc.run(observer);
     } catch (execute::Abortion const &) {
         execution_outcome = CaseStatus::abort;
-    } catch (std::exception const & xcp) {
+    } catch (std::exception const &) {
         execution_outcome = CaseStatus::abort;
     } catch (...) {
         execution_outcome = CaseStatus::abort;

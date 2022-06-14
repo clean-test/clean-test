@@ -12,11 +12,11 @@ namespace clean_test::expression {
 
 class Comma {
 public:
-    template <typename... T>
-    constexpr auto operator()(T &&... t) const noexcept(noexcept((... , std::forward<T>(t))))
-        -> decltype((... , std::forward<T>(t)))
+    template <typename L, typename R>
+    constexpr auto operator()(L && l, R && r) const noexcept(noexcept(std::forward<L>(l), std::forward<R>(r)))
+        -> decltype(std::forward<L>(l), std::forward<R>(r))
     {
-        return (... , std::forward<T>(t));
+        return (std::forward<L>(l), std::forward<R>(r));
     }
 
     template <typename L, typename R>

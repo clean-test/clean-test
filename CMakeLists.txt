@@ -21,6 +21,8 @@ if (NOT CLEANTEST_BUILD_STATIC AND NOT CLEANTEST_BUILD_SHARED)
     message(FATAL_ERROR "Both static and shared library building disabled. What do you want?")
 endif()
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+
 # Dependencies
 find_package(Threads)
 
@@ -178,7 +180,7 @@ if (CLEANTEST_BUILD_STATIC)
     add_library(cleantest-static STATIC $<TARGET_OBJECTS:clntst-objlib> ${CLEANTEST_PUBLIC_HEADERS})
     set_target_properties(cleantest-static PROPERTIES EXPORT_NAME static)
     target_include_directories(cleantest-static PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
-    target_link_libraries(cleantest-static ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(cleantest-static ${CMAKE_THREAD_LIBS_INIT} Threads::Threads)
     add_library(CleanTest::static ALIAS cleantest-static)
 
     add_library(cleantest-main-static STATIC $<TARGET_OBJECTS:clntst-main-objlib>)
@@ -190,7 +192,7 @@ if (CLEANTEST_BUILD_SHARED)
     add_library(cleantest-shared SHARED $<TARGET_OBJECTS:clntst-objlib> ${CLEANTEST_PUBLIC_HEADERS})
     set_target_properties(cleantest-shared PROPERTIES EXPORT_NAME shared)
     target_include_directories(cleantest-shared PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
-    target_link_libraries(cleantest-shared ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(cleantest-shared ${CMAKE_THREAD_LIBS_INIT} Threads::Threads)
     add_library(CleanTest::shared ALIAS cleantest-shared)
 
     add_library(cleantest-main-shared STATIC $<TARGET_OBJECTS:clntst-main-objlib>)

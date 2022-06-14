@@ -95,13 +95,15 @@ public:
     /// Intentionally skips locking on @p that, since the caller has to synchronize end of lifetime of @p that anyways.
     Guarded & operator=(Guarded && that) noexcept(std::is_nothrow_move_assignable_v<T>)
     {
-        return *this = std::move(that.m_value);
+        *this = std::move(that.m_value);
+        return *this;
     }
 
     /// Move assignment from other @p value.
-    Guarded & operator=(std::convertible_to<T> auto && value) noexcept(std::is_nothrow_move_assignable_v<T>)
+    template <std::convertible_to<T> U>
+    Guarded & operator=(U && value) noexcept(std::is_nothrow_move_assignable_v<T>)
     {
-        *guard() = std::forward<decltype(value)>(value);
+        *guard() = std::forward<U>(value);
         return *this;
     }
 

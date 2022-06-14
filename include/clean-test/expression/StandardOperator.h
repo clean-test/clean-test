@@ -50,7 +50,7 @@ public:
         m_value{
             [this]<std::size_t... idx>(std::index_sequence<idx...>) constexpr -> decltype(auto) {
                 auto const & evaluation = m_evaluation;
-                return Operator::operator()(std::get<idx>(evaluation).value()...);
+                return this->Operator::operator()(std::get<idx>(evaluation).value()...);
             }(std::make_index_sequence<sizeof...(Expression)>())
         }
     {}

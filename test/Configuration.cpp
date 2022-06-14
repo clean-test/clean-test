@@ -55,7 +55,7 @@ Configuration parse(std::string_view const input) {
         }
         return result;
     }();
-    return Configuration::parse(argv.size(), argv.data());
+    return Configuration::parse(static_cast<int>(argv.size()), argv.data());
 }
 
 void assert_invalid(std::string_view const input, std::string_view const expectation)

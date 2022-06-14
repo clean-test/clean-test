@@ -8,15 +8,21 @@
 
 #include <functional>
 #include <limits>
+#include <map>
 
 namespace clean_test::execute {
 namespace {
 
 using Name = framework::Name;
 
-constexpr auto list_continuation = std::string_view{"\u2502"};
-constexpr auto list_item = std::string_view{"\u251C"};
-constexpr auto list_end = std::string_view{"\u2514"};
+std::string as_char_string(std::u8string_view literal)
+{
+    return std::string{literal.cbegin(), literal.cend()};
+}
+
+const auto list_continuation = as_char_string(u8"\u2502");
+const auto list_item = as_char_string(u8"\u251C");
+const auto list_end = as_char_string(u8"\u2514");
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -141,7 +147,7 @@ private:
 
 class Tags {
 public:
-    Name::Tags const & tags;
+    explicit Tags(Name::Tags const & ts) : tags{ts} {}
 
     friend std::ostream & operator<<(std::ostream & out, Tags const & t)
     {
@@ -153,6 +159,8 @@ public:
         }
         return out << '}';
     }
+
+    Name::Tags const & tags;
 };
 
 }

@@ -103,9 +103,9 @@ private:
     {
         auto const num = m_cases.size();
 
-        auto next = [previous = 0ul, this, num]() mutable {
+        auto next = [previous = std::size_t{0}, this, num]() mutable {
             while (previous < num
-                   and not m_next.compare_exchange_weak(previous, previous + 1ul, std::memory_order_relaxed)) {
+                   and not m_next.compare_exchange_weak(previous, previous + 1, std::memory_order_relaxed)) {
             }
             return previous;
         };

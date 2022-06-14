@@ -72,7 +72,9 @@ int run(Configuration const & cfg)
     auto outcome = conductor.run();
     serialize(cfg.m_junit_path, colors, JUnitExport{outcome});
 
-    return count_if(outcome.m_results, [](auto const & r) { return r.m_status != CaseStatus::pass; });
+    return static_cast<int>(std::min<std::size_t>(
+        std::numeric_limits<int>::max(),
+        count_if(outcome.m_results, [](auto const & r) { return r.m_status != CaseStatus::pass; })));
 }
 
 }

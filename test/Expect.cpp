@@ -52,8 +52,8 @@ auto const dummy = [] {
     auto_test() = [](ct::Observer & o) { ct::expect(o, false); };
 
     // Unicode handling
-    auto_test() = [] { ct::expect(ct::lift("\x80") == ct::lift("")); }; // invalid UTF-8
-    auto_test() = [] { ct::expect(ct::lift("\n") == ct::lift("")); }; // wants to be escaped
+    auto_test() = [] { ct::expect(ct::lift(std::string_view{"\x80"}) == ct::lift("")); }; // invalid UTF-8
+    auto_test() = [] { ct::expect(ct::lift(std::string_view{"\n"}) == ct::lift("")); }; // wants to be escaped
     // bypass special handling for std::string
     auto_test() = [] { ct::expect(ct::lift(NonString{"\x80"}) == ct::lift(NonString{""})); };
     auto_test() = [] { ct::expect(true) << "\x80"; }; // broken user message
