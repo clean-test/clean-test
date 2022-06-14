@@ -24,7 +24,7 @@ public:
         m_expression{std::forward<decltype(expr)>(expr)...}
     {}
 
-    [[nodiscard]] constexpr auto evaluation() const
+    constexpr auto evaluation() const
     {
         return Evaluation{*this};
     }
@@ -56,7 +56,7 @@ public:
     {}
     // clang-format on
 
-    [[nodiscard]] constexpr typename StandardOperator<Operator, Expression...>::Value const & value() const
+    constexpr typename StandardOperator<Operator, Expression...>::Value const & value() const
     {
         return m_value;
     }

@@ -59,6 +59,25 @@ private:
     bool m_value;
 };
 
+/// Integer wrapper whose comma operator won't warn for discarded first parameter.
+class CommaInt {
+public:
+    constexpr explicit(false) CommaInt(int v) : m_v{v}
+    {}
+
+    explicit(false) constexpr operator int() const
+    {
+        return m_v;
+    }
+
+    friend constexpr CommaInt operator,([[maybe_unused]] CommaInt, CommaInt v)
+    {
+        return v;
+    }
+
+    int m_v;
+};
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // constexpr tests
@@ -112,7 +131,7 @@ static_assert(ct::lift(1) & 1);
 static_assert(ct::lift(2) | 1);
 static_assert(ct::lift(2) ^ 1);
 static_assert(~ct::lift(1));
-static_assert((ct::lift(2), ct::lift(1)));
+static_assert((ct::lift(CommaInt{2}), ct::lift(1)));
 static_assert(ct::lift(0) or 1);
 
 void test_operator_output()
@@ -137,7 +156,7 @@ void test_operator_output()
     assert_output("( 1 ^ 2 )", 1 ^ ct::lift(2));
     assert_output("~2", ~ct::lift(2));
 
-    assert_output("2, 3", (ct::lift(2), ct::lift(3)));
+    assert_output("2, 3", (ct::lift(CommaInt{2}), ct::lift(3)));
 }
 
 void test_literals()
