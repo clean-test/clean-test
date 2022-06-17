@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <numeric>
 #include <ostream>
+#include <time.h>
 
 #if __has_include(<unistd.h>)
 # include <unistd.h>
@@ -37,7 +38,15 @@ public:
 
     friend std::ostream & operator<<(std::ostream & out, Timestamp const & t)
     {
-        return out << std::put_time(std::localtime(&t.m_time), "%FT%T");
+        struct std::tm time_info;
+#ifdef _WIN32
+        if (const auto err = localtime_s(&time_info, &t.m_time); err != 0) {
+            return out << "0000-00-00T00:00:00";
+        }
+#else
+        localtime_r(&t.m_time, &time_info);
+#endif
+        return out << std::put_time(&time_info, "%FT%T");
     }
 
 private:

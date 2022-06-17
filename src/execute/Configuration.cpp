@@ -127,7 +127,7 @@ protected:
             contradiction(description, input, reference);
         }
 
-        auto result = 0ul;
+        auto result = std::size_t{0};
         if (auto [end, ec] = std::from_chars(input.cbegin(), input.cend(), result);
             ec != std::errc{} or end != input.cend()) {
             invalid(description, input);
