@@ -40,8 +40,7 @@ Yet none combines the following qualities:
   UTF-8 support,
   flexible runtime configuration.
 
-Further details are elaborated in
-the `official documentation <https://m8mble.github.io/clean-test-doc/latest/index.html>`_.
+Further details are elaborated in the `official documentation <https://clean-test.github.io>`_.
 
 
 =====
