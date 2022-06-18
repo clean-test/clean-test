@@ -71,11 +71,14 @@ static_assert(not is_guard_nothrow_destructible<false, false>);
 [[maybe_unused]] constexpr auto default_constructible = [] {};
 static_assert(std::is_default_constructible_v<decltype(default_constructible)>);
 static_assert(std::is_default_constructible_v<ScopeGuard<decltype(default_constructible)>>);
-[[maybe_unused]] constexpr auto nondefault_constructible = [ref = std::ref(default_constructible)] {
-    clean_test::utils::discard(ref);
+
+class NonDefaultConstructible {
+public:
+    constexpr explicit NonDefaultConstructible([[maybe_unused]] int&) noexcept {}
+    constexpr void operator()() noexcept {}
 };
-static_assert(not std::is_default_constructible_v<decltype(nondefault_constructible)>);
-static_assert(not std::is_default_constructible_v<ScopeGuard<decltype(nondefault_constructible)>>);
+static_assert(not std::is_default_constructible_v<NonDefaultConstructible>);
+static_assert(not std::is_default_constructible_v<ScopeGuard<NonDefaultConstructible>>);
 
 class Explicit {
 public:
@@ -103,24 +106,24 @@ void test_move_assign()
         return std::forward<decltype(x)>(x);
     };
 
-    auto cnt0 = 0ul;
-    auto cnt1 = 0ul;
+    auto cnt0 = std::size_t{0};
+    auto cnt1 = std::size_t{0};
     {
         auto sg0 = clean_test::utils::ScopeGuard{Incrementer{cnt0}};
         auto sg1 = clean_test::utils::ScopeGuard{Incrementer{cnt1}};
 
         // regular move-assignment
         sg0 = std::move(sg1);
-        clean_test::utils::dynamic_assert(cnt0 == 1ul);
-        clean_test::utils::dynamic_assert(cnt1 == 0ul);
+        clean_test::utils::dynamic_assert(cnt0 == 1);
+        clean_test::utils::dynamic_assert(cnt1 == 0);
 
         // self move-assignment
         sg0 = identity(std::move(sg0));
-        clean_test::utils::dynamic_assert(cnt0 == 1ul);
-        clean_test::utils::dynamic_assert(cnt1 == 0ul);
+        clean_test::utils::dynamic_assert(cnt0 == 1);
+        clean_test::utils::dynamic_assert(cnt1 == 0);
     }
-    clean_test::utils::dynamic_assert(cnt0 == 1ul);
-    clean_test::utils::dynamic_assert(cnt1 == 1ul);
+    clean_test::utils::dynamic_assert(cnt0 == 1);
+    clean_test::utils::dynamic_assert(cnt1 == 1);
 }
 
 void test_dismiss()
