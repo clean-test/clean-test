@@ -55,10 +55,11 @@ void parallel()
     auto numbers = std::vector<std::size_t>{};
     while (not view.empty()) {
         auto const end = view.find(sep);
+        clean_test::utils::dynamic_assert(end != std::string_view::npos);
         auto const number_view = view.substr(0, end);
-        auto number = 0ul;
-        auto const [pos, ec] = std::from_chars(number_view.begin(), number_view.end(), number);
-        clean_test::utils::dynamic_assert(ec == std::errc{});
+        auto number = std::size_t{0};
+        auto const [pos, ec] = std::from_chars(number_view.data(), number_view.data() + number_view.size(), number);
+        clean_test::utils::dynamic_assert(ec == std::errc{} and pos == (number_view.data() + number_view.size()));
         numbers.emplace_back(number);
         view.remove_prefix(end + 1);
     }
@@ -70,9 +71,6 @@ void parallel()
             clean_test::utils::dynamic_assert(
                 numbers[j] == std::numeric_limits<std::size_t>::max() - num_threads + (i / num_threads) + 1);
         }
-    }
-    while (not numbers.empty()) {
-        numbers.pop_back();
     }
 }
 

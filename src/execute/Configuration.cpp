@@ -128,8 +128,8 @@ protected:
         }
 
         auto result = std::size_t{0};
-        if (auto [end, ec] = std::from_chars(input.cbegin(), input.cend(), result);
-            ec != std::errc{} or end != input.cend()) {
+        if (auto [end, ec] = std::from_chars(input.data(), input.data() + input.size(), result);
+            ec != std::errc{} or end != input.data() + input.size()) {
             invalid(description, input);
         }
         reference = input;

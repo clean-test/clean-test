@@ -46,7 +46,7 @@ Configuration parse(std::string_view const input) {
         std::cout << sep << '"' << a << '"';
         sep = ", ";
     }
-    std::cout << "]\n";
+    std::cout << ']' << std::endl;
 
     auto const argv = [&] {
         auto result = std::vector<char const *>{};
