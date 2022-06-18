@@ -54,10 +54,21 @@ private:
 };
 
 class Hostname {
+private:
+    auto buffer_size() const
+    {
+        return
+#ifdef _WIN32
+            static_cast<int>(m_buffer.size());
+#else
+            m_buffer.size();
+#endif
+    }
+
 public:
     Hostname() : m_buffer{}
     {
-        gethostname(m_buffer.data(), m_buffer.size());
+        gethostname(m_buffer.data(), buffer_size());
     }
 
     friend std::ostream & operator<<(std::ostream & out, Hostname const & host)
