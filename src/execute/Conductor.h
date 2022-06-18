@@ -23,7 +23,7 @@ public:
     public:
         ColorTable const & m_colors; //!< coloring details for console output.
         /// Number of worker threads for executing test-cases concurrently. Uses all available CPU cores if set to 0.
-        unsigned int m_num_workers;
+        std::size_t m_num_workers;
         BufferingMode m_buffering; //!< how test observation output is buffered.
         NameFilter const & m_filter; //!< which tests should be executed and which should be skipped.
     };

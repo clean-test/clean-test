@@ -8,8 +8,8 @@
 #include "NameFilterSetting.h"
 #include "OperationMode.h"
 
-#include <vector>
 #include <filesystem>
+#include <vector>
 
 namespace clean_test::execute {
 
@@ -46,7 +46,7 @@ public:
     /// Number of test-cases to be executed in parallel.
     ///
     /// The special value 0 (default) instructs to utilize all available CPU cores.
-    unsigned int m_num_jobs = 0ul;
+    std::size_t m_num_jobs = 0ul;
 
     /// Path for generating the JUnit-XML summary into.
     ///
@@ -60,7 +60,7 @@ public:
     /// @{
 
     /// Maximum depth of the visualized tree of test-cases.
-    unsigned int m_depth = 3ul;
+    std::size_t m_depth = 3ul;
 
     /// @}
 };
