@@ -244,10 +244,12 @@ int main()
     test_short_circuit_or();
 
     // Abortion
+#ifdef CLEANTEST_HAS_ABORT_SUPPORT
     ct::utils::dynamic_assert(ct::aborts([] { std::abort(); }));
     ct::utils::dynamic_assert(ct::aborts([] { std::terminate(); }));
     ct::utils::dynamic_assert(not ct::aborts([] { return 42; }));
     ct::utils::dynamic_assert(ct::debug_aborts([] { assert(false); }));
+#endif
 
     // Exceptions
     ct::utils::dynamic_assert(ct::throws([] { throw 42; }));

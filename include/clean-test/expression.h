@@ -31,8 +31,10 @@
 
 namespace clean_test {
 
+#ifdef CLEANTEST_HAS_ABORT_SUPPORT
 using expression::aborts;
 using expression::debug_aborts;
+#endif
 using expression::lift;
 using expression::throws;
 

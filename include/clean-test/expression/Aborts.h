@@ -7,9 +7,9 @@
 
 #include <concepts>
 #if __has_include(<unistd.h>) and __has_include(<sys/wait.h>)
+# define CLEANTEST_HAS_ABORT_SUPPORT unix
 # include <sys/wait.h>
 # include <unistd.h>
-#endif
 
 namespace clean_test::expression {
 
@@ -74,3 +74,4 @@ bool DetectAbortDebug::operator()(Func && func) const
 }
 
 }
+#endif
