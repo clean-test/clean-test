@@ -62,17 +62,17 @@ private:
 /// Integer wrapper whose comma operator won't warn for discarded first parameter.
 class CommaInt {
 public:
-    constexpr explicit(false) CommaInt(int v) : m_v{v}
+    constexpr explicit(false) CommaInt(int v) noexcept : m_v{v}
     {}
 
-    explicit(false) constexpr operator int() const
+    explicit(false) constexpr operator int() const noexcept
     {
         return m_v;
     }
 
-    friend constexpr CommaInt operator,([[maybe_unused]] CommaInt, CommaInt v)
+    friend constexpr decltype(auto) operator,([[maybe_unused]] CommaInt const &, auto && v) noexcept
     {
-        return v;
+        return std::forward<decltype(v)>(v);
     }
 
     int m_v;
