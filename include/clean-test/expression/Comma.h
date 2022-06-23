@@ -16,6 +16,9 @@ public:
     constexpr auto operator()(L && l, R && r) const noexcept(noexcept(std::forward<L>(l), std::forward<R>(r)))
         -> decltype(std::forward<L>(l), std::forward<R>(r))
     {
+#ifdef _MSC_VER
+#pragma warning(suppress: 4834)
+#endif
         return (std::forward<L>(l), std::forward<R>(r));
     }
 
