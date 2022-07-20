@@ -20,16 +20,30 @@ public:
     using TimePoint = std::chrono::time_point<Clock, Duration>;
     using Observations = std::vector<Observation>;
 
+    /// The result type indicates how contained results have been observed.
+    enum class Type : bool {
+        /// Used for standard observations in (correct) user-specified tests.
+        regular = false,
+        /// Used for catch-all observations of unknown test cases (e.g. when tests fail to propagate observers).
+        fallback = true,
+    };
+
     /// Detailed c'tor: initialize from @p name_path, @p wall_time and @p observations.
     ///
     /// Stores worst outcome of any @p observations and @p execution_outcome into @c m_outcome.
     /// The @p execution_outcome is assumed to result from the test execution.
-    CaseResult(std::string name_path, CaseStatus execution_outcome, Duration wall_time, Observations observations);
+    CaseResult(
+        std::string name_path,
+        CaseStatus execution_outcome,
+        Duration wall_time,
+        Observations observations,
+        Type type = Type::regular);
 
     std::string m_name_path; //!< Name of the test-case.
     CaseStatus m_status; //!< Overall outcome of the test-case.
     Duration m_wall_time; //!< Total execution (wall) time.
     Observations m_observations; //!< Observation details (including passed ones).
+    Type m_type; //!< Type of result (to detect catch-all observations).
 };
 
 }

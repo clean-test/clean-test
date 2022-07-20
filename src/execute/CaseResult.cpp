@@ -35,13 +35,15 @@ CaseStatus worst_status(CaseResult::Observations const & observations)
 
 CaseResult::CaseResult(
     std::string name_path,
-    CaseStatus execution_outcome,
+    CaseStatus const execution_outcome,
     Duration wall_time,
-    Observations observations) :
-    m_name_path{name_path},
+    Observations observations,
+    Type const type) :
+    m_name_path{std::move(name_path)},
     m_status{std::max(execution_outcome, worst_status(observations))},
     m_wall_time{std::move(wall_time)},
-    m_observations{std::move(observations)}
+    m_observations{std::move(observations)},
+    m_type{type}
 {}
 
 }
