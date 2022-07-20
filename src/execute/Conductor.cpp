@@ -15,6 +15,7 @@
 #include <framework/Registry.h>
 
 #include <utils/OSyncStream.h>
+#include <utils/RangesUtils.h>
 #include <utils/WithAdaptiveUnit.h>
 
 #include <exception>
@@ -38,6 +39,11 @@ bool passed(CaseStatus const status)
         default:
             std::terminate();
     }
+}
+
+bool is_regular(CaseResult::Type const & type)
+{
+    return not static_cast<bool>(type);
 }
 
 Conductor::Setup const & default_setup()
@@ -186,7 +192,8 @@ Outcome safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
             << colors[Color::bad] << badge(BadgeType::headline)
             << " Warning: Observed test-expectations at unknown Observer, likely caused by lacking passed observer."
             << colors[Color::off] << std::endl;
-        results.emplace_back("unknown", CaseStatus::fail, CaseResult::Duration{}, std::move(unmanaged));
+        results.emplace_back(
+            "unknown", CaseStatus::pass, CaseResult::Duration{}, std::move(unmanaged), CaseResult::Type::fallback);
     }
     return {Clock::now() - time_start, std::move(results)};
 }
@@ -221,21 +228,22 @@ void Conductor::report(Outcome const & outcome) const
 {
     auto const & [wall_time, results] = outcome;
     auto const & colors = m_setup.m_colors;
+    auto const num_regular_tests = utils::count_if(results, [](CaseResult const & r) { return is_regular(r.m_type); });
 
     auto & logger = m_setup.m_logger;
     logger
-        << colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << results.size() << " test-cases ("
+        << colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << num_regular_tests << " test-cases ("
         << utils::WithAdaptiveUnit{wall_time} << " total)" << std::endl;
 
     std::size_t num_passed = 0ul;
     for (auto const & result : results) {
         if (passed(result.m_status)) {
-            ++num_passed;
+            num_passed += is_regular(result.m_type);
         } else {
             logger << colors.colored(Color::bad, badge(BadgeType::fail)) << ' ' << result.m_name_path << '\n';
         }
     }
-    auto const all_have_passed = (num_passed == results.size());
+    auto const all_have_passed = (num_passed == num_regular_tests);
     if (num_passed > 0ul) {
         logger
             << colors.colored(Color::good, badge(BadgeType::pass)) << " All " << (all_have_passed ? "" : "other ")

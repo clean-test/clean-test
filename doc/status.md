@@ -60,7 +60,7 @@
  - [x] Support fallback `Observer` (for users forgetting to pass it along)
  - [ ] Add scoped, `Observer`-based facility for additional debug output
  - [ ] Provide migration helpers for the big 3
- - [ ] The unknown catch-all "test" shouldn't be counted in "Ran n test-cases" and not reported as failed (without errors)
+ - [x] The unknown catch-all "test" shouldn't be counted in "Ran n test-cases" and not reported as failed (without errors)
  - [ ] Single-threaded mode could allow a global observer (so that this works without errors)
 
 

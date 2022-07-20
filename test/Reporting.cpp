@@ -10,6 +10,8 @@
 
 #include <clean-test/framework.h>
 
+#include <thread>
+
 namespace ct = clean_test;
 using namespace ct::literals;
 
@@ -57,6 +59,23 @@ void late_registration()
     report(); // to clear now registered test-case joe.
 }
 
+void catch_all()
+{
+    for (auto const success: {true, false}) {
+        "root"_test = [&] {
+            auto worker = std::thread{[&] {
+                ct::expect(success); // incorrect. lacking observer transfer.
+            }};
+            worker.join();
+        };
+        auto const console = report();
+        utils::dynamic_assert(contains(console, "unknown Observer"));
+        utils::dynamic_assert(contains(console, "1 test-case"));
+        utils::dynamic_assert(contains(console, "[ PASS  ] All 1 test-case"));
+        utils::dynamic_assert(contains(console, "[ FAIL  ] unknown") != success);
+    }
+}
+
 }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,4 +84,5 @@ int main()
 {
     ct::execute::standard();
     ct::execute::late_registration();
+    ct::execute::catch_all();
 }
