@@ -166,9 +166,10 @@ add_files(CLEANTEST_SOURCES src/utils
     Guarded.h
     OSyncStream.cpp
     OSyncStream.h
+    RangesUtils.h
+    UTF8Encoder.cpp
     UTF8Utils.cpp
     UTF8Utils.h
-    UTF8Encoder.cpp
     WithAdaptiveUnit.h
 )
 add_files(CLEANTEST_MAIN_SOURCES src

@@ -14,26 +14,13 @@
 #include <execute/NameFilter.h>
 #include <execute/TreeDisplay.h>
 
-#include <algorithm>
+#include <utils/RangesUtils.h>
+
 #include <iostream>
 #include <fstream>
-#include <version>
 
 namespace clean_test::execute {
 namespace {
-
-/// Variant of @c std::count_if for whole containers.
-template <typename Data, std::invocable<typename Data::value_type> Predicate>
-constexpr std::size_t count_if(Data const & data, Predicate && predicate)
-{
-#if __cpp_lib_ranges
-    return std::ranges::count_if(data, std::forward<Predicate>(predicate));
-#else
-    return std::count_if(std::cbegin(data), std::cend(data), std::forward<Predicate>(predicate));
-#endif
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ColorTable const & load_colors(Configuration const & cfg)
 {
@@ -75,7 +62,7 @@ int run(std::ostream & logger, Configuration const & cfg)
 
     return static_cast<int>(std::min<std::size_t>(
         std::numeric_limits<int>::max(),
-        count_if(outcome.m_results, [](auto const & r) { return r.m_status != CaseStatus::pass; })));
+        utils::count_if(outcome.m_results, [](auto const & r) { return r.m_status != CaseStatus::pass; })));
 }
 
 }
