@@ -44,6 +44,7 @@ Conductor::Setup const & default_setup()
 {
     static auto const filter = NameFilter{};
     static auto const singleton = Conductor::Setup{
+        .m_logger = std::cout,
         .m_colors = coloring_setup(ColoringMode::automatic),
         .m_num_workers = 0u,
         .m_buffering = BufferingMode::testcase,
@@ -79,11 +80,14 @@ class Worker {
 public:
     using Next = std::atomic<std::size_t>;
 
-    Worker(Cases & cases, Next & next, Conductor::Setup const setup) :
+    Worker(Cases & cases, Next & next, Conductor::Setup setup) :
         m_cases{cases},
         m_next{next},
-        m_filter{setup.m_filter},
-        m_evaluator{{.m_output = std::cout, .m_colors = setup.m_colors, .m_buffering = setup.m_buffering}},
+        m_filter{std::move(setup.m_filter)},
+        m_evaluator{
+            {.m_output = setup.m_logger,
+             .m_colors = std::move(setup.m_colors),
+             .m_buffering = std::move(setup.m_buffering)}},
         m_results{},
         m_thread{[this] { run(); }}
     {}
@@ -167,7 +171,7 @@ Outcome safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
     auto const time_start = Clock::now();
 
     // Ensure appropriate fallback observation setup.
-    auto fallback_reporter = CaseReporter{{std::cout, setup.m_colors, setup.m_buffering}};
+    auto fallback_reporter = CaseReporter{{setup.m_logger, setup.m_colors, setup.m_buffering}};
     auto fallback_observer = Observer{fallback_reporter};
     auto const fallback = framework::FallbackObservationSetup{fallback_observer};
 
@@ -178,7 +182,7 @@ Outcome safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
     auto unmanaged = std::move(fallback_observer).release();
     if (not unmanaged.empty()) {
         auto const & colors = setup.m_colors;
-        utils::OSyncStream{std::cout}
+        utils::OSyncStream{setup.m_logger}
             << colors[Color::bad] << badge(BadgeType::headline)
             << " Warning: Observed test-expectations at unknown Observer, likely caused by lacking passed observer."
             << colors[Color::off] << std::endl;
@@ -199,8 +203,9 @@ Conductor::Conductor() noexcept : Conductor{default_setup()}
 Outcome Conductor::run() const
 {
     auto & registry = framework::registry();
-    std::cout << m_setup.m_colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
-              << " test-cases" << std::endl;
+    m_setup.m_logger
+        << m_setup.m_colors.colored(Color::good, badge(BadgeType::title)) << " Running " << registry.size()
+        << " test-cases" << std::endl;
 
     // run cases and collect results
     auto const outcome = safe_execute_parallel(std::exchange(registry, {}), m_setup);
@@ -217,35 +222,42 @@ void Conductor::report(Outcome const & outcome) const
     auto const & [wall_time, results] = outcome;
     auto const & colors = m_setup.m_colors;
 
-    std::cout << colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << results.size() << " test-cases ("
-              << utils::WithAdaptiveUnit{wall_time} << " total)" << std::endl;
+    auto & logger = m_setup.m_logger;
+    logger
+        << colors.colored(Color::good, badge(BadgeType::title)) << " Ran " << results.size() << " test-cases ("
+        << utils::WithAdaptiveUnit{wall_time} << " total)" << std::endl;
 
     std::size_t num_passed = 0ul;
     for (auto const & result : results) {
         if (passed(result.m_status)) {
             ++num_passed;
         } else {
-            std::cout << colors.colored(Color::bad, badge(BadgeType::fail)) << ' ' << result.m_name_path << '\n';
+            logger << colors.colored(Color::bad, badge(BadgeType::fail)) << ' ' << result.m_name_path << '\n';
         }
     }
     auto const all_have_passed = (num_passed == results.size());
     if (num_passed > 0ul) {
-        std::cout << colors.colored(Color::good, badge(BadgeType::pass)) << " All "
-                  << (all_have_passed ? "" : "other ") << num_passed << " test-cases\n";
+        logger
+            << colors.colored(Color::good, badge(BadgeType::pass)) << " All " << (all_have_passed ? "" : "other ")
+            << num_passed << " test-cases\n";
     }
-    std::cout << std::flush;
+    logger << std::flush;
 }
 
 void Conductor::display_late_registration_warning(std::vector<framework::Case> const & cases) const
 {
     auto const & colors = m_setup.m_colors;
-    std::cout << colors[Color::bad] << badge(BadgeType::headline) << " Warning: The following " << cases.size()
-              << " test-cases have been registered late:\n";
+    auto & logger = m_setup.m_logger;
+
+    logger
+        << colors[Color::bad] << badge(BadgeType::headline) << " Warning: The following " << cases.size()
+        << " test-cases have been registered late:\n";
     for (auto const & tc : cases) {
-        std::cout << badge(BadgeType::empty) << "   - " << tc.name().path() << '\n';
+        logger << badge(BadgeType::empty) << "   - " << tc.name().path() << '\n';
     }
-    std::cout << badge(BadgeType::headline) << " Registering test-cases dynamically impedes parallel execution."
-              << colors[Color::off] << std::endl;
+    logger
+        << badge(BadgeType::headline) << " Registering test-cases dynamically impedes parallel execution."
+        << colors[Color::off] << std::endl;
 }
 
 }

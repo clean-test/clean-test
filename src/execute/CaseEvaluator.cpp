@@ -7,8 +7,6 @@
 #include "CaseReporter.h"
 #include "Observer.h"
 
-#include <iostream>
-
 namespace clean_test::execute {
 
 CaseEvaluator::CaseEvaluator(CaseReporter::Setup const setup) : m_reporter{setup}

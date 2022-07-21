@@ -7,6 +7,7 @@
 
 #include <execute/BufferingMode.h>
 
+#include <ostream>
 #include <vector>
 
 namespace clean_test::framework {
@@ -21,6 +22,7 @@ class Conductor {
 public:
     class Setup {
     public:
+        std::ostream & m_logger; //!< sink for any reports and status updates.
         ColorTable const & m_colors; //!< coloring details for console output.
         /// Number of worker threads for executing test-cases concurrently. Uses all available CPU cores if set to 0.
         std::size_t m_num_workers;

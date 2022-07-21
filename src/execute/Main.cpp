@@ -45,14 +45,14 @@ auto filter(Configuration const & cfg)
     return NameFilter{cfg.m_filter_settings};
 }
 
-void serialize(std::filesystem::path const & path, ColorTable const & colors, auto && data) {
+void serialize(std::ostream & logger, std::filesystem::path const & path, ColorTable const & colors, auto && data) {
     if (path.empty()) {
         return;
     }
 
     auto out = std::ofstream{path, std::ios_base::trunc | std::ios_base::out};
     if (not out) {
-        std::cout
+        logger
             << colors[Color::bad] << badge(BadgeType::headline) << colors[Color::off]
             << " Error: Failed to write report into " << path << ".\n";
         return;
@@ -60,17 +60,18 @@ void serialize(std::filesystem::path const & path, ColorTable const & colors, au
     out << data;
 }
 
-int run(Configuration const & cfg)
+int run(std::ostream & logger, Configuration const & cfg)
 {
     auto const & colors = load_colors(cfg);
     auto const conductor = Conductor{{
+        .m_logger = logger,
         .m_colors = colors,
         .m_num_workers = cfg.m_num_jobs,
         .m_buffering = cfg.m_buffering,
         .m_filter = filter(cfg)}};
 
     auto outcome = conductor.run();
-    serialize(cfg.m_junit_path, colors, JUnitExport{outcome});
+    serialize(logger, cfg.m_junit_path, colors, JUnitExport{outcome});
 
     return static_cast<int>(std::min<std::size_t>(
         std::numeric_limits<int>::max(),
@@ -94,17 +95,18 @@ int main(int argc, char ** argv)
 
 int main(Configuration const & cfg)
 {
+    auto & logger = (cfg.m_logger ? *cfg.m_logger : std::cout);
     switch (cfg.m_operation) {
         case OperationMode::help:
-            std::cout << HelpDisplay{load_colors(cfg)};
+            logger << HelpDisplay{load_colors(cfg)};
             break;
 
         case OperationMode::list:
-            std::cout << TreeDisplay{framework::registry(), {load_colors(cfg), filter(cfg), cfg.m_depth}};
+            logger << TreeDisplay{framework::registry(), {load_colors(cfg), filter(cfg), cfg.m_depth}};
             break;
 
         case OperationMode::run:
-            return run(cfg);
+            return run(logger, cfg);
 
         default:
             std::terminate();

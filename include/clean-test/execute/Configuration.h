@@ -34,6 +34,11 @@ public:
     /// Which selection of test-cases should be included / excluded from configured operations?
     std::vector<NameFilterSetting> m_filter_settings = {};
 
+    /// Sink for reports and status updates (includes full commandline output); uses @c std::cout by default.
+    ///
+    /// The stream doesn't need to be thread safe. Concurrent output from different threads is synchronized internally.
+    std::ostream * m_logger = nullptr;
+
     /// @}
 
     /// @name Test Execution Configuration

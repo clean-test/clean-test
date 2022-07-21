@@ -109,6 +109,7 @@ void execute()
         return f;
     }();
     auto const setup = clean_test::execute::Conductor::Setup{
+        .m_logger = std::cout,
         .m_colors = clean_test::execute::coloring_setup(clean_test::execute::ColoringMode::automatic),
         .m_num_workers = 0u,
         .m_buffering = clean_test::execute::BufferingMode::off,
