@@ -7,9 +7,14 @@
 #include "CaseReporter.h"
 #include "Observer.h"
 
+#include <framework/FallbackObservationSetup.h>
+
+#include <optional>
+
 namespace clean_test::execute {
 
-CaseEvaluator::CaseEvaluator(CaseReporter::Setup const setup) : m_reporter{setup}
+CaseEvaluator::CaseEvaluator(CaseReporter::Setup const setup, bool const overwrite_fallback_observer = false) :
+    m_reporter{setup}, m_overwrite_fallback_observer{overwrite_fallback_observer}
 {}
 
 CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept
@@ -17,6 +22,11 @@ CaseResult CaseEvaluator::operator()(framework::Case & tc) noexcept
     using Clock = CaseResult::Clock;
 
     auto observer = Observer{m_reporter};
+    auto fallback = std::optional<framework::FallbackObservationSetup>{};
+    if (m_overwrite_fallback_observer) {
+        fallback.emplace(observer);
+    }
+
     m_reporter(CaseReporter::Start{tc.name().path()});
     auto execution_outcome = CaseStatus{CaseStatus::pass};
     auto const time_start = Clock::now();

@@ -93,7 +93,9 @@ public:
         m_evaluator{
             {.m_output = setup.m_logger,
              .m_colors = std::move(setup.m_colors),
-             .m_buffering = std::move(setup.m_buffering)}},
+             .m_buffering = std::move(setup.m_buffering)},
+            setup.m_num_workers == 1,
+        },
         m_results{},
         m_thread{[this] { run(); }}
     {}

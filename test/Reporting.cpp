@@ -24,13 +24,13 @@ constexpr bool contains(std::string_view const haystack, std::string_view needle
 }
 
 /// Execute registered tests and return captured output of test execution.
-std::string report()
+std::string report(std::size_t const num_threads = 0)
 {
     auto buffer = std::ostringstream{};
     auto const filter = NameFilter{};
     Conductor{{.m_logger = buffer,
                .m_colors = coloring_setup(ColoringMode::disabled),
-               .m_num_workers = 0u,
+               .m_num_workers = num_threads,
                .m_buffering = BufferingMode::testcase,
                .m_filter = filter}}
         .run();
@@ -76,6 +76,22 @@ void catch_all()
     }
 }
 
+void single_threaded_observations()
+{
+    for (auto const sequential: {true, false}) {
+        "root"_test = [&] {
+            auto worker = std::thread{[&] {
+                ct::expect(false); // incorrect. lacking observer transfer.
+            }};
+            worker.join();
+        };
+        auto const console = report(sequential);
+        utils::dynamic_assert(contains(console, "unknown Observer") != sequential);
+        utils::dynamic_assert(contains(console, "[ FAIL  ] unknown") != sequential);
+        utils::dynamic_assert(contains(console, "[ FAIL  ] root") == sequential);
+    }
+}
+
 }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -85,4 +101,5 @@ int main()
     ct::execute::standard();
     ct::execute::late_registration();
     ct::execute::catch_all();
+    ct::execute::single_threaded_observations();
 }
