@@ -3,7 +3,7 @@
 
 #pragma once
 
-#ifdef __cpp_lib_syncstream
+#if defined(__cpp_lib_syncbuf) and __cpp_lib_syncbuf >= 201803
 # include <syncstream>
 #else
 # include <utils/Guarded.h>
@@ -12,7 +12,7 @@
 
 namespace clean_test::utils {
 
-#ifdef __cpp_lib_syncstream
+#if defined(__cpp_lib_syncbuf) and __cpp_lib_syncbuf >= 201803
 using OSyncStream = std::osyncstream;
 #else
 

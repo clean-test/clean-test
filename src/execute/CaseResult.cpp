@@ -14,7 +14,7 @@ namespace {
 template <typename Data, std::invocable<typename Data::value_type> Predicate>
 constexpr bool any_of(Data const & data, Predicate && predicate)
 {
-#if __cpp_lib_ranges
+#if defined(__cpp_lib_ranges) and __cpp_lib_ranges >= 201900
     return std::ranges::any_of(data, std::forward<Predicate>(predicate));
 #else
     return std::any_of(std::cbegin(data), std::cend(data), std::forward<Predicate>(predicate));

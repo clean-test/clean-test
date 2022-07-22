@@ -5,7 +5,7 @@
 
 #include <version>
 
-#if defined(__cpp_lib_source_location) && __cpp_lib_source_location >= 201907L
+#if defined(__cpp_lib_source_location) and __cpp_lib_source_location >= 201907L
 # include <source_location>
 #else
 # include <cstdint>
@@ -13,7 +13,7 @@
 
 namespace clean_test::utils {
 
-#if defined(__cpp_lib_source_location) && __cpp_lib_source_location >= 201907L
+#if defined(__cpp_lib_source_location) and __cpp_lib_source_location >= 201907L
 using SourceLocation = std::source_location;
 #else
 

@@ -1,10 +1,11 @@
 // Copyright (c) m8mble 2021.
 // SPDX-License-Identifier: BSL-1.0
 
-#ifndef __cpp_lib_syncstream
-
 #include "OSyncStream.h"
 
+#if not defined(__cpp_lib_syncbuf) or __cpp_lib_syncbuf < 201803
+
+#include <ostream>
 #include <unordered_map>
 #include <utility>
 

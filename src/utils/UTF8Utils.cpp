@@ -6,8 +6,9 @@
 #include "utils/ScopeGuard.h"
 
 #include <algorithm>
-#include <ostream>
 #include <cctype>
+#include <ostream>
+#include <version>
 
 namespace clean_test::utils::utf8 {
 namespace {
@@ -29,7 +30,7 @@ namespace {
 template <typename Data, std::invocable<typename Data::value_type> Predicate>
 constexpr bool all_of(Data const & data, Predicate && predicate)
 {
-#if __cpp_lib_ranges
+#if defined(__cpp_lib_ranges) and __cpp_lib_ranges >= 201900
     return std::ranges::all_of(data, std::forward<Predicate>(predicate));
 #else
     return std::all_of(std::cbegin(data), std::cend(data), std::forward<Predicate>(predicate));

@@ -6,6 +6,7 @@
 #include "Clause.h"
 
 #include <string_view>
+#include <version>
 
 namespace clean_test::expression::literals {
 
@@ -44,7 +45,7 @@ constexpr auto operator""_w(unsigned long long const num)
     return Clause{static_cast<wchar_t>(num)};
 }
 
-#if defined(__cpp_lib_char8_t)
+#if defined(__cpp_lib_char8_t) and __cpp_lib_char8_t >= 201900
 constexpr auto operator""_c8(unsigned long long const num)
 {
     return Clause{static_cast<char8_t>(num)};
