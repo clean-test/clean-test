@@ -11,7 +11,9 @@
 #include "expression/BitwiseNot.h"
 #include "expression/BitwiseOr.h"
 #include "expression/BitwiseXor.h"
+#include "expression/Close.h"
 #include "expression/Comma.h"
+#include "expression/Distance.h"
 #include "expression/Divide.h"
 #include "expression/Equal.h"
 #include "expression/Greater.h"
@@ -28,6 +30,7 @@
 #include "expression/Or.h"
 #include "expression/Subtract.h"
 #include "expression/Throws.h"
+#include "expression/Tolerance.h"
 
 namespace clean_test {
 
@@ -35,8 +38,11 @@ namespace clean_test {
 using expression::aborts;
 using expression::debug_aborts;
 #endif
+using expression::distance;
+using expression::is_close;
 using expression::lift;
 using expression::throws;
+using expression::tolerance;
 
 namespace literals {
 using namespace expression::literals;

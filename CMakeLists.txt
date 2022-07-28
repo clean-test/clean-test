@@ -69,7 +69,9 @@ add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/expression
     BitwiseOr.h
     BitwiseXor.h
     Clause.h
+    Close.h
     Comma.h
+    Distance.h
     Divide.h
     Equal.h
     Greater.h
@@ -89,6 +91,7 @@ add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/expression
     StandardOperator.h
     Subtract.h
     Throws.h
+    Tolerance.h
 )
 add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/framework
     AbstractCaseRunner.h

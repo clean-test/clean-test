@@ -8,7 +8,6 @@
 #include <cassert>
 #include <clean-test/expression.h>
 #include <exception>
-#include <iostream>
 #include <sstream>
 
 namespace {
@@ -236,12 +235,156 @@ void test_short_circuit_or()
     }
 }
 
+template <typename T, typename U = T>
+concept Identifiable = requires(T t, U u) {
+    { t == u } -> std::convertible_to<bool>;
+    { t != u } -> std::convertible_to<bool>;
+    { u == t } -> std::convertible_to<bool>;
+    { u != t } -> std::convertible_to<bool>;
+};
+
+template <typename T, typename U = T>
+concept Ordered = requires(T t, U u) {
+    { t < u } -> std::convertible_to<bool>;
+    { t <= u } -> std::convertible_to<bool>;
+    { t > u } -> std::convertible_to<bool>;
+    { t >= u } -> std::convertible_to<bool>;
+    { u < t } -> std::convertible_to<bool>;
+    { u <= t } -> std::convertible_to<bool>;
+    { u > t } -> std::convertible_to<bool>;
+    { u >= t } -> std::convertible_to<bool>;
+};
+
+template <typename T, typename U>
+concept OrderedOnly
+    = Ordered<T, U> and not Ordered<T, T> and not Ordered<U, U>
+    and not Identifiable<T, U> and not Identifiable<T, T> and not Identifiable<U, U>;
+
+template <typename T>
+class StaticallyMockable {
+public:
+    static std::vector<T> m_norm_stack;
+
+    auto operator<=>(StaticallyMockable const & other) const noexcept = delete;
+
+    friend auto operator-(StaticallyMockable, StaticallyMockable) {
+        return StaticallyMockable{};
+    }
+
+    friend std::ostream & operator<<(std::ostream & out, StaticallyMockable) {
+        return out << "StaticallyMockable";
+    }
+};
+
+template <typename T>
+std::vector<T> StaticallyMockable<T>::m_norm_stack = {};
+
+template <typename T>
+constexpr auto norm(StaticallyMockable<T>)
+{
+    auto & data = StaticallyMockable<T>::m_norm_stack;
+    ct::utils::dynamic_assert(not data.empty());
+    auto result = std::move(data.back());
+    data.pop_back();
+    return result;
+}
+
+void test_distance() {
+    // compile time checks on unsigned, since this is the only constexpr-norm available for both MSVC and clang.
+    static_assert(ct::distance(4u, 1u) <= ct::tolerance(3u, 0u));
+    static_assert(not ct::is_close(1u, 2u));
+    static_assert(ct::is_close(ct::lift(1u) + 3u, ct::lift(6u) - 2u));
+
+    static_assert(OrderedOnly<ct::expression::Distance<int>, ct::expression::Tolerance<int>>);
+    static_assert(not OrderedOnly<ct::expression::Distance<int>, ct::expression::Tolerance<double>>);
+    static_assert(not Ordered<ct::expression::Distance<int>>);
+    static_assert(not Identifiable<ct::expression::Distance<int>>);
+    static_assert(not Ordered<ct::expression::Tolerance<int>>);
+    static_assert(not Identifiable<ct::expression::Tolerance<int>>);
+
+    // Distance / Tolerance comparison operator.
+    using D = ct::expression::Distance<int>;
+    using T = ct::expression::Tolerance<int>;
+    auto as_tolerance = [](D const & dist) {
+        return T{.m_absolute = dist.m_absolute, .m_relative = dist.m_relative};
+    };
+    auto compare_all = [&](auto const & positive, auto const & negative, D const & lhs, D const & rhs, bool const expectation) {
+        // note: lhs < T{rhs} is not equivalent to not (lhs >= T{rhs}).
+        ct::utils::dynamic_assert(expectation == positive(lhs, as_tolerance(rhs)));
+        ct::utils::dynamic_assert(expectation == negative(as_tolerance(rhs), lhs));
+        ct::utils::dynamic_assert(expectation == positive(as_tolerance(lhs), rhs));
+        ct::utils::dynamic_assert(expectation == negative(rhs, as_tolerance(lhs)));
+    };
+    auto test_less_equal = [&](D const & lhs, D const & rhs) {
+        compare_all(std::less_equal<>{}, std::greater_equal<>{}, lhs, rhs, true);
+    };
+    auto test_less = [&](D const & lhs, D const & rhs) {
+        test_less_equal(lhs, rhs);
+        compare_all(std::less<>{}, std::greater<>{}, lhs, rhs, true);
+    };
+    auto test_not_less = [&](D const & lhs, D const & rhs) {
+        compare_all(std::less<>{}, std::greater<>{}, lhs, rhs, false);
+    };
+    auto test_not_less_equal = [&](D const & lhs, D const & rhs) {
+        test_not_less(lhs, rhs);
+        compare_all(std::less_equal<>{}, std::greater_equal<>{}, lhs, rhs, false);
+    };
+
+    auto const north = D{0, 1};
+    auto const south = D{0, -1};
+    auto const east = D{1, 0};
+    auto const west = D{-1, 0};
+
+    test_less(west, north);
+    test_less(east, north);
+    test_less(north, east);
+    test_less(south, north);
+    test_less(south, west);
+    test_less(west, south);
+    test_less(south, east);
+
+    test_less_equal(north, south);
+    test_less_equal(south, north);
+    test_less_equal(north, north);
+    test_less_equal(south, south);
+    test_less_equal(east, east);
+    test_less_equal(west, west);
+    test_less_equal(south, south);
+    test_less_equal(north, north);
+
+    test_not_less_equal(north, west);
+    test_not_less_equal(east, south);
+
+    test_not_less(north, south);
+    test_not_less(east, east);
+    test_not_less(west, west);
+    test_not_less(south, south);
+    test_not_less(north, north);
+
+    // With a type T where norm(T) != T
+    auto & data = StaticallyMockable<int>::m_norm_stack;
+    data.push_back(1);
+    data.push_back(2);
+    data.push_back(3);
+    assert_output(
+        "( distance(StaticallyMockable, StaticallyMockable) = {absolute: 3, relative: 1} "
+        ">= {absolute: 1, relative: 100} )",
+        ct::distance(StaticallyMockable<int>{}, StaticallyMockable<int>{}) >= ct::tolerance(1, 100));
+
+    // Operator console output
+    assert_output(
+        "( distance(( 1 + 0.3 ), ( 2 - 0.7 )) = {absolute: 0, relative: 0} "
+        "<= {absolute: 2.22045e-16, relative: 2.22045e-16} )",
+        ct::is_close(ct::lift(1.) + .3, ct::lift(2) - .7));
+}
+
 int main()
 {
     test_operator_output();
     test_literals();
     test_short_circuit_and();
     test_short_circuit_or();
+    test_distance();
 
     // Abortion
 #ifdef CLEANTEST_HAS_ABORT_SUPPORT
