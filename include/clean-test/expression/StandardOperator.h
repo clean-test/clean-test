@@ -14,7 +14,7 @@ template <typename Operator, BasicExpression... Expression> requires(only_values
 class StandardOperatorEvaluation;
 
 template <typename Operator, BasicExpression... Expression> requires(only_values<Expression...>)
-class StandardOperator : public ExpressionBase<StandardOperator<Operator, Expression...>> {
+class StandardOperator final : public ExpressionBase<StandardOperator<Operator, Expression...>> {
 public:
     using Value = decltype(
         std::declval<Operator>().operator()(std::declval<typename Expression::Value>()...));
@@ -36,8 +36,8 @@ private:
 };
 
 template <typename Operator, BasicExpression... Expression> requires(only_values<Expression...>)
-class StandardOperatorEvaluation
-    : public EvaluationBase<StandardOperatorEvaluation<Operator, Expression...>>, private Operator {
+class StandardOperatorEvaluation final : public EvaluationBase<StandardOperatorEvaluation<Operator, Expression...>>,
+                                         private Operator {
 public:
     // clang-format off
     constexpr explicit(sizeof...(Expression) == 1)
