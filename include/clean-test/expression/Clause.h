@@ -30,7 +30,7 @@ public:
     }
 
 private:
-    friend class ClauseEvaluation<T>;
+    friend Evaluation;
 
     T m_value;
 };

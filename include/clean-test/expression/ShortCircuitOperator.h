@@ -37,7 +37,7 @@ public:
     }
 
 private:
-    friend class ShortCircuitEvaluation<Operator, L, R>;
+    friend Evaluation;
 
     L const m_lhs;
     R const m_rhs;

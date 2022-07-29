@@ -30,7 +30,7 @@ public:
     }
 
 private:
-    friend class StandardOperatorEvaluation<Operator, Expression...>;
+    friend Evaluation;
 
     std::tuple<Expression const...> m_expression;
 };
