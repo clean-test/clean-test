@@ -116,6 +116,7 @@ add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/execute
 add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/utils
     FwdCapture.h
     Initializes.h
+    Math.h
     ScopeGuard.h
     SourceLocation.h
     UTF8Encoder.h
