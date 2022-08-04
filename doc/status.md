@@ -20,6 +20,7 @@
  - [ ] Make packageable (for github, vcpkg, etc.)
  - [ ] Make proper C++20 module
  - [x] Add static lib with already prepared main (mention in toplevel readme)
+ - [ ] Use ubsan (also in one CI matrix-cell)
 
 
 ## Doc
