@@ -23,8 +23,8 @@ class ShortCircuitEvaluation;
 template <typename Operator, BasicExpression L, BasicExpression R> requires(only_values<L, R>)
 class ShortCircuitOperator : public ExpressionBase<ShortCircuitOperator<Operator, L, R>> {
 public:
-    using Value
-        = decltype(std::declval<Operator>()(std::declval<typename L::Value>(), std::declval<typename R::Value>()));
+    using Value = std::remove_cvref_t<
+        decltype(std::declval<Operator>()(std::declval<typename L::Value>(), std::declval<typename R::Value>()))>;
     using Evaluation = ShortCircuitEvaluation<Operator, L, R>;
 
     constexpr ShortCircuitOperator(std::convertible_to<L> auto && lhs, std::convertible_to<R> auto && rhs) :
@@ -55,7 +55,7 @@ public:
 
     [[nodiscard]] constexpr Value const & value() const
     {
-        return (m_rhs ? *m_rhs_value : m_lhs_value);
+        return m_truth;
     }
 
     friend std::ostream & operator<<(std::ostream & out, ShortCircuitEvaluation const & expr)
@@ -69,10 +69,8 @@ private:
     std::ostream & print_to(std::ostream & out) const;
 
     typename L::Evaluation m_lhs;
-    Value m_lhs_value;
-
     std::optional<typename R::Evaluation> m_rhs;
-    std::optional<Value> m_rhs_value;
+    Value const m_truth;
 };
 
 /// Factory for selecting appropriate template arguments for the returned @c ShortCircuitOperator based on arguments.
@@ -91,9 +89,8 @@ template <typename Operator, BasicExpression L, BasicExpression R>
 constexpr ShortCircuitEvaluation<Operator, L, R>::ShortCircuitEvaluation(
     ShortCircuitOperator<Operator, L, R> const & sco) :
     m_lhs{sco.m_lhs.evaluation()},
-    m_lhs_value{static_cast<Value>(m_lhs.value())},
     m_rhs{static_cast<bool>(m_lhs) != short_circuit_when ? std::optional{sco.m_rhs.evaluation()} : std::nullopt},
-    m_rhs_value{m_rhs ? std::optional{static_cast<Value>(m_rhs->value())} : std::nullopt}
+    m_truth{m_rhs ? static_cast<Value>(m_rhs->value()) : static_cast<Value>(m_lhs.value())}
 {}
 
 template <typename Operator, BasicExpression L, BasicExpression R>
@@ -102,7 +99,7 @@ std::ostream & ShortCircuitEvaluation<Operator, L, R>::print_to(std::ostream & o
     out << "( " << m_lhs << ' ' << description << ' ';
 
     // Check whether rhs was ever considered (due to short circuiting). Otherwise it might be unsafe to print it.
-    if (m_rhs_value) {
+    if (m_rhs) {
         out << *m_rhs;
     } else {
         out << "<unknown>";

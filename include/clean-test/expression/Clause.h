@@ -19,7 +19,7 @@ template <typename T>
 class Clause : public ExpressionBase<Clause<T>> {
 public:
     using Evaluation = ClauseEvaluation<T>;
-    using Value = T const &;
+    using Value = T;
 
     constexpr explicit Clause(std::convertible_to<T> auto && value) : m_value{std::forward<decltype(value)>(value)}
     {}

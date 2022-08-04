@@ -16,8 +16,8 @@ class StandardOperatorEvaluation;
 template <typename Operator, BasicExpression... Expression> requires(only_values<Expression...>)
 class StandardOperator final : public ExpressionBase<StandardOperator<Operator, Expression...>> {
 public:
-    using Value = decltype(
-        std::declval<Operator>().operator()(std::declval<typename Expression::Value>()...));
+    using Value = std::remove_cvref_t<decltype(std::declval<Operator>().operator()(
+        std::declval<typename Expression::Value>()...))>;
     using Evaluation = StandardOperatorEvaluation<Operator, Expression...>;
 
     constexpr explicit(sizeof...(Expression) == 1) StandardOperator(std::convertible_to<Expression> auto &&... expr) :
@@ -73,7 +73,7 @@ public:
 
 private:
     std::tuple<typename std::remove_cvref_t<Expression>::Evaluation...> m_evaluation;
-    typename StandardOperator<Operator, Expression...>::Value m_value;
+    typename StandardOperator<Operator, Expression...>::Value const m_value;
 };
 
 /// Factory for selecting appropriate template arguments for the returned @c StandardOperator based on @c expression.
