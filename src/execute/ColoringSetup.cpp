@@ -4,7 +4,6 @@
 #include "ColoringSetup.h"
 
 #include <exception>
-#include <iostream>
 
 #if _WIN32
 #include <io.h>
