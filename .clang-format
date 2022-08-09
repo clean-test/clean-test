@@ -68,6 +68,7 @@ PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 100
 PenaltyReturnTypeOnItsOwnLine: 200
 PointerAlignment: Middle
+RequiresClausePosition: WithPreceding
 Standard: Cpp11
 TabWidth: 4
 UseTab: Never
