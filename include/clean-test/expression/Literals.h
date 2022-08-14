@@ -92,6 +92,26 @@ constexpr auto operator""_ull(unsigned long long num)
     return Clause{std::move(num)};
 }
 
+constexpr auto operator""_z(unsigned long long const num)
+{
+    return Clause{static_cast<std::make_signed_t<std::size_t>>(num)};
+}
+
+constexpr auto operator""_uz(unsigned long long const num)
+{
+    return Clause{static_cast<std::size_t>(num)};
+}
+
+constexpr auto operator""_t(unsigned long long const num)
+{
+    return Clause{static_cast<std::ptrdiff_t>(num)};
+}
+
+constexpr auto operator""_ut(unsigned long long const num)
+{
+    return Clause{static_cast<std::make_unsigned_t<std::ptrdiff_t>>(num)};
+}
+
 constexpr auto operator""_f(long double const num)
 {
     return Clause{static_cast<float>(num)};

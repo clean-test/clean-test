@@ -163,6 +163,10 @@ void test_literals()
     using namespace ct::literals;
     static_assert(1_i != 2_i);
     static_assert(0_ull == 0);
+    static_assert(1_z == 1);
+    static_assert(1_uz == 1u);
+    static_assert(-1_t == -1);
+    static_assert(0_ut != -1);
     static_assert(3.7 != 3.8_f);
     static_assert("hi"_sv != "how are you");
 }
