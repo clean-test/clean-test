@@ -112,11 +112,26 @@ std::string description(ct::framework::Name const & name) {
     return buffer.str();
 }
 
+template <typename T>
+auto set_difference(std::vector<T> const & lhs, std::vector<T> const & rhs)
+{
+    auto result = std::vector<T>{};
+    std::set_difference(std::begin(lhs), std::end(lhs), std::begin(rhs), std::end(rhs), std::back_inserter(result));
+    return result;
+}
+
+template <typename T>
+constexpr auto sorted(std::vector<T> data)
+{
+    std::sort(data.begin(), data.end());
+    return data;
+}
+
 // Ensure invariants of registered test-suites and -cases as documented above.
 int main()
 {
     // per TU: ordered from top to bottom.
-    auto const expected_descriptions = std::multiset<std::string>{
+    auto const expected_descriptions = sorted(std::vector<std::string>{
         // this TU
         "short_suite/short",
         "test_alternatives/foo",
@@ -142,12 +157,30 @@ int main()
 
         // addendum TU
         "second_tu/case",
-    };
+    });
 
-    auto const & registry = ct::framework::registry();
-    auto found_descriptions = std::multiset<std::string>{};
-    for (auto && test_case : registry) {
-        found_descriptions.emplace(description(test_case.name()));
+    auto found_descriptions = sorted([&] {
+        auto result = std::vector<std::string>{};
+        auto const & registry = ct::framework::registry();
+        for (auto && test_case : registry) {
+            result.emplace_back(description(test_case.name()));
+        }
+        return result;
+    }());
+
+    auto const missing_descriptions = set_difference(expected_descriptions, found_descriptions);
+    auto const excess_description = set_difference(found_descriptions, expected_descriptions);
+    if (not missing_descriptions.empty()) {
+        std::cout << "Missing (expected but not found):\n";
+        for (auto const & name: missing_descriptions) {
+            std::cout << "  " << name << "\n";
+        }
+    }
+    if (not excess_description.empty()) {
+        std::cout << "Excess (found but not expected):\n";
+        for (auto const & name: excess_description) {
+            std::cout << "  " << name << "\n";
+        }
     }
     ct::utils::dynamic_assert(found_descriptions == expected_descriptions);
 }
