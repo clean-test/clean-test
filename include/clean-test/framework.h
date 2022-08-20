@@ -25,17 +25,17 @@ namespace literals {
 
 [[nodiscard]] inline auto operator""_test(char const * const name, std::size_t const size)
 {
-    return Test{framework::Name{{name, size}}};
+    return Test{framework::Name{std::string{name, size}}};
 }
 
 [[nodiscard]] inline auto operator""_suite(char const * const name, std::size_t const size)
 {
-    return Suite{framework::Name{{name, size}}};
+    return Suite{framework::Name{std::string{name, size}}};
 }
 
 [[nodiscard]] constexpr auto operator""_tag(char const * const name, std::size_t const size)
 {
-    return Tag{{name, size}};
+    return Tag{std::string_view{name, size}};
 }
 
 }

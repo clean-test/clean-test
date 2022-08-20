@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <clean-test/utils/Initializes.h>
+
 #include "Tag.h"
 
 #include <vector>
@@ -20,7 +22,8 @@ public:
     /// Default c'tor with empty path and tags.
     Name() = default;
 
-    explicit Name(std::string_view const path) : m_path{path}
+    template <utils::Initializes<std::string> Path>
+    explicit Name(Path && path) : m_path{std::forward<Path>(path)}
     {}
 
     explicit Name(Tag const & tag) : m_tags{tag}
