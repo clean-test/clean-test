@@ -45,13 +45,13 @@ public:
         m_evaluation{
             [&op]<std::size_t... idx>(std::index_sequence<idx...>) constexpr {
                 return std::tuple{std::get<idx>(op.m_expression).evaluation()...};
-            }(std::make_index_sequence<sizeof...(Expression)>())
+            }(std::index_sequence_for<Expression...>{})
         },
         m_value{
             [this]<std::size_t... idx>(std::index_sequence<idx...>) constexpr -> decltype(auto) {
                 auto const & evaluation = m_evaluation;
                 return this->Operator::operator()(std::get<idx>(evaluation).value()...);
-            }(std::make_index_sequence<sizeof...(Expression)>())
+            }(std::index_sequence_for<Expression...>{})
         }
     {}
     // clang-format on
@@ -67,7 +67,7 @@ public:
         return [&evaluation, &out]<std::size_t... idx>(std::index_sequence<idx...>) -> decltype(auto)
         {
             return evaluation.describe(out, std::get<idx>(evaluation.m_evaluation)...);
-        }(std::make_index_sequence<sizeof...(Expression)>());
+        }(std::index_sequence_for<Expression...>{});
         // clang-format on
     }
 
