@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "CaseRunner.h"
 #include "Name.h"
 #include "ObservationSetup.h"
 #include "ObserverFwd.h"
@@ -17,12 +18,6 @@
 #include <type_traits>
 
 namespace clean_test::framework {
-
-template <typename T>
-concept CaseRunner = std::is_invocable_v<T, execute::Observer &>;
-
-template <typename T>
-concept GenericCaseRunner = CaseRunner<T> or std::is_invocable_v<T>;
 
 /// Facility for registration of a test-case with a predefined name.
 ///
