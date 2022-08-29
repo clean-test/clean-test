@@ -7,6 +7,8 @@
 #include <execute/CaseStatus.h>
 #include <execute/Conductor.h>
 
+#include <utils/Printable.h>
+
 #include <clean-test/framework.h>
 
 #include <condition_variable>

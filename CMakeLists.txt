@@ -120,6 +120,7 @@ add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/utils
     FwdCapture.h
     Initializes.h
     Math.h
+    Printable.h
     RemoveRvalueReference.h
     ScopeGuard.h
     SourceLocation.h
