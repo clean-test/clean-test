@@ -11,9 +11,9 @@ namespace clean_test::utils {
 ///
 /// A usual usage pattern looks like:
 /// @code
-/// auto lambda = [fwd = fwd_capture(whatever)] {
+/// auto lambda = [fwd = fwd_capture(std::forward<Whatever>(whatever))] mutable {
 ///     auto & [captured] = fwd;
-///     // [...]
+///     call(std::forward<Whatever>(captured);
 /// };
 /// @endcode
 ///
