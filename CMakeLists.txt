@@ -130,6 +130,7 @@ add_files(CLEANTEST_PUBLIC_HEADERS include/clean-test/utils
     UTF8Encoder.h
 )
 add_files(CLEANTEST_SOURCES src/framework
+    CaseRegistrar.cpp
     ExpectationObserver.cpp
     FallbackObservationSetup.h
     ObservationSetup.cpp

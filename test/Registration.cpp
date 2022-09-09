@@ -5,7 +5,9 @@
 
 #include <clean-test/framework.h>
 
+#include <array>
 #include <iostream>
+#include <ranges>
 #include <set>
 #include <sstream>
 
@@ -13,6 +15,16 @@ namespace {
 
 namespace ct = clean_test;
 using namespace ct::literals;
+
+// Some tests need properly supported ranges library -- particularly including owning views.
+//
+// Furthermore, no clang release to date correctly handles (unnamed) concept requirements for member functions.
+// Therefore lots of ranges functionalities don't compile with clang.
+// See https://github.com/llvm/llvm-project/issues/44178 for details.
+#if (not defined(__clang_major__) or __clang_major__ > 100)                                                            \
+    and defined(__cpp_lib_ranges) and __cpp_lib_ranges >= 202110L
+#define ENABLE_RANGE_TESTS
+#endif
 
 // It doesn't get simpler than this: Start with our first test-suite
 auto const short_suite = ct::Suite{"short_suite", [] {
@@ -95,6 +107,104 @@ auto const observability = ct::Suite{"observer", [] {
     "test"_test = [](ct::Observer &) {};
 }};
 
+// data (driven) test-cases
+
+/// A wrapper around T that keeps track wether it has been copied or not.
+template <typename T>
+class Original {
+public:
+    friend std::ostream & operator<<(std::ostream& out, Original const & o)
+    {
+        return out << o.value << " (" << (o.is_copied ? "copied" : "original") << ')';
+    }
+
+    explicit(false) operator T const &() const {
+        return value;
+    }
+
+    explicit constexpr Original(T v) noexcept : value{std::move(v)}
+    {}
+
+    constexpr Original(Original const & other) noexcept : value{other.value}, is_copied{true}
+    {}
+
+    constexpr Original(Original && other) noexcept : value{std::move(other.value)}
+    {}
+
+    constexpr Original & operator=(Original const & other) noexcept
+    {
+        value = other.value;
+        is_copied = true;
+    }
+    constexpr Original & operator=(Original && other) noexcept
+    {
+        value = std::move(other.value);
+        is_copied = false;
+    }
+
+private:
+    T value;
+    bool is_copied = false;
+};
+
+class Unprintable{};
+
+auto const data_suite = ct::Suite{"data", []{
+    static auto const ints = std::vector{0, -1, 3, 4};
+    ct::Test{"2-arg-ctor", ints} = [](int const &) {};
+    ct::Test{"3-arg-ctor", ints, [x = std::make_unique<int>(0)](int) mutable { *x += 1; }}; // move-only runner
+    ints | ct::Test{"1-arg-ctor"} = [](int) {};
+    std::tuple{1, "one"} | ct::Test{"tuple"} = [](auto &&) {};
+    std::array{Unprintable{}} | ct::Test{"unprintable"} = [](auto &&) {};
+    ct::Test{"pair", std::pair{"1", "one"}} = [](auto&&) {};
+
+    // Handling of temporary ranges
+    auto generate_originals = [] {
+        return std::array{Original<int>{0}};
+    };
+    generate_originals() | "temporary"_test = [](auto&&) {};
+    auto const stored = generate_originals();
+    stored | "permanent"_test = [](auto&&) {};
+
+    // Handling of range views (generators of temporaries)
+#if defined(ENABLE_RANGE_TESTS)
+    auto make_tmp = [](int const &) { return std::string{"temporary but very long string"}; }; // SSO unlikely
+    auto ensure_rvref = [](auto && x) { static_assert(std::is_rvalue_reference_v<decltype(x)>); };
+    generate_originals() | std::views::transform(make_tmp) | "tmp-range"_test = ensure_rvref;
+#endif
+    auto base = 0;
+    auto validate_refs = []<typename T>(T && t) {
+        // Note: This lambda is used in unevaluated contexts with either reference types as part of std::is_invocable
+        // checks. Therefore we are intentionally using a runtime check rather than a static assertion.
+        ct::utils::dynamic_assert(std::is_lvalue_reference_v<decltype(t)>);
+    };
+    std::tuple<int const &, std::string>{base, "1"} | "tmp-tuple"_test = validate_refs;
+}};
+
+#if defined(ENABLE_RANGE_TESTS)
+
+// Tests for corner cases of the CaseData concept
+namespace case_data_tests {
+
+class NonCopyable {
+public:
+    template <typename T> requires(not std::is_same_v<T, NonCopyable>)
+    NonCopyable(T&&){}
+
+    NonCopyable(NonCopyable const &) = delete;
+    NonCopyable(NonCopyable&&) = delete;
+};
+
+auto stable_reference = NonCopyable{0};
+using CounterExampleRange
+    = decltype(std::array{0} | std::views::transform([](auto &&) -> decltype(auto) { return stable_reference; }));
+static_assert(not std::ranges::borrowed_range<CounterExampleRange>);
+static_assert(not ct::utils::Tuple<CounterExampleRange>);
+static_assert(not ct::framework::CaseData<CounterExampleRange>);
+
+}
+#endif
+
 } // anonymous namespace
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -157,6 +267,32 @@ int main()
 
         // addendum TU
         "second_tu/case",
+
+        // data driven
+        "data/1-arg-ctor/-1",
+        "data/1-arg-ctor/0",
+        "data/1-arg-ctor/3",
+        "data/1-arg-ctor/4",
+        "data/2-arg-ctor/-1",
+        "data/2-arg-ctor/0",
+        "data/2-arg-ctor/3",
+        "data/2-arg-ctor/4",
+        "data/3-arg-ctor/-1",
+        "data/3-arg-ctor/0",
+        "data/3-arg-ctor/3",
+        "data/3-arg-ctor/4",
+        "data/pair/1",
+        "data/pair/one",
+        "data/tuple/1",
+        "data/tuple/one",
+        "data/permanent/0 (original)",
+        "data/temporary/0 (original)",
+        "data/unprintable/0",
+#if defined(ENABLE_RANGE_TESTS)
+        "data/tmp-range/temporary but very long string",
+#endif
+        "data/tmp-tuple/0",
+        "data/tmp-tuple/1",
     });
 
     auto found_descriptions = sorted([&] {

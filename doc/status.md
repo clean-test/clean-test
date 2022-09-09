@@ -47,7 +47,7 @@
  - [x] Replace `std::function` in order to support move-only testcases
  - [x] Make output thread-safe by using `std::basic_osyncstream`
  - [x] Integrate Observer
- - [ ] Support parameterized tests (for loop; also with `operator|`?)
+ - [x] Support parameterized tests (for loop; also with `operator|`?)
  - [x] Decide whether delayed registration is supported
        (i.e. registering while any case has already been started).
  - [ ] Make `Name` `constexpr` with `constexpr` `std::vector` / `std::string`.
@@ -60,7 +60,6 @@
  - [ ] Generate badges with `std::format`.
  - [x] Support fallback `Observer` (for users forgetting to pass it along)
  - [ ] Add scoped, `Observer`-based facility for additional debug output
- - [ ] Provide migration helpers for the big 3
  - [x] The unknown catch-all "test" shouldn't be counted in "Ran n test-cases" and not reported as failed (without errors)
  - [x] Single-threaded mode could allow a global observer (so that this works without errors)
 
