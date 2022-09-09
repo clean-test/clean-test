@@ -7,6 +7,7 @@ Clean Test
 .. image:: https://github.com/clean-test/clean-test/actions/workflows/clang.yml/badge.svg?branch=main
 .. image:: https://github.com/clean-test/clean-test/actions/workflows/msvc.yml/badge.svg?branch=main
 .. image:: https://github.com/clean-test/clean-test/actions/workflows/doc.yml/badge.svg?branch=main
+.. image:: https://img.shields.io/badge/c%2B%2B-20-informational
 .. image:: https://img.shields.io/badge/license-BSL--1.0-informational
 
 A modern C++-20 unit-testing framework.

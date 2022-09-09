@@ -13,6 +13,8 @@ Clean Test
    :target: https://github.com/clean-test/clean-test/actions/workflows/msvc.yml
 .. image:: https://github.com/clean-test/clean-test/actions/workflows/doc.yml/badge.svg?branch=main
    :target: https://github.com/clean-test/clean-test/actions/workflows/doc.yml
+.. image:: https://img.shields.io/badge/c%2B%2B-20-informational
+   :target: https://en.wikipedia.org/wiki/C%2B%2B20
 .. image:: https://img.shields.io/badge/license-BSL--1.0-informational
    :target: LICENSE.txt
 
