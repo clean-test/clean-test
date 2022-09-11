@@ -5,6 +5,7 @@
 
 #include <framework/ObserverFwd.h>
 
+#include <memory>
 #include <utility>
 
 namespace clean_test::framework {

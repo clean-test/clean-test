@@ -3,6 +3,8 @@
 
 #include "XMLEncoder.h"
 
+#include <memory>
+
 namespace clean_test::execute {
 
 XMLEncoder & operator<<(XMLEncoder & encoder, std::string_view str)
