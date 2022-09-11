@@ -9,6 +9,7 @@
 #include <clean-test/expression.h>
 #include <exception>
 #include <sstream>
+#include <vector>
 
 namespace {
 
