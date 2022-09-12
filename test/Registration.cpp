@@ -197,7 +197,7 @@ public:
 
 auto stable_reference = NonCopyable{0};
 using CounterExampleRange
-    = decltype(std::array{0} | std::views::transform([](auto &&) -> decltype(auto) { return stable_reference; }));
+    = decltype(std::ranges::transform_view(std::array{0}, [](auto &&) -> decltype(auto) { return stable_reference; }));
 static_assert(not std::ranges::borrowed_range<CounterExampleRange>);
 static_assert(not ct::utils::Tuple<CounterExampleRange>);
 static_assert(not ct::framework::CaseData<CounterExampleRange>);
