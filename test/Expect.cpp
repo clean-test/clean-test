@@ -58,6 +58,9 @@ auto const dummy = [] {
     auto_test() = [] { ct::expect(ct::lift(NonString{"\x80"}) == ct::lift(NonString{""})); };
     auto_test() = [] { ct::expect(true) << "\x80"; }; // broken user message
 
+    // nullptr
+    auto_test() = [] { int * i = nullptr; ct::expect(i == ct::lift(nullptr)); };
+
     return 1;
 }();
 
@@ -182,5 +185,13 @@ int main()
         auto const & details = result.m_observations.front().m_description;
         std::cout << "HUHU " << details << std::endl;
         ct::utils::dynamic_assert(details.find(R"R(\x80)R") != std::string_view::npos);
+    });
+
+    // nullptr
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        auto const & details = result.m_observations.front().m_expression_details;
+        std::cout << "Checking: " << details << std::endl;
+        ct::utils::dynamic_assert(details.find("nullptr == nullptr") != std::string_view::npos);
     });
 }

@@ -71,10 +71,31 @@ private:
 template <typename T>
 std::ostream & ClauseEvaluation<T>::print_to(std::ostream & out) const
 {
-    if constexpr (requires { utils::UTF8Encoder::Elaborated{value()}; }) {
-        out << utils::UTF8Encoder::Elaborated{value()};
+    using Type = std::remove_cvref_t<T>;
+
+    auto & v = value();
+
+#if defined(__GNUC__) and __GNUC__ <= 10 // ancient gcc can cause warning during Elaborated{v} check
+# pragma GCC diagnostic push // save state
+# pragma GCC diagnostic ignored "-Wnonnull"
+#endif
+    if constexpr (
+        not std::is_same_v<Type, std::nullptr_t>
+        and not std::is_pointer_v<Type>
+        and requires { utils::UTF8Encoder::Elaborated{v}; })
+    {
+#if defined(__GNUC__) and __GNUC__ <= 10
+# pragma GCC diagnostic pop // restore saved state
+#endif
+        out << utils::UTF8Encoder::Elaborated{v};
+    } else if constexpr (std::is_pointer_v<Type>) {
+        if (v == nullptr) {
+            out << "nullptr";
+        } else {
+            out << v;
+        }
     } else {
-        out << value();
+        out << v;
     }
     return out;
 }
