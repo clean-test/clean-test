@@ -1,6 +1,10 @@
 # Copyright (c) m8mble 2021.
 # SPDX-License-Identifier: BSL-1.0
 
+# Require dependencies
+include(CMakeFindDependencyMacro)
+find_dependency(Threads)
+
 # Import central (generated) configuration details.
 include(${CMAKE_CURRENT_LIST_FILE}/CleanTestConfigGenerated.cmake)
 
