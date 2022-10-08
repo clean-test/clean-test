@@ -95,7 +95,7 @@ void test_integral()
     static_assert(std::is_same_v<Wrapper<T>, std::remove_cvref_t<decltype(ct::utils::norm(Wrapper<T>{}))>>);
     static_assert(std::is_same_v<T, decltype(ct::utils::norm(Mock{}))>);
 
-    auto const values = std::vector<T>{0, 1, 2, Limits::max(), Limits::lowest()};
+    auto const values = std::vector<T>{0, 1, 2, Limits::max()};
     auto const signs = std::array{std::vector<int>{1}, std::vector<int>{1, -1}};
     for (auto const v : values) {
         for (auto const sign : signs[std::is_signed_v<T>]) {
