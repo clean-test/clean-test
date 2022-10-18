@@ -30,7 +30,7 @@ public:
 
     /// Detailed c'tor: initialize from @p name_path, @p wall_time and @p observations.
     ///
-    /// Stores worst outcome of any @p observations and @p execution_outcome into @c m_outcome.
+    /// Stores worst outcome of any @p observations and @p execution_outcome into @c m_status.
     /// The @p execution_outcome is assumed to result from the test execution.
     CaseResult(
         std::string name_path,
