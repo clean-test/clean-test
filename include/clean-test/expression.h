@@ -28,6 +28,7 @@
 #include "expression/Not.h"
 #include "expression/NotEqual.h"
 #include "expression/Or.h"
+#include "expression/Star.h"
 #include "expression/Subtract.h"
 #include "expression/Throws.h"
 #include "expression/Tolerance.h"

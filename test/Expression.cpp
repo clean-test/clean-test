@@ -78,6 +78,14 @@ public:
     int m_v;
 };
 
+template <typename T>
+struct PtrWrap {
+    constexpr auto operator *() const {
+        return *ptr;
+    }
+    T * ptr;
+};
+
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // constexpr tests
@@ -155,6 +163,16 @@ void test_operator_output()
     assert_output("( 1 | 2 )", 1 | ct::lift(2));
     assert_output("( 1 ^ 2 )", 1 ^ ct::lift(2));
     assert_output("~2", ~ct::lift(2));
+
+    constexpr auto one = 1;
+    auto const expected = [&] {
+        auto buffer = std::ostringstream{};
+        buffer << one << " (@" << &one << ')';
+        return std::move(buffer).str();
+    }();
+    assert_output(expected, *ct::lift(&one));
+    auto const wrapped_one = PtrWrap<int const>{&one};
+    assert_output("1", *ct::lift(wrapped_one));
 
     assert_output("2, 3", (ct::lift(CommaInt{2}), ct::lift(3)));
 }
