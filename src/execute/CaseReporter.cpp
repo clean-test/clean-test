@@ -15,10 +15,11 @@
 namespace clean_test::execute {
 namespace {
 
-constexpr auto observation_description = std::array{
+constexpr auto observation_description = std::array<std::string_view, ObservationStatus::num_values>{
     "Passing expectation",
     "Failure (flaky)",
     "Failure",
+    "Failure (asserted)",
 };
 
 BadgeType badge_type(CaseStatus status)
@@ -74,7 +75,7 @@ CaseReporter::CaseReporter(Setup const setup) :
     m_setup{setup},
     m_buffer{},
     m_sink{use_buffering(m_setup.m_buffering) ? m_buffer : m_setup.m_output},
-    m_is_observation_state_enabled{false, true, true}
+    m_is_observation_state_enabled{false, true, true, true}
 {}
 
 CaseReporter::~CaseReporter()

@@ -92,6 +92,13 @@ void single_threaded_observations()
     }
 }
 
+void asserted_failures()
+{
+    "test"_test = [] { ct::expect(false) << ct::asserted << "fooooo"; };
+    auto const console = report();
+    utils::dynamic_assert(contains(console, "foooo"));
+}
+
 }
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,4 +109,5 @@ int main()
     ct::execute::late_registration();
     ct::execute::catch_all();
     ct::execute::single_threaded_observations();
+    ct::execute::asserted_failures();
 }
