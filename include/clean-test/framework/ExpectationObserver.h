@@ -13,8 +13,15 @@
 
 namespace clean_test::framework {
 
-class Asserted final {};
-class Flaky final {};
+class Asserted final {
+public:
+    bool abort_on_failure;
+};
+
+class Flaky final {
+public:
+    bool may_flake;
+};
 
 class ExpectationObserver {
 public:
@@ -80,9 +87,9 @@ template <typename Other>
 ExpectationObserver & ExpectationObserver::operator<<(Other const & other)
 {
     if constexpr (std::is_same_v<Other, Asserted>) {
-        m_abort_on_failure = true;
+        m_abort_on_failure = other.abort_on_failure;
     } else if constexpr (std::is_same_v<Other, Flaky>) {
-        m_may_fail = true;
+        m_may_fail = other.may_flake;
     } else {
         m_buffer << other;
     }

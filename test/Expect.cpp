@@ -38,10 +38,14 @@ auto const dummy = [] {
     auto_test() = [] { ct::expect(false); };
     auto_test() = [] { ct::expect(true) << ct::asserted; ct::expect(true); };
     auto_test() = [] { ct::expect(false) << ct::asserted; ct::expect(true); };
+    auto_test() = [] { ct::expect(false) << ct::asserted_if(true); ct::expect(true); };
+    auto_test() = [] { ct::expect(false) << ct::asserted_if(false); ct::expect(true); };
     auto_test() = [] { ct::expect(true) << "Can't see this"; };
     auto_test() = [] { ct::expect(false) << "Can see this!"; };
     auto_test() = [] { ct::expect(true) << ct::flaky; };
     auto_test() = [] { ct::expect(false) << ct::flaky; };
+    auto_test() = [] { ct::expect(false) << ct::flaky_if(true); };
+    auto_test() = [] { ct::expect(false) << ct::flaky_if(false); };
     auto_test() = [] { ct::expect(false) << ct::flaky << ct::asserted; };
 
     // Recursion
@@ -111,6 +115,16 @@ int main()
         ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_asserted);
     });
     test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_status == Outcome::abort);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_asserted);
+    });
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_status == Outcome::fail);
+        ct::utils::dynamic_assert(result.m_observations.size() == 2ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail);
+    });
+    test([](auto const & result) {
         ct::utils::dynamic_assert(result.m_status == Outcome::pass);
         ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
         auto const & observation = result.m_observations[0];
@@ -133,6 +147,16 @@ int main()
         ct::utils::dynamic_assert(result.m_status == Outcome::pass);
         ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
         ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_flaky);
+    });
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_status == Outcome::pass);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail_flaky);
+    });
+    test([](auto const & result) {
+        ct::utils::dynamic_assert(result.m_status == Outcome::fail);
+        ct::utils::dynamic_assert(result.m_observations.size() == 1ul);
+        ct::utils::dynamic_assert(result.m_observations[0].m_status == State::fail);
     });
     test([](auto const & result) {
         ct::utils::dynamic_assert(result.m_status == Outcome::abort);

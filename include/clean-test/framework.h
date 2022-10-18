@@ -51,8 +51,19 @@ using Test = framework::CaseRegistrar<Args...>;
 
 #endif
 
-constexpr inline auto asserted = framework::Asserted{};
-constexpr inline auto flaky = framework::Flaky{};
+
+constexpr auto asserted_if(bool const should_assert)
+{
+    return framework::Asserted{should_assert};
+}
+
+constexpr auto flaky_if(bool const may_flake)
+{
+    return framework::Flaky{may_flake};
+}
+
+constexpr inline auto asserted = asserted_if(true);
+constexpr inline auto flaky = flaky_if(true);
 
 namespace literals {
 
