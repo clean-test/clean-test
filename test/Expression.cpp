@@ -394,6 +394,12 @@ void test_distance() {
         ">= {absolute: 1, relative: 100} )",
         ct::distance(StaticallyMockable<int>{}, StaticallyMockable<int>{}) >= ct::tolerance(1, 100));
 
+    // with references
+    constexpr auto x = ct::lift(0.15) + 0.15;
+    constexpr auto y = ct::lift(0.1) + 0.2;
+    constexpr auto eps = x / 10.;
+    ct::utils::dynamic_assert(ct::distance(x, y) <= ct::tolerance(eps, eps));
+
     // Operator console output
     assert_output(
         "( distance(( 1 + 0.3 ), ( 2 - 0.7 )) = {absolute: 0, relative: 0} "

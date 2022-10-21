@@ -40,12 +40,13 @@ public:
 template <BasicExpression L, BasicExpression R>
 class DistanceEvaluation;
 
-template <BasicExpression L, BasicExpression R> requires(only_values<L, R>)
+template <BasicExpression L, BasicExpression R>
 class DistanceExpression final : public ExpressionBase<DistanceExpression<L, R>> {
 public:
     using Evaluation = DistanceEvaluation<L, R>;
-    using NormValue = utils::RemoveRvalueReference<
-        utils::NormValue<decltype(std::declval<typename L::Value>() - std::declval<typename R::Value>())>>;
+    using NormValue = utils::RemoveRvalueReference<utils::NormValue<decltype(
+        std::declval<typename std::remove_cvref_t<L>::Value>() - std::declval<typename std::remove_cvref_t<R>::Value>())
+    >>;
     using Value = Distance<NormValue>;
 
     constexpr DistanceExpression(std::convertible_to<L> auto && lhs, std::convertible_to<R> auto && rhs) :
@@ -59,10 +60,8 @@ public:
 private:
     friend Evaluation;
 
-    // Note: we handle values here, since we only operate on expressions
-    // (i.e. references are already lifted to appropriate Clauses).
-    L const m_lhs;
-    R const m_rhs;
+    L m_lhs;
+    R m_rhs;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,8 +88,8 @@ private:
 
     static constexpr auto compute_distance(auto const & lhs, auto const & rhs);
 
-    typename L::Evaluation m_lhs;
-    typename R::Evaluation m_rhs;
+    typename std::remove_cvref_t<L>::Evaluation m_lhs;
+    typename std::remove_cvref_t<R>::Evaluation m_rhs;
     typename Expression::Value m_distance;
 };
 

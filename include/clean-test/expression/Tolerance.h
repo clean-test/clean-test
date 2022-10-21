@@ -116,15 +116,17 @@ private:
 template <BasicExpression L, BasicExpression R>
 class ToleranceEvaluation;
 
-template <BasicExpression ABS, BasicExpression REL> requires(only_values<ABS, REL>)
-class ToleranceExpression final : public ExpressionBase<ToleranceExpression<ABS, REL>> {
+template <BasicExpression Abs, BasicExpression Rel>
+class ToleranceExpression final : public ExpressionBase<ToleranceExpression<Abs, Rel>> {
 public:
-    static_assert(std::is_same_v<typename ABS::Value, typename REL::Value>);
-    using Evaluation = ToleranceEvaluation<ABS, REL>;
-    using Value = Tolerance<typename ABS::Value const &>;
+    static_assert(std::is_same_v<
+                  std::remove_cvref_t<typename std::remove_cvref_t<Abs>::Value>,
+                  std::remove_cvref_t<typename std::remove_cvref_t<Rel>::Value>>);
+    using Evaluation = ToleranceEvaluation<Abs, Rel>;
+    using Value = Tolerance<typename std::remove_cvref_t<Abs>::Value const &>;
 
-    constexpr ToleranceExpression(std::convertible_to<ABS> auto && abs, std::convertible_to<REL> auto && rel) :
-        m_abs{std::forward<ABS>(abs)}, m_rel{std::forward<REL>(rel)} {};
+    constexpr ToleranceExpression(std::convertible_to<Abs> auto && abs, std::convertible_to<Rel> auto && rel) :
+        m_abs{std::forward<Abs>(abs)}, m_rel{std::forward<Rel>(rel)} {};
 
     constexpr Evaluation evaluation() const
     {
@@ -134,18 +136,16 @@ public:
 private:
     friend Evaluation;
 
-    // Note: we handle values here, since we only operate on expressions
-    // (i.e. references are already lifted to appropriate Clauses).
-    ABS const m_abs;
-    REL const m_rel;
+    Abs m_abs;
+    Rel m_rel;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <BasicExpression ABS, BasicExpression REL>
-class ToleranceEvaluation final : public EvaluationBase<ToleranceEvaluation<ABS, REL>> {
+template <BasicExpression Abs, BasicExpression Rel>
+class ToleranceEvaluation final : public EvaluationBase<ToleranceEvaluation<Abs, Rel>> {
 public:
-    using Expression = ToleranceExpression<ABS, REL>;
+    using Expression = ToleranceExpression<Abs, Rel>;
 
     explicit constexpr ToleranceEvaluation(Expression const &);
 
@@ -167,8 +167,8 @@ public:
     }
 
 private:
-    typename ABS::Evaluation m_abs;
-    typename REL::Evaluation m_rel;
+    typename std::remove_cvref_t<Abs>::Evaluation m_abs;
+    typename std::remove_cvref_t<Rel>::Evaluation m_rel;
     typename Expression::Value m_tolerance;
 };
 
