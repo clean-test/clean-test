@@ -54,19 +54,19 @@ using DataWrapper = std::conditional_t<
 template <typename... Data, GenericCaseRunner<Data...> Runner>
 constexpr /*CaseRunner<Data...>*/ auto load_runner(Runner && runner)
 {
-    if constexpr (CaseRunner<Runner, Data...>) {
-        return std::forward<Runner>(runner);
-    } else {
-        return [fwd = utils::fwd_capture(std::forward<Runner>(runner))]<typename... Sample>(
-                    execute::Observer & observe,
-                    Sample &&... sample) mutable
-            requires(sizeof...(Sample) == sizeof...(Data))
-        {
-            auto const setup = framework::ObservationSetup{observe};
-            auto & [run] = fwd;
+    return [fwd = utils::fwd_capture(std::forward<Runner>(runner))]<typename... Sample>(
+                execute::Observer & observe,
+                Sample &&... sample) mutable
+        requires(sizeof...(Sample) == sizeof...(Data))
+    {
+        auto const setup = framework::ObservationSetup{observe};
+        auto & [run] = fwd;
+        if constexpr (CaseRunner<Runner, Data...>) {
+            run(observe, std::forward<decltype(sample)>(sample)...);
+        } else {
             run(std::forward<decltype(sample)>(sample)...);
-        };
-    }
+        }
+    };
 }
 
 constexpr auto make_name_generator()

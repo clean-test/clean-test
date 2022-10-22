@@ -12,6 +12,7 @@
 #include <clean-test/framework.h>
 
 #include <condition_variable>
+#include <future>
 #include <map>
 #include <mutex>
 #include <thread>
@@ -46,7 +47,9 @@ auto const dummy = [] {
 std::string_view const wrong_observer_message = "This is a message directed to the wrong observer!";
 auto const wrong_observer = [] {
     "wrong"_test = [](ct::Observer &) {
-        ct::expect(false) << wrong_observer_message;
+        std::async([&] {
+            ct::expect(false) << wrong_observer_message;
+        }).wait();
     };
     return 0;
 }();
