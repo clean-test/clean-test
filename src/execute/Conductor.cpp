@@ -20,6 +20,8 @@
 
 #include <exception>
 #include <iostream>
+#include <set>
+#include <string.h>
 #include <thread>
 
 namespace clean_test::execute {
@@ -172,6 +174,39 @@ auto execute_parallel(Cases test_cases, Conductor::Setup const setup)
     return results;
 }
 
+void report_locations(Conductor::Setup const & setup, std::vector<Observation> const & data)
+{
+    auto const & colors = setup.m_colors;
+    auto & logger = setup.m_logger;
+
+    struct CompareSourceLocation {
+        bool operator()(utils::SourceLocation const & l, utils::SourceLocation const & r) const {
+            if (auto const cmp = strcmp(l.file_name(), r.file_name()); cmp != 0) {
+                return cmp < 0;
+            }
+            return l.line() < r.line();
+        }
+    };
+    auto const locations = [&] {
+        auto result = std::set<utils::SourceLocation, CompareSourceLocation>{};
+        for (auto const & sample: data) {
+            result.emplace(sample.m_where);
+        }
+        return result;
+    }();
+
+    logger
+        << colors[Color::bad] << badge(BadgeType::headline)
+        << " Warning: Observed test-expectations at unknown Observer.\n";
+    for (auto const & where: locations) {
+        logger << badge(BadgeType::empty) << "   - " << where.file_name() << ':' << where.line() << '\n';
+    }
+
+    logger
+        << badge(BadgeType::headline) << " This is likely caused by missing to propagate an Observer."
+        << colors[Color::off] << std::endl;
+}
+
 /// Variant of @c execute_parallel that manages mis-reported @c Observation s encountered at a fallback observer.
 Outcome safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
 {
@@ -189,11 +224,7 @@ Outcome safe_execute_parallel(Cases test_cases, Conductor::Setup const setup)
     // Harvest any incorrectly directed observations.
     auto unmanaged = std::move(fallback_observer).release();
     if (not unmanaged.empty()) {
-        auto const & colors = setup.m_colors;
-        utils::OSyncStream{setup.m_logger}
-            << colors[Color::bad] << badge(BadgeType::headline)
-            << " Warning: Observed test-expectations at unknown Observer, likely caused by lacking passed observer."
-            << colors[Color::off] << std::endl;
+        report_locations(setup, unmanaged);
         results.emplace_back(
             "unknown", CaseStatus::pass, CaseResult::Duration{}, std::move(unmanaged), CaseResult::Type::fallback);
     }
