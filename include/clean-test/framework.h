@@ -16,6 +16,7 @@ using framework::expect;
 using Observer = execute::Observer;
 using Suite = framework::SuiteRegistrar;
 using Tag = framework::Tag;
+using ObservationSetup = framework::ObservationSetup;
 
 // No clang release so far supports CTAD for template aliases. We include a workaround.
 // MSVC seems to struggle with it too.
