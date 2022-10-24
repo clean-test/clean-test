@@ -27,7 +27,7 @@ ColorTable const & load_colors(Configuration const & cfg)
     return coloring_setup(cfg.m_coloring);
 }
 
-auto filter(Configuration const & cfg)
+auto load_filter(Configuration const & cfg)
 {
     return NameFilter{cfg.m_filter_settings};
 }
@@ -50,12 +50,13 @@ void serialize(std::ostream & logger, std::filesystem::path const & path, ColorT
 int run(std::ostream & logger, Configuration const & cfg)
 {
     auto const & colors = load_colors(cfg);
+    auto const filter = load_filter(cfg);
     auto const conductor = Conductor{{
         .m_logger = logger,
         .m_colors = colors,
         .m_num_workers = cfg.m_num_jobs,
         .m_buffering = cfg.m_buffering,
-        .m_filter = filter(cfg)}};
+        .m_filter = filter}};
 
     auto outcome = conductor.run();
     serialize(logger, cfg.m_junit_path, colors, JUnitExport{outcome});
@@ -89,7 +90,7 @@ int main(Configuration const & cfg)
             break;
 
         case OperationMode::list:
-            logger << TreeDisplay{framework::registry(), {load_colors(cfg), filter(cfg), cfg.m_depth}};
+            logger << TreeDisplay{framework::registry(), {load_colors(cfg), load_filter(cfg), cfg.m_depth}};
             break;
 
         case OperationMode::run:
