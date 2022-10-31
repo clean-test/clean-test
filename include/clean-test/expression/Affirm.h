@@ -26,7 +26,7 @@ public:
 };
 
 template <BasicExpression T>
-constexpr auto operator+(T && expression)
+constexpr auto operator+(T && expression) requires(requires(typename T::Value const & v) { {+v}; })
 {
     return make_standard_operator<Affirm>(std::forward<T>(expression));
 }

@@ -20,11 +20,14 @@ public:
     }
 };
 
-template <typename L, typename R> requires(BasicExpression<L> or BasicExpression<R>)
+template <typename L, typename R>
+requires(
+    (BasicExpression<L> or BasicExpression<R>)
+    and requires(LiftValue<L> const & l, LiftValue<R> const & r) { {l & r}; }
+)
 constexpr auto operator&(L && lhs, R && rhs)
 {
     return make_standard_operator<BitwiseAnd>(lift(std::forward<L>(lhs)), lift(std::forward<R>(rhs)));
 }
-
 
 }

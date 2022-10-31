@@ -19,7 +19,7 @@ public:
     }
 };
 
-template <BasicExpression T>
+template <BasicExpression T> requires(requires(typename T::Value const & v) { {not v}; })
 constexpr auto operator not(T const & expression)
 {
     return make_standard_operator<Not>(expression);

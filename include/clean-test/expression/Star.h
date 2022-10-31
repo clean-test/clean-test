@@ -67,7 +67,7 @@ private:
 ///
 /// This operator is not a StandardOperator since it's output is different: Rather than displaying "* 0x1234"
 /// we want to see "42 (@0x1234)".
-template <BasicExpression T>
+template <BasicExpression T> requires(requires(typename T::Value const & v) { {*v}; })
 constexpr auto operator *(T && expression)
 {
     return StarExpression<std::remove_cvref_t<T>>{expression};

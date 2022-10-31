@@ -20,7 +20,7 @@ public:
     }
 };
 
-template <BasicExpression T>
+template <BasicExpression T> requires(requires(typename T::Value const & v) { {~v}; })
 constexpr auto operator~(T && expression)
 {
     return make_standard_operator<BitwiseNot>(std::forward<T>(expression));

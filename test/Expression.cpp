@@ -3,10 +3,10 @@
 
 #include "TestUtilities.h"
 
+#include <clean-test/expression.h>
 #include <clean-test/utils/SourceLocation.h>
 
 #include <cassert>
-#include <clean-test/expression.h>
 #include <exception>
 #include <sstream>
 #include <vector>
@@ -141,6 +141,11 @@ static_assert(ct::lift(2) ^ 1);
 static_assert(~ct::lift(1));
 static_assert((ct::lift(CommaInt{2}), ct::lift(1)));
 static_assert(ct::lift(0) or 1);
+
+template <typename L, typename R>
+concept Addable = requires(L const & l, R const & r) { {l + r}; };
+static_assert(Addable<int, ct::expression::Lift<int>>);
+static_assert(not Addable<int, ct::expression::Lift<std::string_view>>);
 
 void test_operator_output()
 {

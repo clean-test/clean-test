@@ -17,7 +17,11 @@ public:
     static constexpr auto description = std::string_view{"and"};
 };
 
-template <typename L, typename R> requires(BasicExpression<L> or BasicExpression<R>)
+template <typename L, typename R>
+requires(
+    (BasicExpression<L> or BasicExpression<R>)
+    and requires(LiftValue<L> const & l, LiftValue<R> const & r) { {l and r}; }
+)
 constexpr auto operator and(L && lhs, R && rhs)
 {
     return make_short_circuit_operator<And>(lift(std::forward<L>(lhs)), lift(std::forward<R>(rhs)));
