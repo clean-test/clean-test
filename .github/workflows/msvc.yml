@@ -15,7 +15,7 @@ jobs:
         std: [ 20 ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Create Build Environment
         run: cmake -E make_directory ${{ github.workspace }}/build
