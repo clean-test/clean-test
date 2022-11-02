@@ -47,7 +47,7 @@ Clause(T &&) -> Clause<T>;
 template <typename T>
 class ClauseEvaluation : public EvaluationBase<ClauseEvaluation<T>>  {
 public:
-    constexpr ClauseEvaluation(Clause<T> const & clause) : m_value{clause.m_value}
+    constexpr explicit ClauseEvaluation(Clause<T> const & clause) : m_value{clause.m_value}
     {}
 
     [[nodiscard]] constexpr auto & value() const

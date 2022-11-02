@@ -31,7 +31,7 @@ public:
     };
 
     /// Detailed c'tor: Honor all specified @p setup details.
-    Conductor(Setup const & setup) noexcept;
+    explicit Conductor(Setup const & setup) noexcept;
 
     /// Convenience c'tor for internal tests: use automatic coloring, buffering as well as all threads and tests.
     Conductor() noexcept;

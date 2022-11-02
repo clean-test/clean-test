@@ -33,7 +33,7 @@ template <typename T>
 class ValueWrapper {
 public:
     template <typename... Args>
-    constexpr ValueWrapper(Args &&... args) : m_data{std::forward<Args>(args)...}
+    constexpr explicit ValueWrapper(Args &&... args) : m_data{std::forward<Args>(args)...}
     {}
 
     constexpr T & get() {

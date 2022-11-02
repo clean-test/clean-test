@@ -19,7 +19,7 @@ public:
     Mutable() = default;
 
     /// Semantic trick for uniform "copy" of reference and Mutable mutexes.
-    Mutable(Mutable &) : Mutable{} {}
+    explicit Mutable(Mutable &) : Mutable{} {}
 
     explicit(false) operator T &() const
     {
@@ -78,7 +78,7 @@ public:
 
     /// Mutex reference c'tor: store (externally owned) mutex reference, perfect forward value initialization.
     template <typename... Args> requires requires { T{std::declval<Args>()...}; }
-    Guarded(Mutex & mutex, Args &&... args) : m_mutex{mutex}, m_value{std::forward<Args>(args)...}
+    explicit(false) Guarded(Mutex & mutex, Args &&... args) : m_mutex{mutex}, m_value{std::forward<Args>(args)...}
     {}
 
     // not copyable

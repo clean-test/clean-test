@@ -38,7 +38,7 @@ class TreePosition {
 public:
     using Position = Node::SubTree::const_iterator;
 
-    TreePosition(Node::SubTree const & tree) :
+    explicit TreePosition(Node::SubTree const & tree) :
         m_indent{list_continuation}, m_position{std::begin(tree)}, m_end{std::end(tree)}, m_num_remaining{tree.size()}
     {}
 
