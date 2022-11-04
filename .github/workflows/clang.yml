@@ -24,9 +24,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: seanmiddleditch/gha-setup-ninja@v3
-        with:
-          version: 1.11.0
       - if: matrix.clang == '12' || matrix.clang == '13'
         uses: egor-tensin/setup-clang@v1
         with:
@@ -44,7 +41,6 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
           -DCMAKE_CXX_STANDARD=${{matrix.std}}
           -DCLEANTEST_WERROR=ON
-          -G Ninja
           $GITHUB_WORKSPACE
 
       - name: Build
