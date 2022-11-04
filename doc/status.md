@@ -71,7 +71,7 @@
  - [x] Support all binary operators
  - [x] Deal with configurable floating point accuracy
  - [ ] Comparison of containers / ranges
- - [ ] Improve lazy detection: support lifting generators, improve descriptions (e.g. "throws").
+ - [x] Improve lazy detection: support lifting generators, improve descriptions (e.g. "throws").
  - [ ] Think about case-insensitive string comparisons
  - [ ] Diff for longer strings (colored?)
 
