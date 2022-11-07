@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <exception>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -147,6 +148,15 @@ concept Addable = requires(L const & l, R const & r) { {l + r}; };
 static_assert(Addable<int, ct::expression::Lift<int>>);
 static_assert(not Addable<int, ct::expression::Lift<std::string_view>>);
 
+template <typename T>
+struct IsLiftableImpl : std::false_type {};
+
+template <typename T> requires(requires (T t) { {ct::lift(t)}; })
+struct IsLiftableImpl<T> : std::true_type {};
+
+template <typename T>
+constexpr inline auto is_liftable = IsLiftableImpl<T>::value;
+
 void test_operator_output()
 {
     assert_output("( 1 + 2 )", 1 + ct::lift(2));
@@ -183,6 +193,13 @@ void test_operator_output()
 
     assert_output("no-throw", ct::throws([] {}));
     assert_output("incorrect-type-thrown", ct::throws<int>([] { throw 1.; }));
+
+    // Lift callables
+    assert_output("2", ct::lift([] { return 2; }));
+    auto const generate_two = [&, ptr = std::make_unique<int>(17)] { return 2; };
+    assert_output("2", ct::lift(generate_two)); // with reference
+    static_assert(not is_liftable<Aborter<false>>);
+    static_assert(is_liftable<int>);
 }
 
 void test_literals()
