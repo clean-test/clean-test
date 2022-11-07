@@ -180,6 +180,9 @@ void test_operator_output()
     assert_output("1", *ct::lift(wrapped_one));
 
     assert_output("2, 3", (ct::lift(CommaInt{2}), ct::lift(3)));
+
+    assert_output("no-throw", ct::throws([] {}));
+    assert_output("incorrect-type-thrown", ct::throws<int>([] { throw 1.; }));
 }
 
 void test_literals()

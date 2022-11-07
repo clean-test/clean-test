@@ -14,7 +14,7 @@ class DetectCatchAny {
 public:
     /// Determine whether invoking @p func throws (anything).
     template <std::invocable<> Func>
-    bool operator()(Func && func) const;
+    DescribedValue<bool> operator()(Func && func) const;
 };
 
 /// Helper for detecting exception of type @tparam Xcp.
@@ -23,7 +23,7 @@ class DetectCatch {
 public:
     /// Determine whether invoking @p func throws an instance of type @tparam Xcp.
     template <std::invocable<> Func>
-    bool operator()(Func && func) const;
+    DescribedValue<bool> operator()(Func && func) const;
 };
 
 
@@ -44,27 +44,28 @@ constexpr auto throws(Func && func)
 // Implementation //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 template <std::invocable<> Func>
-bool DetectCatchAny::operator()(Func && func) const
+DescribedValue<bool> DetectCatchAny::operator()(Func && func) const
 {
     try {
         std::forward<Func>(func)();
     } catch (...) {
-        return true;
+        return {true, "throw"};
     }
-    return false;
+    return {false, "no-throw"};
 }
 
 template <typename Xcp>
 template <std::invocable<> Func>
-bool DetectCatch<Xcp>::operator()(Func && func) const
+DescribedValue<bool> DetectCatch<Xcp>::operator()(Func && func) const
 {
     try {
         std::forward<Func>(func)();
     } catch (Xcp const &) {
-        return true;
+        return {true, "throw"};
     } catch (...) {
+        return {false, "incorrect-type-thrown"};
     }
-    return false;
+    return {false, "no-throw"};
 }
 
 }
