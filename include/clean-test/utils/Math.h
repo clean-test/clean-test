@@ -57,6 +57,14 @@ constexpr auto norm(T && t)
     return std::forward<T>(t);
 }
 
+/// Implementation of norm based on the respective member function.
+template <typename T>
+requires(requires(T && t) { {t.norm()}; })
+constexpr auto norm(T && t) noexcept(noexcept(std::forward<T>(t).norm()))
+{
+    return std::forward<T>(t).norm();
+}
+
 /// Checks for types having a @c norm overload: either by any of the default implementations above or via ADL.
 template <typename T>
 concept Normable = requires(T t) {

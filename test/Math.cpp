@@ -6,6 +6,7 @@
 #include <clean-test/utils/Math.h>
 
 #include <array>
+#include <complex>
 #include <vector>
 
 namespace {
@@ -141,6 +142,14 @@ static_assert(not ct::utils::math_details::Normable<std::string_view>);
 static_assert(not HasConstexprStdAbsSupport<float> or ct::utils::norm(-0.f) == 0.f);
 static_assert(ct::utils::norm(1u) == 1u);
 static_assert(not HasConstexprStdAbsSupport<int> or ct::utils::norm(-2) == 2);
+
+struct MemberNormable {
+    constexpr auto norm() const {
+        return 42;
+    }
+};
+static_assert(ct::utils::norm(MemberNormable{}) == 42);
+static_assert(ct::utils::norm(std::complex{1, 1}) == 2);
 
 int main()
 {
