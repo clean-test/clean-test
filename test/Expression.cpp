@@ -148,6 +148,15 @@ concept Addable = requires(L const & l, R const & r) { {l + r}; };
 static_assert(Addable<int, ct::expression::Lift<int>>);
 static_assert(not Addable<int, ct::expression::Lift<std::string_view>>);
 
+template <bool enabled>
+struct Aborter {
+    constexpr void operator()() const {
+        if constexpr (enabled) {
+            std::abort();
+        }
+    }
+};
+
 template <typename T>
 struct IsLiftableImpl : std::false_type {};
 
@@ -193,6 +202,18 @@ void test_operator_output()
 
     assert_output("no-throw", ct::throws([] {}));
     assert_output("incorrect-type-thrown", ct::throws<int>([] { throw 1.; }));
+
+#if defined(CLEANTEST_HAS_ABORT_SUPPORT)
+    assert_output("aborts", ct::aborts(Aborter<true>{}));
+    assert_output("no-abort", ct::aborts(Aborter<false>{}));
+# if defined(NDEBUG) // non-debug
+    assert_output("incorrect-abort-optimized", ct::debug_aborts(Aborter<true>{}));
+    assert_output("abort-avoided-optimized", ct::debug_aborts(Aborter<false>{}));
+# else // debug
+    assert_output("aborts-debug", ct::debug_aborts(Aborter<true>{}));
+    assert_output("no-abort-debug", ct::debug_aborts(Aborter<false>{}));
+# endif
+#endif
 
     // Lift callables
     assert_output("2", ct::lift([] { return 2; }));
