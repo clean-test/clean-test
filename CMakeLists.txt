@@ -234,16 +234,18 @@ else ()
     add_library(CleanTest::main-automatic ALIAS cleantest-main-static)
 endif ()
 
-if (CLEANTEST_TEST)
-    enable_testing()
-    add_subdirectory(test)
-endif()
-add_subdirectory(doc)
-
-## Packaging ###########################################################################################################
+## Packaging, test and docs ############################################################################################
 
 # Skip if we are not the toplevel of the cmake build
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+
+    if (CLEANTEST_TEST)
+        enable_testing()
+        add_subdirectory(test)
+    endif()
+    
+    add_subdirectory(doc)
+
     set(CPACK_PACKAGE_NAME                clean-test)
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A modern, C++-20 unit-testing framework.")
     set(CPACK_PACKAGE_INSTALL_DIRECTORY   ${CPACK_PACKAGE_NAME})
