@@ -149,7 +149,7 @@ struct MemberNormable {
     }
 };
 static_assert(ct::utils::norm(MemberNormable{}) == 42);
-static_assert(ct::utils::norm(std::complex{1, 1}) == 2);
+static_assert(ct::utils::norm(std::complex{1.0f, 1.0f}) == 2);
 
 int main()
 {
