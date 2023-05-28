@@ -1,7 +1,7 @@
 # Copyright (c) m8mble 2020.
 # SPDX-License-Identifier: BSL-1.0
 
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.21)
 project(clean-test CXX)
 set(PROJECT_VERSION 0.2.0)
 
@@ -10,7 +10,7 @@ include(CMakeParseArguments)
 set(CMAKE_CXX_STANDARD 20)
 
 # Configure build targets
-option(CLEANTEST_TEST "Build tests for the framework." ON)
+option(CLEANTEST_TEST "Build tests for the framework." ${PROJECT_IS_TOP_LEVEL})
 option(CLEANTEST_BUILD_STATIC "Whether to include building the statically linked library version." ON)
 option(CLEANTEST_BUILD_SHARED "Whether to include building the shared, dynamically linked library version." ON)
 option(CLEANTEST_WERROR "Whether warnings should be treated as errors." OFF)
@@ -234,18 +234,18 @@ else ()
     add_library(CleanTest::main-automatic ALIAS cleantest-main-static)
 endif ()
 
-## Packaging, test and docs ############################################################################################
+if (CLEANTEST_TEST)
+    if (PROJECT_IS_TOP_LEVEL)
+        enable_testing()
+    endif()
+    add_subdirectory(test)
+endif()
+add_subdirectory(doc)
+
+## Packaging ###########################################################################################################
 
 # Skip if we are not the toplevel of the cmake build
-if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-
-    if (CLEANTEST_TEST)
-        enable_testing()
-        add_subdirectory(test)
-    endif()
-    
-    add_subdirectory(doc)
-
+if(PROJECT_IS_TOP_LEVEL)
     set(CPACK_PACKAGE_NAME                clean-test)
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A modern, C++-20 unit-testing framework.")
     set(CPACK_PACKAGE_INSTALL_DIRECTORY   ${CPACK_PACKAGE_NAME})
@@ -287,4 +287,6 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     )
     include(CPack)
+else()
+  mark_as_advanced(CLEANTEST_TEST)
 endif()
