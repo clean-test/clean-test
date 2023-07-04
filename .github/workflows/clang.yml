@@ -11,20 +11,14 @@ jobs:
       matrix:
         build_type: [ Debug, Release ]
         std: [ 20 ]
-        clang: [ 11, 12, 13 ]
-        os: [ ubuntu-20.04, ubuntu-22.04 ]
-        exclude:
-          - clang: 11
-            os: ubuntu-22.04
-          - clang: 12
-            os: ubuntu-22.04
-          - clang: 13
-            os: ubuntu-22.04
+        clang: [ 11, 12, 13, 14, 15 ]
+        os: [ ubuntu-22.04 ]
 
 
     steps:
       - uses: actions/checkout@v3
-      - if: matrix.clang == '12' || matrix.clang == '13'
+
+      - name: Setup toolchain
         uses: egor-tensin/setup-clang@v1
         with:
           version: ${{matrix.clang}}
