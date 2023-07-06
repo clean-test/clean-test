@@ -13,7 +13,7 @@ jobs:
         platform: [ Win32, x64 ]
         build_type: [ Debug, Release ]
         std: [ 20 ]
-        toolset: [ v142, v143 ]
+        toolset: [ v141, v142, v143 ]
 
     steps:
       - uses: actions/checkout@v3
