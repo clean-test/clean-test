@@ -30,7 +30,7 @@ template <typename T>
 concept Tuple
     = requires(T t) {
           { std::tuple_size<T>::value } -> std::convertible_to<std::size_t>;
-          requires tuple_details::all_tuple_elements<T>;
+          tuple_details::all_tuple_elements<T>;
       };
 
 }
