@@ -188,7 +188,7 @@ void test_operator_output()
     assert_output("( 1 ^ 2 )", 1 ^ ct::lift(2));
     assert_output("~2", ~ct::lift(2));
 
-    constexpr auto one = 1;
+    auto const one = 1;
     auto const expected = [&] {
         auto buffer = std::ostringstream{};
         buffer << one << " (@" << &one << ')';
