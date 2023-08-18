@@ -96,6 +96,8 @@ def build_docs(build_dir: pathlib.Path, version: str, **kwargs) -> pathlib.Path:
             "sphinx-build",
             "-C",  # no conf.py
             "-W",  # -Werror for sphinx
+            "--keep-going",
+            "--color",
             *_sphinx_arguments(_sphinx_config(doxygen=doxygen, version=version)),
             "-b",
             "html",
