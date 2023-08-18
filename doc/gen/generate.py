@@ -15,13 +15,22 @@ def _sphinx_config(doxygen: pathlib.Path, version: str) -> dict:
         "author": "m8mble",
         "version": version,
         "release": version,
-        "html_theme": "alabaster",
         "rst_prolog": textwrap.dedent(
             """
                 .. role:: cpp(code)
                    :language: cpp
             """
         ),
+        "primary_domain": "cpp",
+        "highlight_language": "cpp",
+        "cpp_index_common_prefix": ["clean_test::"],
+        "html_theme": "furo",
+        "html_title": "Clean Test",
+        "html_theme_options": {
+            "source_repository": "https://github.com/clean-test/clean-test/",
+            "source_branch": "main",
+            "source_directory": "doc/",
+        },
         "extensions": [
             "breathe",
             "sphinx.ext.autosectionlabel",
@@ -65,7 +74,7 @@ def _doxygen_config(doxygen: pathlib.Path, include: pathlib.Path) -> str:
 
 
 def build_docs(build_dir: pathlib.Path, version: str, **kwargs) -> pathlib.Path:
-    """ Generate documentation for Clean Test into build_dir. """
+    """Generate documentation for Clean Test into build_dir."""
     docs = pathlib.Path(__file__).parent.parent.resolve()
     include = docs.parent / "include" / "clean-test"
     doxygen = build_dir / "doxygen"

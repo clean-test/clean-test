@@ -13,6 +13,7 @@ python = ">=3.8"
 Sphinx = ">=3.5.3"
 breathe = ">=4.28.0"
 sphinx-rtd-theme = ">=0.5.2"
+furo = "^2023.7.26"
 
 [tool.poetry.dev-dependencies]
 
