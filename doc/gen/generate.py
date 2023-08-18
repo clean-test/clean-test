@@ -31,6 +31,7 @@ def _sphinx_config(doxygen: pathlib.Path, version: str) -> dict:
             "source_branch": "main",
             "source_directory": "doc/",
         },
+        "autosectionlabel_prefix_document": True,
         "extensions": [
             "breathe",
             "sphinx.ext.autosectionlabel",

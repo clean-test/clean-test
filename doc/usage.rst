@@ -19,7 +19,7 @@ This can either be obtained from `a release <https://github.com/clean-test/clean
 or (soon) your package manager of choice.
 
 With this no further preparation is needed.
-Feel free to skip ahead to the :ref:`integration details<Integration>`.
+Feel free to skip ahead to the :ref:`integration details<usage:Integration>`.
 
 Build
 ^^^^^
