@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <string_view>
+#include <cstdint>
 
 namespace clean_test::utils::utf8 {
 
