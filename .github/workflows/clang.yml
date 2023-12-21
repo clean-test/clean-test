@@ -12,7 +12,9 @@ jobs:
         build_type: [ Debug, Release ]
         std: [ 20 ]
         clang: [ 11, 12, 13, 14, 15 ]
-        os: [ ubuntu-22.04 ]
+        # ubuntu-22.04 brings gcc-13 whose stdlib is incompatible with modern clang versions.exclude:
+        # Therefore we prefer an older ubuntu baseline for now.
+        os: [ ubuntu-20.04 ]
 
 
     steps:
