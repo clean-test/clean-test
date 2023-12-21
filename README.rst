@@ -100,6 +100,17 @@ Clean Test ensures valid UTF-8 reports and thus can safely be utilized in your C
 
 
 ======
+Video
+======
+
+Details about Clean Test were presented at Meeting C++ 2022 in Berlin:
+
+.. image:: https://img.youtube.com/vi/JF83GGNvvM8/0.jpg
+    :alt: Clean Test at Meeting C++ 2022
+    :target: https://www.youtube.com/watch?v=JF83GGNvvM8
+    :align: center
+
+======
 Status
 ======
 

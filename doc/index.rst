@@ -73,3 +73,14 @@ Moreover Clean Test can also be used with any continuous integration tool.
 With the support of JUnit XML-reports (the most common format) any CI-engine can display error details and statistics.
 Clean Test guarantees valid UTF-8 output, thus allowing for assertions with arbitrary byte-sequences.
 The necessary escaping is done automatically, if necessary.
+
+
+Video
+-------
+
+Details about Clean Test were presented at Meeting C++ 2022 in Berlin:
+
+.. image:: https://img.youtube.com/vi/JF83GGNvvM8/0.jpg
+    :alt: Clean Test at Meeting C++ 2022
+    :target: https://www.youtube.com/watch?v=JF83GGNvvM8
+    :align: center
