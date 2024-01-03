@@ -5,6 +5,7 @@ import argparse
 import datetime
 import pathlib
 import subprocess
+import tempfile
 import textwrap
 
 
@@ -44,18 +45,25 @@ def _sphinx_config(doxygen: pathlib.Path, version: str) -> dict:
     }
 
 
-def _sphinx_arguments(config: dict) -> list:
+def _sphinx_arguments(config: dict, prefix=None) -> list:
     result = []
-    for k, v in config.items():
-        if isinstance(v, dict):
-            result.extend(f"{k}.{vk}={vv}" for vk, vv in v.items())
-        elif isinstance(v, list):
-            result.append(f"{k}={','.join(str(e) for e in v)}")
-        elif isinstance(v, bool):
-            result.append(f"{k}={int(v)}")
-        else:
-            result.append(f"{k}={v}")
-    return [f"-D{arg}" for arg in result]
+    if isinstance(config, dict):
+        arg_prefix = f"{prefix}." if prefix is not None else ""
+        result = [e for l in [_sphinx_arguments(v, prefix=f"{arg_prefix}{k}") for k, v in config.items()] for e in l]
+    elif isinstance(config, list):
+        result = [f"{prefix}={','.join(str(e) for e in config)}"]
+    elif isinstance(config, bool):
+        result = [f"{prefix}={int(config)}"]
+    else:
+        result = [f"{prefix}={config}"]
+
+    if prefix is None:
+        result = [f"-D{arg}" for arg in result]
+    return result
+
+
+def _sphinx_module(config: dict) -> str:
+    return "\n".join(f"{k} = {repr(v)}" for k, v in config.items())
 
 
 def _doxygen_config(doxygen: pathlib.Path, include: pathlib.Path) -> str:
@@ -92,20 +100,23 @@ def build_docs(build_dir: pathlib.Path, version: str, **kwargs) -> pathlib.Path:
     )
 
     html = build_dir / "html"
-    subprocess.check_call(
-        (
-            "sphinx-build",
-            "-C",  # no conf.py
-            "-W",  # -Werror for sphinx
-            "--keep-going",
-            "--color",
-            *_sphinx_arguments(_sphinx_config(doxygen=doxygen, version=version)),
-            "-b",
-            "html",
-            docs,
-            html,
+    with tempfile.TemporaryDirectory() as tmp:
+        conf = pathlib.Path(tmp) / "conf.py"
+        conf.write_text(_sphinx_module(_sphinx_config(doxygen=doxygen, version=version)))
+        subprocess.check_call(
+            (
+                "sphinx-build",
+                "-c",
+                tmp,
+                "-W",  # -Werror for sphinx
+                "--keep-going",
+                "--color",
+                "-b",
+                "html",
+                docs,
+                html,
+            )
         )
-    )
     return html
 
 
