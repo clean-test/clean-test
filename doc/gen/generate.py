@@ -9,7 +9,7 @@ import tempfile
 import textwrap
 
 
-def _sphinx_config(doxygen: pathlib.Path, version: str) -> dict:
+def _sphinx_config(doxygen: pathlib.Path, logo: pathlib.Path, version: str) -> dict:
     return {
         "project": "Clean Test",
         "copyright": f"2020 - {datetime.date.today().year}, m8mble",
@@ -31,7 +31,20 @@ def _sphinx_config(doxygen: pathlib.Path, version: str) -> dict:
             "source_repository": "https://github.com/clean-test/clean-test/",
             "source_branch": "main",
             "source_directory": "doc/",
+            "light_logo": "logo-light.svg",
+            "dark_logo": "logo-dark.svg",
+            "sidebar_hide_name": True,
+            "light_css_variables": {
+                "color-brand-primary": "#00D423",
+            },
+            "dark_css_variables": {
+                "color-brand-primary": "#00D423",
+            },
         },
+        "html_static_path": [
+            str(logo),
+        ],
+        "html_favicon": str(logo / "favicon.ico"),
         "autosectionlabel_prefix_document": True,
         "extensions": [
             "breathe",
@@ -40,7 +53,7 @@ def _sphinx_config(doxygen: pathlib.Path, version: str) -> dict:
         ],
         # breathe configuration
         "breathe_default_project": "clean-test",
-        "breathe_projects": {"clean-test": doxygen.resolve()},
+        "breathe_projects": {"clean-test": str(doxygen.resolve())},
         "breathe_domain_by_extension": {"h": "cpp"},
     }
 
@@ -102,7 +115,7 @@ def build_docs(build_dir: pathlib.Path, version: str, **kwargs) -> pathlib.Path:
     html = build_dir / "html"
     with tempfile.TemporaryDirectory() as tmp:
         conf = pathlib.Path(tmp) / "conf.py"
-        conf.write_text(_sphinx_module(_sphinx_config(doxygen=doxygen, version=version)))
+        conf.write_text(_sphinx_module(_sphinx_config(doxygen=doxygen, logo=docs / "logo", version=version)))
         subprocess.check_call(
             (
                 "sphinx-build",

@@ -1,9 +1,17 @@
 .. Copyright m8mble 2020.
    SPDX-License-Identifier: BSL-1.0
 
-**********
-Clean Test
-**********
+.. |Clean Test Logo| raw:: html
+
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="doc/logo/logo-dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="doc/logo/logo-light.svg">
+    <img src="doc/logo/logo-light.svg" width="80%">
+  </picture>
+
+*****************
+|Clean Test Logo|
+*****************
 
 .. image:: https://github.com/clean-test/clean-test/actions/workflows/gcc.yml/badge.svg?branch=main
    :target: https://github.com/clean-test/clean-test/actions/workflows/gcc.yml
